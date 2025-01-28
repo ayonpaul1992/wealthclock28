@@ -16,6 +16,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(),
       ),
+      onUnknownRoute: (settings) {
+        // Handle unknown routes
+        return MaterialPageRoute(builder: (context) => LoginPage());
+      },
       home: const LoginPage(),
     );
   }
