@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
       print("Login failed: Email or Password is empty");
       return;
     } else if (uPan.isEmpty) {
-      // Allow sign-in even if uPan is empty
+      // If PAN is empty, proceed with login using email and password
       print("Warning: PAN ID is empty. Proceeding with login...");
     } else {
       // All fields are filled, continue with normal sign-in process
@@ -52,7 +52,10 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
-      final apiUrl = 'https://wealthclockadvisors.com/api/client/login';
+      // API URL is updated for login with PAN
+      final apiUrl = uPan.isEmpty
+          ? 'https://wealthclockadvisors.com/api/client/login'
+          : 'https://wealthclockadvisors.com/api/client/login-with-pan';
       print("Attempting to login with email: $uEmail"); // Print email for debugging
 
       final response = await http.post(
@@ -63,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
         body: {
           'email': uEmail,
           'password': uPass,
-          'pan': uPan,
+          'pan': uPan, // Send PAN if available
         },
       );
 
@@ -97,15 +100,15 @@ class _LoginPageState extends State<LoginPage> {
           print("Unexpected response structure.");
           _showMessage("Unexpected response from server.");
         }
-      } else if(response.statusCode == 400){
+      } else if (response.statusCode == 400) {
         final Map<String, dynamic> errorResponse = json.decode(response.body);
         print("Bad request: ${errorResponse['message']}");
         _showMessage(errorResponse['message'] ?? "Login failed. Please try again.");
-      } else if(response.statusCode == 401){
+      } else if (response.statusCode == 401) {
         final Map<String, dynamic> errorResponse = json.decode(response.body);
         print("Unauthorized: ${errorResponse['message']}");
         _showMessage(errorResponse['message'] ?? "Login failed. Please try again.");
-      } else if(response.statusCode == 409){
+      } else if (response.statusCode == 409) {
         final Map<String, dynamic> errorResponse = json.decode(response.body);
         print("Conflict: ${errorResponse['message']}");
         _showMessage(errorResponse['message'] ?? "Login failed. Please try again.");

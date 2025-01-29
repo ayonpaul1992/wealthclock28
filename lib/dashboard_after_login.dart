@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'individual_portfolio.dart';
 import 'family_portfolio.dart';
@@ -65,6 +67,412 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
   //     );
   //   }
   // }
+  String userName = "Loading...";
+  String userCurrentValue = "Loading...";
+  String userTotalGain = "Loading...";
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserName();
+    fetchUserCurrentValue();
+    fetchUserTotalGain();
+    fetchUserDtlsPopUp();
+  }
+
+
+
+  // Future<void> fetchUserName() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //
+  //   // Fetch auth_token dynamically from SharedPreferences
+  //   final String? authToken = prefs.getString('auth_token');
+  //   const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
+  //
+  //   // Check if the token is available
+  //   if (authToken == null || authToken.isEmpty) {
+  //     setState(() {
+  //       userName = "Auth token not found!";
+  //     });
+  //     return;
+  //   }
+  //
+  //   try {
+  //     final response = await http.get(
+  //       Uri.parse(apiUrl),
+  //       headers: {
+  //         'Authorization': 'Bearer $authToken', // Use token dynamically
+  //         'Content-Type': 'application/json',
+  //       },
+  //     );
+  //
+  //     // Debugging: Print full response details
+  //     print("Response Status Code: ${response.statusCode}");
+  //     print("Raw Response Body: '${response.body}'");
+  //     print("Response Headers: ${response.headers}");
+  //
+  //     final String responseBody = response.body.trim(); // Remove extra spaces
+  //
+  //     // Check if response is valid JSON before decoding
+  //     if (response.statusCode == 200) {
+  //       if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
+  //         final Map<String, dynamic> data = json.decode(responseBody);
+  //         print("Parsed Data: $data");
+  //
+  //         // Fetch the user_name dynamically
+  //         if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
+  //           setState(() {
+  //             userName = data["clientData"][0]["user_name"] ?? "No Name Found";
+  //           });
+  //         } else {
+  //           setState(() {
+  //             userName = "Invalid data format";
+  //           });
+  //         }
+  //       } else {
+  //         setState(() {
+  //           userName = "Invalid response format (Not JSON)";
+  //         });
+  //       }
+  //     } else if (response.statusCode == 400) {
+  //       setState(() {
+  //         userName = "Bad Request: Please check your request parameters!";
+  //       });
+  //     } else if (response.statusCode == 401) {
+  //       setState(() {
+  //         userName = "Unauthorized: Please login again!";
+  //       });
+  //     } else {
+  //       setState(() {
+  //         userName = "Error ${response.statusCode}: Something went wrong!";
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print("Error: $e");
+  //     setState(() {
+  //       userName = "Error fetching data!";
+  //     });
+  //   }
+  // }
+  Future<void> fetchUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? authToken = prefs.getString('auth_token');
+    const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
+
+    if (authToken == null || authToken.isEmpty) {
+      setState(() {
+        userName = "Auth token not found!";
+      });
+      return;
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $authToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print("Response Status Code: ${response.statusCode}");
+      print("Raw Response Body: '${response.body}'");
+
+      final String responseBody = response.body.trim();
+
+      if (response.statusCode == 200) {
+        if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
+          final Map<String, dynamic> data = json.decode(responseBody);
+          print("Parsed Data: $data");
+
+          if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
+            String? fetchedName = data["clientData"][0]["user_name"];
+            String? fetchedPan = data["clientData"][0]["pan"];
+
+            print("Fetched PAN: $fetchedPan"); // Debugging print statement
+
+            setState(() {
+              if (fetchedPan == null || fetchedPan.isEmpty) {
+                userName = ""; // Blank if PAN is missing
+              } else {
+                userName = fetchedName ?? "No Name Found";
+              }
+            });
+          } else {
+            setState(() {
+              userName = "Invalid data format";
+            });
+          }
+        } else {
+          setState(() {
+            userName = "Invalid response format (Not JSON)";
+          });
+        }
+      } else if (response.statusCode == 400) {
+        final Map<String, dynamic> data = json.decode(responseBody);
+        setState(() {
+          userName = data["message"] ?? "Bad Request: Please check your request parameters!";
+        });
+      } else if (response.statusCode == 401) {
+        setState(() {
+          userName = "Unauthorized: Please login again!";
+        });
+      } else {
+        setState(() {
+          userName = "Error ${response.statusCode}: Something went wrong!";
+        });
+      }
+    } catch (e) {
+      print("Error: $e");
+      setState(() {
+        userName = "Error fetching data!";
+      });
+    }
+  }
+  Future<void> fetchUserCurrentValue() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Fetch auth_token dynamically from SharedPreferences
+    final String? authToken = prefs.getString('auth_token');
+    const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
+
+    // Check if the token is available
+    if (authToken == null || authToken.isEmpty) {
+      setState(() {
+        userCurrentValue = "Auth token not found!";
+      });
+      return;
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $authToken', // Use token dynamically
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // Debugging: Print full response details
+      print("Response Status Code: ${response.statusCode}");
+      print("Raw Response Body: '${response.body}'");
+      print("Response Headers: ${response.headers}");
+
+      final String responseBody = response.body.trim(); // Remove extra spaces
+
+      // Check if the response is valid JSON before decoding
+      if (response.statusCode == 200) {
+        if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
+          try {
+            final Map<String, dynamic> data = json.decode(responseBody);
+            print("Parsed Data: $data");
+
+            // Fetch and format totalGain
+            if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
+              double totalGain = (data["clientData"][0]["total_current_val"] ?? 0).toDouble();
+
+              // Apply NumberFormat with toStringAsFixed(2)
+              String formattedTotalGain = NumberFormat('#,##0.00').format(double.parse(totalGain.toStringAsFixed(2)));
+
+              setState(() {
+                userCurrentValue = formattedTotalGain; // Formatted with commas and 2 decimal places
+              });
+            } else {
+              setState(() {
+                userCurrentValue = "Invalid data format";
+              });
+            }
+          } catch (e) {
+            print("Error decoding JSON: $e");
+            setState(() {
+              userCurrentValue = "Error decoding JSON! Response might not be in JSON format.";
+            });
+          }
+        } else {
+          setState(() {
+            userCurrentValue = "Invalid response format (Not JSON)";
+          });
+        }
+      } else if (response.statusCode == 400) {
+        final Map<String, dynamic> data = json.decode(responseBody);
+        setState(() {
+          userCurrentValue = data["message"] ?? "Bad Request: Please check your request parameters!";
+        });
+      } else if (response.statusCode == 401) {
+        setState(() {
+          userCurrentValue = "Unauthorized: Please login again!";
+        });
+      } else {
+        setState(() {
+          userCurrentValue = "Error ${response.statusCode}: Something went wrong!";
+        });
+      }
+    } catch (e) {
+      print("Exception caught: $e");
+      setState(() {
+        userCurrentValue = "Error fetching data! Exception: $e";
+      });
+    }
+  }
+  Future<void> fetchUserTotalGain() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Fetch auth_token dynamically from SharedPreferences
+    final String? authToken = prefs.getString('auth_token');
+    const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
+
+    // Check if the token is available
+    if (authToken == null || authToken.isEmpty) {
+      setState(() {
+        userTotalGain = "Auth token not found!";
+      });
+      return;
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $authToken', // Use token dynamically
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // Debugging: Print full response details
+      print("Response Status Code: ${response.statusCode}");
+      print("Raw Response Body: '${response.body}'");
+      print("Response Headers: ${response.headers}");
+
+      final String responseBody = response.body.trim(); // Remove extra spaces
+
+      // Check if the response is valid JSON before decoding
+      if (response.statusCode == 200) {
+        if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
+          try {
+            final Map<String, dynamic> data = json.decode(responseBody);
+            print("Parsed Data: $data");
+
+            // Fetch and format totalGain
+            if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
+              double totalGain = (data["clientData"][0]["totalGain"] ?? 0).toDouble();
+
+              // Apply NumberFormat with toStringAsFixed(2)
+              String formattedTotalGain = NumberFormat('#,##0.00').format(double.parse(totalGain.toStringAsFixed(2)));
+
+              setState(() {
+                userTotalGain = formattedTotalGain; // Formatted with commas and 2 decimal places
+              });
+            } else {
+              setState(() {
+                userTotalGain = "Invalid data format";
+              });
+            }
+          } catch (e) {
+            print("Error decoding JSON: $e");
+            setState(() {
+              userTotalGain = "Error decoding JSON! Response might not be in JSON format.";
+            });
+          }
+        } else {
+          setState(() {
+            userTotalGain = "Invalid response format (Not JSON)";
+          });
+        }
+      } else if (response.statusCode == 400) {
+        final Map<String, dynamic> data = json.decode(responseBody);
+        setState(() {
+          userTotalGain = data["message"] ?? "Bad Request: Please check your request parameters!";
+        });
+      } else if (response.statusCode == 401) {
+        setState(() {
+          userTotalGain = "Unauthorized: Please login again!";
+        });
+      } else {
+        setState(() {
+          userTotalGain = "Error ${response.statusCode}: Something went wrong!";
+        });
+      }
+    } catch (e) {
+      print("Exception caught: $e");
+      setState(() {
+        userTotalGain = "Error fetching data! Exception: $e";
+      });
+    }
+  }
+  Future<void> fetchUserDtlsPopUp() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Fetch auth_token dynamically from SharedPreferences
+    final String? authToken = prefs.getString('auth_token');
+    const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
+
+    // Check if the token is available
+    if (authToken == null || authToken.isEmpty) {
+      setState(() {
+        userName = "Auth token not found!";
+      });
+      return;
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $authToken', // Use token dynamically
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // Debugging: Print full response details
+      print("Response Status Code: ${response.statusCode}");
+      print("Raw Response Body: '${response.body}'");
+      print("Response Headers: ${response.headers}");
+
+      final String responseBody = response.body.trim(); // Remove extra spaces
+
+      // Check if response is valid JSON before decoding
+      if (response.statusCode == 200) {
+        if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
+          final Map<String, dynamic> data = json.decode(responseBody);
+          print("Parsed Data: $data");
+
+          // Fetch the user_name dynamically
+          if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
+            setState(() {
+              userName = data["clientData"][0]["user_name"] ?? "No Name Found";
+            });
+          } else {
+            setState(() {
+              userName = "Invalid data format";
+            });
+          }
+        } else {
+          setState(() {
+            userName = "Invalid response format (Not JSON)";
+          });
+        }
+      } else if (response.statusCode == 400) {
+        final Map<String, dynamic> data = json.decode(responseBody);
+        // Display the error message returned by the API
+        setState(() {
+          userName = data["message"] ?? "Bad Request: Please check your request parameters!";
+        });
+      } else if (response.statusCode == 401) {
+        setState(() {
+          userName = "Unauthorized: Please login again!";
+        });
+      } else {
+        setState(() {
+          userName = "Error ${response.statusCode}: Something went wrong!";
+        });
+      }
+    } catch (e) {
+      print("Error: $e");
+      setState(() {
+        userName = "Error fetching data!";
+      });
+    }
+  }
   Future<void> _logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -165,13 +573,15 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                         height: 64,
                       ),
                     ),
-
-                    Text(
-                      'Siddharth\nShrimal',
-                      style: GoogleFonts.poppins(
-                        color: Color(0xFF0f625c),
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                    Container(
+                      width: 150,
+                      child: Text(
+                        userName,
+                        style: GoogleFonts.poppins(
+                          color: Color(0xFF0f625c),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     Container(
@@ -541,7 +951,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                   children: [
                     const SizedBox(height: 20),
                     Text(
-                      'Siddharth Shrimal',
+                      userName,
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -558,63 +968,66 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                     ),
                     Container(
                       margin: EdgeInsets.only(top: 20, bottom: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Portfolio Value',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xFF648683),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Portfolio Value',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xFF648683),
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  '₹1,19,91,489',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFF0f625c),
+                                  Text(
+                                    '₹ $userCurrentValue',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF0f625c),
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          SizedBox(width: 25),
-                          Container(
-                            width: 1,
-                            height: 56,
-                            color: Color(0xFFd5d4d0),
-                          ),
-                          SizedBox(width: 25),
-                          Container(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Overal Gain %',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xFF648683),
-                                  ),
-                                ),
-                                Text(
-                                  '₹25,72,686',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFF0f625c),
-                                  ),
-                                ),
-                              ],
+                            SizedBox(width: 25),
+                            Container(
+                              width: 1,
+                              height: 56,
+                              color: Color(0xFFd5d4d0),
                             ),
-                          ),
-                        ],
+                            SizedBox(width: 25),
+                            Container(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Overal Gain %',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xFF648683),
+                                    ),
+                                  ),
+                                  Text(
+                                    '₹ $userTotalGain',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF0f625c),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     Row(
@@ -1463,3 +1876,4 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
     );
   }
 }
+

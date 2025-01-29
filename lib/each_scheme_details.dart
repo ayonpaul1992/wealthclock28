@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'each_fund_investment_detils.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class eachSchemeDetails extends StatefulWidget {
@@ -13,6 +15,70 @@ class eachSchemeDetails extends StatefulWidget {
 class _eachSchemeDetailsState extends State<eachSchemeDetails>{
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String activeTile = 'Home';
+  Future<void> _logout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Retrieve the dynamically stored API URL and auth token from SharedPreferences
+    const String apiUrl = 'https://wealthclockadvisors.com/api/client/logout'; // Replace with your actual API URL
+    final String? authToken = prefs.getString('auth_token'); // Dynamically get the auth token
+
+    // Check if the auth token is null
+    if (authToken == null) {
+      print('Auth token not found in SharedPreferences');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to retrieve session data. Please log in again.')),
+      );
+      return;
+    }
+
+    try {
+      print('Attempting to log out...');
+      print('API URL: $apiUrl');
+      print('Authorization Token: $authToken');
+
+      // Sending the GET request to the logout API
+      final response = await http.get(
+        Uri.parse('$apiUrl?logout=true'),
+        headers: {
+          'Authorization': 'Bearer $authToken', // Use the dynamic auth token
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        // Successfully logged out
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Logged out successfully!')),
+        );
+
+        // Clear all session data after logout
+        await prefs.clear();
+
+        // Navigate to the login screen after successful logout
+        Navigator.pushReplacementNamed(context, '/login');
+      } else if (response.statusCode == 401) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unauthorized')),
+        );
+      }else {
+        // Handle API error response
+        print('Error during logout. Status code: ${response.statusCode}');
+        print('Error body: ${response.body}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unable to logout. Please try again.')),
+        );
+      }
+    } catch (e) {
+      // Handle network or other errors
+      print('Error during logout: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: Unable to log out. $e')),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -294,8 +360,8 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails>{
                       padding: const EdgeInsets.only(left: 20),
                       child: ElevatedButton(
                         onPressed: () {
-                          // Add your log out logic here
-                          print('User logged out');
+                          print('Logout button pressed');
+                          _logout(context); // Call the logout function here
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFFfef1e2),
