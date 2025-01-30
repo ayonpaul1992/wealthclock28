@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'family_scheme_details.dart';
+import 'individual_portfolio.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,6 +20,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
   String userName = "Loading...";
   String userCurrentValue = "Loading...";
   String userTotalGain = "Loading...";
+  String userInvestedValue = "Loading...";
 
   @override
   void initState() {
@@ -27,6 +29,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
     fetchUserCurrentValue();
     fetchUserTotalGain();
     fetchUserDtlsPopUp();
+    fetchUserInvestedValue();
   }
 
   Future<void> fetchUserName() async {
@@ -330,6 +333,109 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
       });
     }
   }
+  Future<void> fetchUserInvestedValue() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? authToken = prefs.getString('auth_token');
+    const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
+
+    if (authToken == null || authToken.isEmpty) {
+      setState(() {
+        userInvestedValue = "Auth token not found!";
+      });
+      return;
+    }
+
+    try {
+      print("Auth Token: $authToken");
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $authToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print("Response Status Code: ${response.statusCode}");
+      print("Raw Response Body: '${response.body}'");
+
+      final String responseBody = response.body.trim();
+
+      if (response.statusCode == 200) {
+        if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
+          try {
+            final Map<String, dynamic> data = json.decode(responseBody);
+            print("Parsed Data: $data");
+
+            if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
+              String? fetchedPan = data["clientData"][0]["pan"];
+
+              // If PAN does not exist, return "0.00"
+              if (fetchedPan == null || fetchedPan.isEmpty) {
+                print("PAN does not exist. Setting userInvestedValue to 0.00");
+                setState(() {
+                  userInvestedValue = "0.00";
+                });
+                return;
+              }
+
+              double totalGain = (data["clientData"][0]["total_invested_val"] ?? 0).toDouble();
+
+              // Ensure totalGain is not negative or NaN
+              if (totalGain.isNaN || totalGain < 0) {
+                totalGain = 0;
+              }
+
+              String formattedTotalGain = NumberFormat('#,##0.00').format(totalGain);
+
+              setState(() {
+                userInvestedValue = formattedTotalGain;
+              });
+            } else {
+              setState(() {
+                userInvestedValue = "0.00"; // If clientData is missing, return "0.00"
+              });
+            }
+          } catch (e) {
+            print("Error decoding JSON: $e");
+            setState(() {
+              userInvestedValue = "0.00"; // Default to "0.00" on JSON error
+            });
+          }
+        } else {
+          setState(() {
+            userInvestedValue = "0.00"; // Response not JSON, default to "0.00"
+          });
+        }
+      } else if (response.statusCode == 400) {
+        final Map<String, dynamic> data = json.decode(responseBody);
+        String errorMessage = data["message"] ?? "";
+
+        if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
+          print("Detected 'sorry user pan does not exist'. Setting userCurrentValue to 0.00");
+          setState(() {
+            userInvestedValue = "0.00"; // If PAN is missing, return "0.00"
+          });
+        } else {
+          setState(() {
+            userInvestedValue = errorMessage;
+          });
+        }
+      } else if (response.statusCode == 401) {
+        setState(() {
+          userInvestedValue = "Unauthorized: Please login again!";
+        });
+      } else {
+        setState(() {
+          userInvestedValue = "Error ${response.statusCode}: Something went wrong!";
+        });
+      }
+    } catch (e) {
+      print("Exception caught: $e");
+      setState(() {
+        userInvestedValue = "0.00"; // Default to "0.00" on any exception
+      });
+    }
+  }
   Future<void> fetchUserDtlsPopUp() async {
     final prefs = await SharedPreferences.getInstance();
     final String? authToken = prefs.getString('auth_token');
@@ -490,6 +596,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
       );
     }
   }
+  bool isGainPositive = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1279,7 +1386,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                       onPressed: () {
                         // Navigator.push(context, MaterialPageRoute(builder: (context) => const SignupPage()));
                         // Define the action for the button here
-                        // Navigator.push(context, MaterialPageRoute(builder: (context) => const familyPortfolioPage()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const individualPortfolioPage()));
                       },
                       child: Container(
                         margin: EdgeInsets.only(top: 20, bottom: 20),
@@ -1294,7 +1401,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Siddharth Navinchand Shrimal',
+                                    userName,
                                     style: GoogleFonts.poppins(
                                       color: Color(0xFF0f625c),
                                       fontSize: 17,
@@ -1326,80 +1433,85 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                               //     fontWeight: FontWeight.w600,
                               //   ),),
                               // ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    children: [
-                                      Text(
-                                        'Cost Amount',
-                                        style: GoogleFonts.poppins(
-                                          color: Color(0xFF8c8c8c),
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      Text(
-                                        '24,20,290',
-                                        style: GoogleFonts.poppins(
-                                          color: Color(0xFF303131),
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Column(
-                                    children: [
-                                      Text(
-                                        'Present Value',
-                                        style: GoogleFonts.poppins(
-                                          color: Color(0xFF8c8c8c),
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      Text(
-                                        '34,01,471',
-                                        style: GoogleFonts.poppins(
-                                          color: Color(0xFF303131),
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Column(
-                                    children: [
-                                      Text(
-                                        'Gain/Loss',
-                                        style: GoogleFonts.poppins(
-                                          color: Color(0xFF8c8c8c),
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.arrow_upward,
-                                            color: Color(0xFF09a99d),
-                                            size: 15,
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Text(
+                                          'Cost Amount',
+                                          style: GoogleFonts.poppins(
+                                            color: Color(0xFF8c8c8c),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
                                           ),
-                                          Text(
-                                            '9,82,219',
-                                            style: GoogleFonts.poppins(
+                                        ),
+                                        Text(
+                                          userInvestedValue,
+                                          style: GoogleFonts.poppins(
+                                            color: Color(0xFF303131),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(width: 15,),
+                                    Column(
+                                      children: [
+                                        Text(
+                                          'Present Value',
+                                          style: GoogleFonts.poppins(
+                                            color: Color(0xFF8c8c8c),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        Text(
+                                          userCurrentValue,
+                                          style: GoogleFonts.poppins(
+                                            color: Color(0xFF303131),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(width: 15,),
+                                    Column(
+                                      children: [
+                                        Text(
+                                          'Gain/Loss',
+                                          style: GoogleFonts.poppins(
+                                            color: Color(0xFF8c8c8c),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              isGainPositive ? Icons.arrow_upward : Icons.arrow_downward,
                                               color: Color(0xFF09a99d),
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
+                                              size: 15,
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                            Text(
+                                              userTotalGain,
+                                              style: GoogleFonts.poppins(
+                                                color: Color(0xFF09a99d),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                               Container(
                                 margin: EdgeInsets.only(top: 18, bottom: 18),

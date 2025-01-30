@@ -125,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
       _showMessage("Error: Unable to connect to the server.");
     }
   }
-
+  bool _isPanVisible = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -177,11 +177,24 @@ class _LoginPageState extends State<LoginPage> {
                 style: const TextStyle(color: Color(0xFF648683), fontSize: 15),
               ),
               const SizedBox(height: 14),
-              TextField(
-                controller: panText,
-                decoration: _inputDecoration('Login with PAN ID'),
-                style: const TextStyle(color: Color(0xFF648683), fontSize: 15),
-              ),
+          TextField(
+      controller: panText,
+      obscureText: !_isPanVisible, // Toggle text visibility
+          decoration: _inputDecoration('PAN ID (Optional)').copyWith(
+        suffixIcon: IconButton(
+          icon: Icon(
+            _isPanVisible ? Icons.visibility : Icons.visibility_off,
+            color: Color(0xFF648683),
+          ),
+          onPressed: () {
+            setState(() {
+              _isPanVisible = !_isPanVisible; // Toggle visibility
+            });
+          },
+        ),
+      ),
+      style: const TextStyle(color: Color(0xFF648683), fontSize: 15),
+    ),
               const SizedBox(height: 14),
               ElevatedButton(
                 onPressed:
