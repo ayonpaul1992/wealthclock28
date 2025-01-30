@@ -167,6 +167,8 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
     }
 
     try {
+      print("Auth Token: $authToken"); // Debugging: Check if token exists
+
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {
@@ -176,7 +178,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
       );
 
       print("Response Status Code: ${response.statusCode}");
-      print("Raw Response Body: '${response.body}'");
+      print("Full Response: ${response.body}");
 
       final String responseBody = response.body.trim();
 
@@ -185,15 +187,24 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
           final Map<String, dynamic> data = json.decode(responseBody);
           print("Parsed Data: $data");
 
-          if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
+          if (data.containsKey("clientData") && data["clientData"] is List) {
+            if (data["clientData"].isEmpty) {
+              print("clientData is empty. Setting userName to blank.");
+              setState(() {
+                userName = ""; // If clientData is empty, show blank string
+              });
+              return;
+            }
+
             String? fetchedName = data["clientData"][0]["user_name"];
             String? fetchedPan = data["clientData"][0]["pan"];
 
-            print("Fetched PAN: $fetchedPan"); // Debugging print statement
+            print("Fetched Name: $fetchedName");
+            print("Fetched PAN: $fetchedPan");
 
             setState(() {
               if (fetchedPan == null || fetchedPan.isEmpty) {
-                userName = ""; // Blank if PAN is missing
+                userName = ""; // PAN is missing, set userName to blank
               } else {
                 userName = fetchedName ?? "No Name Found";
               }
@@ -210,8 +221,17 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
         }
       } else if (response.statusCode == 400) {
         final Map<String, dynamic> data = json.decode(responseBody);
+        String errorMessage = data["message"] ?? "Bad Request";
+
+        print("Received 400 Error: $errorMessage");
+
         setState(() {
-          userName = data["message"] ?? "Bad Request: Please check your request parameters!";
+          if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
+            print("Detected 'sorry user pan does not exist'. Setting userName to blank.");
+            userName = ""; // If error message contains this phrase, set blank
+          } else {
+            userName = errorMessage;
+          }
         });
       } else if (response.statusCode == 401) {
         setState(() {
@@ -231,12 +251,9 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
   }
   Future<void> fetchUserCurrentValue() async {
     final prefs = await SharedPreferences.getInstance();
-
-    // Fetch auth_token dynamically from SharedPreferences
     final String? authToken = prefs.getString('auth_token');
     const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
 
-    // Check if the token is available
     if (authToken == null || authToken.isEmpty) {
       setState(() {
         userCurrentValue = "Auth token not found!";
@@ -245,59 +262,80 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
     }
 
     try {
+      print("Auth Token: $authToken");
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {
-          'Authorization': 'Bearer $authToken', // Use token dynamically
+          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
         },
       );
 
-      // Debugging: Print full response details
       print("Response Status Code: ${response.statusCode}");
       print("Raw Response Body: '${response.body}'");
-      print("Response Headers: ${response.headers}");
 
-      final String responseBody = response.body.trim(); // Remove extra spaces
+      final String responseBody = response.body.trim();
 
-      // Check if the response is valid JSON before decoding
       if (response.statusCode == 200) {
         if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
           try {
             final Map<String, dynamic> data = json.decode(responseBody);
             print("Parsed Data: $data");
 
-            // Fetch and format totalGain
             if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
+              String? fetchedPan = data["clientData"][0]["pan"];
+
+              // If PAN does not exist, return "0.00"
+              if (fetchedPan == null || fetchedPan.isEmpty) {
+                print("PAN does not exist. Setting userCurrentValue to 0.00");
+                setState(() {
+                  userCurrentValue = "0.00";
+                });
+                return;
+              }
+
               double totalGain = (data["clientData"][0]["total_current_val"] ?? 0).toDouble();
 
-              // Apply NumberFormat with toStringAsFixed(2)
-              String formattedTotalGain = NumberFormat('#,##0.00').format(double.parse(totalGain.toStringAsFixed(2)));
+              // Ensure totalGain is not negative or NaN
+              if (totalGain.isNaN || totalGain < 0) {
+                totalGain = 0;
+              }
+
+              String formattedTotalGain = NumberFormat('#,##0.00').format(totalGain);
 
               setState(() {
-                userCurrentValue = formattedTotalGain; // Formatted with commas and 2 decimal places
+                userCurrentValue = formattedTotalGain;
               });
             } else {
               setState(() {
-                userCurrentValue = "Invalid data format";
+                userCurrentValue = "0.00"; // If clientData is missing, return "0.00"
               });
             }
           } catch (e) {
             print("Error decoding JSON: $e");
             setState(() {
-              userCurrentValue = "Error decoding JSON! Response might not be in JSON format.";
+              userCurrentValue = "0.00"; // Default to "0.00" on JSON error
             });
           }
         } else {
           setState(() {
-            userCurrentValue = "Invalid response format (Not JSON)";
+            userCurrentValue = "0.00"; // Response not JSON, default to "0.00"
           });
         }
       } else if (response.statusCode == 400) {
         final Map<String, dynamic> data = json.decode(responseBody);
-        setState(() {
-          userCurrentValue = data["message"] ?? "Bad Request: Please check your request parameters!";
-        });
+        String errorMessage = data["message"] ?? "";
+
+        if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
+          print("Detected 'sorry user pan does not exist'. Setting userCurrentValue to 0.00");
+          setState(() {
+            userCurrentValue = "0.00"; // If PAN is missing, return "0.00"
+          });
+        } else {
+          setState(() {
+            userCurrentValue = errorMessage;
+          });
+        }
       } else if (response.statusCode == 401) {
         setState(() {
           userCurrentValue = "Unauthorized: Please login again!";
@@ -310,18 +348,15 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
     } catch (e) {
       print("Exception caught: $e");
       setState(() {
-        userCurrentValue = "Error fetching data! Exception: $e";
+        userCurrentValue = "0.00"; // Default to "0.00" on any exception
       });
     }
   }
   Future<void> fetchUserTotalGain() async {
     final prefs = await SharedPreferences.getInstance();
-
-    // Fetch auth_token dynamically from SharedPreferences
     final String? authToken = prefs.getString('auth_token');
     const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
 
-    // Check if the token is available
     if (authToken == null || authToken.isEmpty) {
       setState(() {
         userTotalGain = "Auth token not found!";
@@ -330,59 +365,80 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
     }
 
     try {
+      print("Auth Token: $authToken");
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {
-          'Authorization': 'Bearer $authToken', // Use token dynamically
+          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
         },
       );
 
-      // Debugging: Print full response details
       print("Response Status Code: ${response.statusCode}");
       print("Raw Response Body: '${response.body}'");
-      print("Response Headers: ${response.headers}");
 
-      final String responseBody = response.body.trim(); // Remove extra spaces
+      final String responseBody = response.body.trim();
 
-      // Check if the response is valid JSON before decoding
       if (response.statusCode == 200) {
         if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
           try {
             final Map<String, dynamic> data = json.decode(responseBody);
             print("Parsed Data: $data");
 
-            // Fetch and format totalGain
             if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
-              double totalGain = (data["clientData"][0]["totalGain"] ?? 0).toDouble();
+              String? fetchedPan = data["clientData"][0]["pan"];
 
-              // Apply NumberFormat with toStringAsFixed(2)
-              String formattedTotalGain = NumberFormat('#,##0.00').format(double.parse(totalGain.toStringAsFixed(2)));
+              // If PAN does not exist, return "0.00"
+              if (fetchedPan == null || fetchedPan.isEmpty) {
+                print("PAN does not exist. Setting userCurrentValue to 0.00");
+                setState(() {
+                  userTotalGain = "0.00";
+                });
+                return;
+              }
+
+              double totalGain = (data["clientData"][0]["total_current_val"] ?? 0).toDouble();
+
+              // Ensure totalGain is not negative or NaN
+              if (totalGain.isNaN || totalGain < 0) {
+                totalGain = 0;
+              }
+
+              String formattedTotalGain = NumberFormat('#,##0.00').format(totalGain);
 
               setState(() {
-                userTotalGain = formattedTotalGain; // Formatted with commas and 2 decimal places
+                userTotalGain = formattedTotalGain;
               });
             } else {
               setState(() {
-                userTotalGain = "Invalid data format";
+                userTotalGain = "0.00"; // If clientData is missing, return "0.00"
               });
             }
           } catch (e) {
             print("Error decoding JSON: $e");
             setState(() {
-              userTotalGain = "Error decoding JSON! Response might not be in JSON format.";
+              userTotalGain = "0.00"; // Default to "0.00" on JSON error
             });
           }
         } else {
           setState(() {
-            userTotalGain = "Invalid response format (Not JSON)";
+            userTotalGain = "0.00"; // Response not JSON, default to "0.00"
           });
         }
       } else if (response.statusCode == 400) {
         final Map<String, dynamic> data = json.decode(responseBody);
-        setState(() {
-          userTotalGain = data["message"] ?? "Bad Request: Please check your request parameters!";
-        });
+        String errorMessage = data["message"] ?? "";
+
+        if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
+          print("Detected 'sorry user pan does not exist'. Setting userCurrentValue to 0.00");
+          setState(() {
+            userTotalGain = "0.00"; // If PAN is missing, return "0.00"
+          });
+        } else {
+          setState(() {
+            userTotalGain = errorMessage;
+          });
+        }
       } else if (response.statusCode == 401) {
         setState(() {
           userTotalGain = "Unauthorized: Please login again!";
@@ -395,18 +451,15 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
     } catch (e) {
       print("Exception caught: $e");
       setState(() {
-        userTotalGain = "Error fetching data! Exception: $e";
+        userTotalGain = "0.00"; // Default to "0.00" on any exception
       });
     }
   }
   Future<void> fetchUserDtlsPopUp() async {
     final prefs = await SharedPreferences.getInstance();
-
-    // Fetch auth_token dynamically from SharedPreferences
     final String? authToken = prefs.getString('auth_token');
     const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
 
-    // Check if the token is available
     if (authToken == null || authToken.isEmpty) {
       setState(() {
         userName = "Auth token not found!";
@@ -415,31 +468,47 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
     }
 
     try {
+      print("Auth Token: $authToken"); // Debugging: Check if token exists
+
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {
-          'Authorization': 'Bearer $authToken', // Use token dynamically
+          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
         },
       );
 
-      // Debugging: Print full response details
       print("Response Status Code: ${response.statusCode}");
-      print("Raw Response Body: '${response.body}'");
-      print("Response Headers: ${response.headers}");
+      print("Full Response: ${response.body}");
 
-      final String responseBody = response.body.trim(); // Remove extra spaces
+      final String responseBody = response.body.trim();
 
-      // Check if response is valid JSON before decoding
       if (response.statusCode == 200) {
         if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
           final Map<String, dynamic> data = json.decode(responseBody);
           print("Parsed Data: $data");
 
-          // Fetch the user_name dynamically
-          if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
+          if (data.containsKey("clientData") && data["clientData"] is List) {
+            if (data["clientData"].isEmpty) {
+              print("clientData is empty. Setting userName to blank.");
+              setState(() {
+                userName = ""; // If clientData is empty, show blank string
+              });
+              return;
+            }
+
+            String? fetchedName = data["clientData"][0]["user_name"];
+            String? fetchedPan = data["clientData"][0]["pan"];
+
+            print("Fetched Name: $fetchedName");
+            print("Fetched PAN: $fetchedPan");
+
             setState(() {
-              userName = data["clientData"][0]["user_name"] ?? "No Name Found";
+              if (fetchedPan == null || fetchedPan.isEmpty) {
+                userName = ""; // PAN is missing, set userName to blank
+              } else {
+                userName = fetchedName ?? "No Name Found";
+              }
             });
           } else {
             setState(() {
@@ -453,9 +522,17 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
         }
       } else if (response.statusCode == 400) {
         final Map<String, dynamic> data = json.decode(responseBody);
-        // Display the error message returned by the API
+        String errorMessage = data["message"] ?? "Bad Request";
+
+        print("Received 400 Error: $errorMessage");
+
         setState(() {
-          userName = data["message"] ?? "Bad Request: Please check your request parameters!";
+          if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
+            print("Detected 'sorry user pan does not exist'. Setting userName to blank.");
+            userName = ""; // If error message contains this phrase, set blank
+          } else {
+            userName = errorMessage;
+          }
         });
       } else if (response.statusCode == 401) {
         setState(() {
