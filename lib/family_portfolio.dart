@@ -1450,7 +1450,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                           ),
                                         ),
                                         Text(
-                                          userInvestedValue,
+                                          '₹ $userInvestedValue',
                                           style: GoogleFonts.poppins(
                                             color: Color(0xFF303131),
                                             fontSize: 14,
@@ -1471,7 +1471,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                           ),
                                         ),
                                         Text(
-                                          userCurrentValue,
+                                          '₹ $userCurrentValue',
                                           style: GoogleFonts.poppins(
                                             color: Color(0xFF303131),
                                             fontSize: 14,
@@ -1499,7 +1499,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                               size: 15,
                                             ),
                                             Text(
-                                              userTotalGain,
+                                              '₹ $userTotalGain',
                                               style: GoogleFonts.poppins(
                                                 color: Color(0xFF09a99d),
                                                 fontSize: 14,
