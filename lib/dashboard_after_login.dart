@@ -1346,47 +1346,50 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                         child: Padding(
                           padding: EdgeInsets.only(
                               top: 10, bottom: 10, left: 10, right: 0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFb6dfdc),
-                                  borderRadius: BorderRadius.circular(8),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFFb6dfdc),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Center(
+                                    child:
+                                        Image.asset('assets/images/prtflo.png'),
+                                  ),
                                 ),
-                                child: Center(
-                                  child:
-                                      Image.asset('assets/images/prtflo.png'),
+                                SizedBox(width: 15),
+                                Text(
+                                  'Individual Portfolio',
+                                  style: GoogleFonts.poppins(
+                                    color: Color(0xFF0f625c),
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: 15),
-                              Text(
-                                'Individual Portfolio',
-                                style: GoogleFonts.poppins(
-                                  color: Color(0xFF0f625c),
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w500,
+                                SizedBox(width: 10),
+                                Container(
+                                  child: Icon(
+                                    Icons.info_outline,
+                                    color: Color(0xFF0d958b),
+                                    size: 20,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: 10),
-                              Container(
-                                child: Icon(
-                                  Icons.info_outline,
-                                  color: Color(0xFF0d958b),
-                                  size: 20,
+                                SizedBox(width: 30),
+                                Container(
+                                  child: Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Color(0xFF0d958b),
+                                    size: 18,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: 30),
-                              Container(
-                                child: Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Color(0xFF0d958b),
-                                  size: 18,
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -1420,47 +1423,50 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                         child: Padding(
                           padding: EdgeInsets.only(
                               top: 10, bottom: 10, left: 10, right: 0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFb6dfdc),
-                                  borderRadius: BorderRadius.circular(8),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFFb6dfdc),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Center(
+                                    child:
+                                        Image.asset('assets/images/prtflo.png'),
+                                  ),
                                 ),
-                                child: Center(
-                                  child:
-                                      Image.asset('assets/images/prtflo.png'),
+                                SizedBox(width: 15),
+                                Text(
+                                  'Family Portfolio',
+                                  style: GoogleFonts.poppins(
+                                    color: Color(0xFF0f625c),
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: 15),
-                              Text(
-                                'Family Portfolio',
-                                style: GoogleFonts.poppins(
-                                  color: Color(0xFF0f625c),
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w500,
+                                SizedBox(width: 10),
+                                Container(
+                                  child: Icon(
+                                    Icons.info_outline,
+                                    color: Color(0xFF0d958b),
+                                    size: 20,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: 10),
-                              Container(
-                                child: Icon(
-                                  Icons.info_outline,
-                                  color: Color(0xFF0d958b),
-                                  size: 20,
+                                SizedBox(width: 55),
+                                Container(
+                                  child: Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Color(0xFF0d958b),
+                                    size: 18,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: 55),
-                              Container(
-                                child: Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Color(0xFF0d958b),
-                                  size: 18,
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),

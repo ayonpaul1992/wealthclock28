@@ -1046,197 +1046,200 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                         ),
                         child: Column(
                           children: [
-                            Row(
-                              children: [
-                                Container(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            color: Color(0xFF2cbefc),
-                                            width: 4,
-                                            height: 30,
-                                          ),
-                                          SizedBox(width: 10),
-                                          SizedBox(
-                                            width: 53,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  'Equity',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF303131),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                                Text(
-                                                  '95.87%',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF8c8c8c),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              color: Color(0xFF2cbefc),
+                                              width: 4,
+                                              height: 30,
                                             ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            '₹ 1,14,96,531',
-                                            style: GoogleFonts.poppins(
-                                                color: Color(0xFF0f625c),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            color: Color(0xFFf79e3b),
-                                            width: 4,
-                                            height: 30,
-                                          ),
-                                          SizedBox(width: 10),
-                                          SizedBox(
-                                            width: 53,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  'Hybrid',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF303131),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                                Text(
-                                                  '3.91%',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF8c8c8c),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
+                                            SizedBox(width: 10),
+                                            SizedBox(
+                                              width: 53,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Equity',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF303131),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                  Text(
+                                                    '95.87%',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF8c8c8c),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            '₹ 14,68,903',
-                                            style: GoogleFonts.poppins(
-                                                color: Color(0xFF0f625c),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            color: Color(0xFFa6a8a7),
-                                            width: 4,
-                                            height: 30,
-                                          ),
-                                          SizedBox(width: 10),
-                                          SizedBox(
-                                            width: 53,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  'Debt',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF303131),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                                Text(
-                                                  '0%',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF8c8c8c),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
+                                            SizedBox(width: 10),
+                                            Text(
+                                              '₹ 1,14,96,531',
+                                              style: GoogleFonts.poppins(
+                                                  color: Color(0xFF0f625c),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500),
                                             ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            '₹ 0',
-                                            style: GoogleFonts.poppins(
-                                                color: Color(0xFF0f625c),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            color: Color(0xFFdac45e),
-                                            width: 4,
-                                            height: 30,
-                                          ),
-                                          SizedBox(width: 10),
-                                          SizedBox(
-                                            width: 53,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  'Other',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF303131),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                                Text(
-                                                  '0.22%',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF8c8c8c),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
+                                          ],
+                                        ),
+                                        SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              color: Color(0xFFf79e3b),
+                                              width: 4,
+                                              height: 30,
                                             ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            '₹ 26.055',
-                                            style: GoogleFonts.poppins(
-                                                color: Color(0xFF0f625c),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                            SizedBox(width: 10),
+                                            SizedBox(
+                                              width: 53,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Hybrid',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF303131),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                  Text(
+                                                    '3.91%',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF8c8c8c),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              '₹ 14,68,903',
+                                              style: GoogleFonts.poppins(
+                                                  color: Color(0xFF0f625c),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              color: Color(0xFFa6a8a7),
+                                              width: 4,
+                                              height: 30,
+                                            ),
+                                            SizedBox(width: 10),
+                                            SizedBox(
+                                              width: 53,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Debt',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF303131),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                  Text(
+                                                    '0%',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF8c8c8c),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              '₹ 0',
+                                              style: GoogleFonts.poppins(
+                                                  color: Color(0xFF0f625c),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              color: Color(0xFFdac45e),
+                                              width: 4,
+                                              height: 30,
+                                            ),
+                                            SizedBox(width: 10),
+                                            SizedBox(
+                                              width: 53,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Other',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF303131),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                  Text(
+                                                    '0.22%',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF8c8c8c),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              '₹ 26.055',
+                                              style: GoogleFonts.poppins(
+                                                  color: Color(0xFF0f625c),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: 20),
-                                Container(
-                                  child:
-                                      Image.asset('assets/images/rtt_brd.png'),
-                                ),
-                              ],
+                                  SizedBox(width: 20),
+                                  Container(
+                                    child:
+                                        Image.asset('assets/images/rtt_brd.png'),
+                                  ),
+                                ],
+                              ),
                             ),
                             Container(
                               margin: EdgeInsets.only(top: 18, bottom: 18),
@@ -1293,24 +1296,27 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Bandhan Tax Advantage (ELSS)',
-                                    style: GoogleFonts.poppins(
-                                      color: Color(0xFF0f625c),
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w500,
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Bandhan Tax Advantage (ELSS)',
+                                      style: GoogleFonts.poppins(
+                                        color: Color(0xFF0f625c),
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: Color(0xFF0d958b),
-                                    size: 18,
-                                  )
-                                ],
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: Color(0xFF0d958b),
+                                      size: 18,
+                                    )
+                                  ],
+                                ),
                               ),
                               Text(
                                 'Fund Regular Growth',
