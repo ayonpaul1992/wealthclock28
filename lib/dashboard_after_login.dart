@@ -77,83 +77,9 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
     fetchUserName();
     fetchUserCurrentValue();
     fetchUserTotalGain();
-    fetchUserDtlsPopUp();
+    // fetchUserDtlsPopUp();
   }
 
-
-
-  // Future<void> fetchUserName() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //
-  //   // Fetch auth_token dynamically from SharedPreferences
-  //   final String? authToken = prefs.getString('auth_token');
-  //   const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
-  //
-  //   // Check if the token is available
-  //   if (authToken == null || authToken.isEmpty) {
-  //     setState(() {
-  //       userName = "Auth token not found!";
-  //     });
-  //     return;
-  //   }
-  //
-  //   try {
-  //     final response = await http.get(
-  //       Uri.parse(apiUrl),
-  //       headers: {
-  //         'Authorization': 'Bearer $authToken', // Use token dynamically
-  //         'Content-Type': 'application/json',
-  //       },
-  //     );
-  //
-  //     // Debugging: Print full response details
-  //     print("Response Status Code: ${response.statusCode}");
-  //     print("Raw Response Body: '${response.body}'");
-  //     print("Response Headers: ${response.headers}");
-  //
-  //     final String responseBody = response.body.trim(); // Remove extra spaces
-  //
-  //     // Check if response is valid JSON before decoding
-  //     if (response.statusCode == 200) {
-  //       if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
-  //         final Map<String, dynamic> data = json.decode(responseBody);
-  //         print("Parsed Data: $data");
-  //
-  //         // Fetch the user_name dynamically
-  //         if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
-  //           setState(() {
-  //             userName = data["clientData"][0]["user_name"] ?? "No Name Found";
-  //           });
-  //         } else {
-  //           setState(() {
-  //             userName = "Invalid data format";
-  //           });
-  //         }
-  //       } else {
-  //         setState(() {
-  //           userName = "Invalid response format (Not JSON)";
-  //         });
-  //       }
-  //     } else if (response.statusCode == 400) {
-  //       setState(() {
-  //         userName = "Bad Request: Please check your request parameters!";
-  //       });
-  //     } else if (response.statusCode == 401) {
-  //       setState(() {
-  //         userName = "Unauthorized: Please login again!";
-  //       });
-  //     } else {
-  //       setState(() {
-  //         userName = "Error ${response.statusCode}: Something went wrong!";
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print("Error: $e");
-  //     setState(() {
-  //       userName = "Error fetching data!";
-  //     });
-  //   }
-  // }
   Future<void> fetchUserName() async {
     final prefs = await SharedPreferences.getInstance();
     final String? authToken = prefs.getString('auth_token');
@@ -397,7 +323,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                 return;
               }
 
-              double totalGain = (data["clientData"][0]["total_current_val"] ?? 0).toDouble();
+              double totalGain = (data["clientData"][0]["totalGain"] ?? 0).toDouble();
 
               // Ensure totalGain is not negative or NaN
               if (totalGain.isNaN || totalGain < 0) {
@@ -455,101 +381,101 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
       });
     }
   }
-  Future<void> fetchUserDtlsPopUp() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? authToken = prefs.getString('auth_token');
-    const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
-
-    if (authToken == null || authToken.isEmpty) {
-      setState(() {
-        userName = "Auth token not found!";
-      });
-      return;
-    }
-
-    try {
-      print("Auth Token: $authToken"); // Debugging: Check if token exists
-
-      final response = await http.get(
-        Uri.parse(apiUrl),
-        headers: {
-          'Authorization': 'Bearer $authToken',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      print("Response Status Code: ${response.statusCode}");
-      print("Full Response: ${response.body}");
-
-      final String responseBody = response.body.trim();
-
-      if (response.statusCode == 200) {
-        if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
-          final Map<String, dynamic> data = json.decode(responseBody);
-          print("Parsed Data: $data");
-
-          if (data.containsKey("clientData") && data["clientData"] is List) {
-            if (data["clientData"].isEmpty) {
-              print("clientData is empty. Setting userName to blank.");
-              setState(() {
-                userName = ""; // If clientData is empty, show blank string
-              });
-              return;
-            }
-
-            String? fetchedName = data["clientData"][0]["user_name"];
-            String? fetchedPan = data["clientData"][0]["pan"];
-
-            print("Fetched Name: $fetchedName");
-            print("Fetched PAN: $fetchedPan");
-
-            setState(() {
-              if (fetchedPan == null || fetchedPan.isEmpty) {
-                userName = ""; // PAN is missing, set userName to blank
-              } else {
-                userName = fetchedName ?? "No Name Found";
-              }
-            });
-          } else {
-            setState(() {
-              userName = "Invalid data format";
-            });
-          }
-        } else {
-          setState(() {
-            userName = "Invalid response format (Not JSON)";
-          });
-        }
-      } else if (response.statusCode == 400) {
-        final Map<String, dynamic> data = json.decode(responseBody);
-        String errorMessage = data["message"] ?? "Bad Request";
-
-        print("Received 400 Error: $errorMessage");
-
-        setState(() {
-          if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
-            print("Detected 'sorry user pan does not exist'. Setting userName to blank.");
-            userName = ""; // If error message contains this phrase, set blank
-          } else {
-            userName = errorMessage;
-          }
-        });
-      } else if (response.statusCode == 401) {
-        setState(() {
-          userName = "Unauthorized: Please login again!";
-        });
-      } else {
-        setState(() {
-          userName = "Error ${response.statusCode}: Something went wrong!";
-        });
-      }
-    } catch (e) {
-      print("Error: $e");
-      setState(() {
-        userName = "Error fetching data!";
-      });
-    }
-  }
+  // Future<void> fetchUserDtlsPopUp() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final String? authToken = prefs.getString('auth_token');
+  //   const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
+  //
+  //   if (authToken == null || authToken.isEmpty) {
+  //     setState(() {
+  //       userName = "Auth token not found!";
+  //     });
+  //     return;
+  //   }
+  //
+  //   try {
+  //     print("Auth Token: $authToken"); // Debugging: Check if token exists
+  //
+  //     final response = await http.get(
+  //       Uri.parse(apiUrl),
+  //       headers: {
+  //         'Authorization': 'Bearer $authToken',
+  //         'Content-Type': 'application/json',
+  //       },
+  //     );
+  //
+  //     print("Response Status Code: ${response.statusCode}");
+  //     print("Full Response: ${response.body}");
+  //
+  //     final String responseBody = response.body.trim();
+  //
+  //     if (response.statusCode == 200) {
+  //       if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
+  //         final Map<String, dynamic> data = json.decode(responseBody);
+  //         print("Parsed Data: $data");
+  //
+  //         if (data.containsKey("clientData") && data["clientData"] is List) {
+  //           if (data["clientData"].isEmpty) {
+  //             print("clientData is empty. Setting userName to blank.");
+  //             setState(() {
+  //               userName = ""; // If clientData is empty, show blank string
+  //             });
+  //             return;
+  //           }
+  //
+  //           String? fetchedName = data["clientData"][0]["user_name"];
+  //           String? fetchedPan = data["clientData"][0]["pan"];
+  //
+  //           print("Fetched Name: $fetchedName");
+  //           print("Fetched PAN: $fetchedPan");
+  //
+  //           setState(() {
+  //             if (fetchedPan == null || fetchedPan.isEmpty) {
+  //               userName = ""; // PAN is missing, set userName to blank
+  //             } else {
+  //               userName = fetchedName ?? "No Name Found";
+  //             }
+  //           });
+  //         } else {
+  //           setState(() {
+  //             userName = "Invalid data format";
+  //           });
+  //         }
+  //       } else {
+  //         setState(() {
+  //           userName = "Invalid response format (Not JSON)";
+  //         });
+  //       }
+  //     } else if (response.statusCode == 400) {
+  //       final Map<String, dynamic> data = json.decode(responseBody);
+  //       String errorMessage = data["message"] ?? "Bad Request";
+  //
+  //       print("Received 400 Error: $errorMessage");
+  //
+  //       setState(() {
+  //         if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
+  //           print("Detected 'sorry user pan does not exist'. Setting userName to blank.");
+  //           userName = ""; // If error message contains this phrase, set blank
+  //         } else {
+  //           userName = errorMessage;
+  //         }
+  //       });
+  //     } else if (response.statusCode == 401) {
+  //       setState(() {
+  //         userName = "Unauthorized: Please login again!";
+  //       });
+  //     } else {
+  //       setState(() {
+  //         userName = "Error ${response.statusCode}: Something went wrong!";
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print("Error: $e");
+  //     setState(() {
+  //       userName = "Error fetching data!";
+  //     });
+  //   }
+  // }
   Future<void> _logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -1085,7 +1011,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    'Overal Gain %',
+                                    'Overall Gain',
                                     style: GoogleFonts.poppins(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
@@ -1169,197 +1095,200 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                         ),
                         child: Column(
                           children: [
-                            Row(
-                              children: [
-                                Container(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            color: Color(0xFF2cbefc),
-                                            width: 4,
-                                            height: 30,
-                                          ),
-                                          SizedBox(width: 10),
-                                          SizedBox(
-                                            width: 53,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  'Equity',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF303131),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                                Text(
-                                                  '95.87%',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF8c8c8c),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              color: Color(0xFF2cbefc),
+                                              width: 4,
+                                              height: 30,
                                             ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            '₹ 1,14,96,531',
-                                            style: GoogleFonts.poppins(
-                                                color: Color(0xFF0f625c),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            color: Color(0xFFf79e3b),
-                                            width: 4,
-                                            height: 30,
-                                          ),
-                                          SizedBox(width: 10),
-                                          SizedBox(
-                                            width: 53,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  'Hybrid',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF303131),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                                Text(
-                                                  '3.91%',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF8c8c8c),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
+                                            SizedBox(width: 10),
+                                            SizedBox(
+                                              width: 53,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Equity',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF303131),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                  Text(
+                                                    '95.87%',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF8c8c8c),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            '₹ 14,68,903',
-                                            style: GoogleFonts.poppins(
-                                                color: Color(0xFF0f625c),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            color: Color(0xFFa6a8a7),
-                                            width: 4,
-                                            height: 30,
-                                          ),
-                                          SizedBox(width: 10),
-                                          SizedBox(
-                                            width: 53,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  'Debt',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF303131),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                                Text(
-                                                  '0%',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF8c8c8c),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
+                                            SizedBox(width: 10),
+                                            Text(
+                                              '₹ 1,14,96,531',
+                                              style: GoogleFonts.poppins(
+                                                  color: Color(0xFF0f625c),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500),
                                             ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            '₹ 0',
-                                            style: GoogleFonts.poppins(
-                                                color: Color(0xFF0f625c),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            color: Color(0xFFdac45e),
-                                            width: 4,
-                                            height: 30,
-                                          ),
-                                          SizedBox(width: 10),
-                                          SizedBox(
-                                            width: 53,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  'Other',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF303131),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                                Text(
-                                                  '0.22%',
-                                                  style: GoogleFonts.poppins(
-                                                      color: Color(0xFF8c8c8c),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
+                                          ],
+                                        ),
+                                        SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              color: Color(0xFFf79e3b),
+                                              width: 4,
+                                              height: 30,
                                             ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            '₹ 26.055',
-                                            style: GoogleFonts.poppins(
-                                                color: Color(0xFF0f625c),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                            SizedBox(width: 10),
+                                            SizedBox(
+                                              width: 53,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Hybrid',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF303131),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                  Text(
+                                                    '3.91%',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF8c8c8c),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              '₹ 14,68,903',
+                                              style: GoogleFonts.poppins(
+                                                  color: Color(0xFF0f625c),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              color: Color(0xFFa6a8a7),
+                                              width: 4,
+                                              height: 30,
+                                            ),
+                                            SizedBox(width: 10),
+                                            SizedBox(
+                                              width: 53,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Debt',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF303131),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                  Text(
+                                                    '0%',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF8c8c8c),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              '₹ 0',
+                                              style: GoogleFonts.poppins(
+                                                  color: Color(0xFF0f625c),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              color: Color(0xFFdac45e),
+                                              width: 4,
+                                              height: 30,
+                                            ),
+                                            SizedBox(width: 10),
+                                            SizedBox(
+                                              width: 53,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Other',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF303131),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                  Text(
+                                                    '0.22%',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF8c8c8c),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              '₹ 26.055',
+                                              style: GoogleFonts.poppins(
+                                                  color: Color(0xFF0f625c),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: 20),
-                                Container(
-                                  child:
-                                      Image.asset('assets/images/rtt_brd.png'),
-                                ),
-                              ],
+                                  SizedBox(width: 20),
+                                  Container(
+                                    child:
+                                        Image.asset('assets/images/rtt_brd.png'),
+                                  ),
+                                ],
+                              ),
                             ),
                             Container(
                               margin: EdgeInsets.only(top: 18, bottom: 18),
