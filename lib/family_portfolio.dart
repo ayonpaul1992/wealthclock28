@@ -1399,24 +1399,28 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    userName,
-                                    style: GoogleFonts.poppins(
-                                      color: Color(0xFF0f625c),
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w500,
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      userName,
+                                      style: GoogleFonts.poppins(
+                                        color: Color(0xFF0f625c),
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: Color(0xFF0d958b),
-                                    size: 18,
-                                  )
-                                ],
+                                    SizedBox(width: 12,),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: Color(0xFF0d958b),
+                                      size: 18,
+                                    )
+                                  ],
+                                ),
                               ),
                               Container(
                                 margin: EdgeInsets.only(
@@ -1595,24 +1599,28 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Garimal Shrimal',
-                                    style: GoogleFonts.poppins(
-                                      color: Color(0xFF0f625c),
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w500,
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Garimal Shrimal',
+                                      style: GoogleFonts.poppins(
+                                        color: Color(0xFF0f625c),
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: Color(0xFF0d958b),
-                                    size: 18,
-                                  )
-                                ],
+                                    SizedBox(width: 12,),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: Color(0xFF0d958b),
+                                      size: 18,
+                                    )
+                                  ],
+                                ),
                               ),
                               Container(
                                 margin: EdgeInsets.only(
