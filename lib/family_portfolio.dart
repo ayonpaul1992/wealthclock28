@@ -266,19 +266,18 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
             if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
               String? fetchedPan = data["clientData"][0]["pan"];
 
-              // If PAN does not exist, return "0.00"
               if (fetchedPan == null || fetchedPan.isEmpty) {
-                print("PAN does not exist. Setting userCurrentValue to 0.00");
+                print("PAN does not exist. Setting userTotalGain to 0.00");
                 setState(() {
                   userTotalGain = "0.00";
+                  isGainPositive = false;
                 });
                 return;
               }
 
               double totalGain = (data["clientData"][0]["totalGain"] ?? 0).toDouble();
 
-              // Ensure totalGain is not negative or NaN
-              if (totalGain.isNaN || totalGain < 0) {
+              if (totalGain.isNaN) {
                 totalGain = 0;
               }
 
@@ -286,21 +285,25 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
 
               setState(() {
                 userTotalGain = formattedTotalGain;
+                isGainPositive = totalGain >= 0; // Update arrow color logic
               });
             } else {
               setState(() {
-                userTotalGain = "0.00"; // If clientData is missing, return "0.00"
+                userTotalGain = "0.00";
+                isGainPositive = false;
               });
             }
           } catch (e) {
             print("Error decoding JSON: $e");
             setState(() {
-              userTotalGain = "0.00"; // Default to "0.00" on JSON error
+              userTotalGain = "0.00";
+              isGainPositive = false;
             });
           }
         } else {
           setState(() {
-            userTotalGain = "0.00"; // Response not JSON, default to "0.00"
+            userTotalGain = "0.00";
+            isGainPositive = false;
           });
         }
       } else if (response.statusCode == 400) {
@@ -308,28 +311,33 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
         String errorMessage = data["message"] ?? "";
 
         if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
-          print("Detected 'sorry user pan does not exist'. Setting userCurrentValue to 0.00");
+          print("Detected 'sorry user pan does not exist'. Setting userTotalGain to 0.00");
           setState(() {
-            userTotalGain = "0.00"; // If PAN is missing, return "0.00"
+            userTotalGain = "0.00";
+            isGainPositive = false;
           });
         } else {
           setState(() {
             userTotalGain = errorMessage;
+            isGainPositive = false;
           });
         }
       } else if (response.statusCode == 401) {
         setState(() {
           userTotalGain = "Unauthorized: Please login again!";
+          isGainPositive = false;
         });
       } else {
         setState(() {
           userTotalGain = "Error ${response.statusCode}: Something went wrong!";
+          isGainPositive = false;
         });
       }
     } catch (e) {
       print("Exception caught: $e");
       setState(() {
-        userTotalGain = "0.00"; // Default to "0.00" on any exception
+        userTotalGain = "0.00";
+        isGainPositive = false;
       });
     }
   }
@@ -1502,13 +1510,13 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                           children: [
                                             Icon(
                                               isGainPositive ? Icons.arrow_upward : Icons.arrow_downward,
-                                              color: Color(0xFF09a99d),
+                                              color: isGainPositive ? Color(0xFF09a99d) : Colors.red,
                                               size: 15,
                                             ),
                                             Text(
                                               '₹ $userTotalGain',
                                               style: GoogleFonts.poppins(
-                                                color: Color(0xFF09a99d),
+                                                color: isGainPositive ? Color(0xFF09a99d) : Colors.red,
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w600,
                                               ),
@@ -1702,7 +1710,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                             size: 15,
                                           ),
                                           Text(
-                                            '7,07,633',
+                                            '-7,07,633',
                                             style: GoogleFonts.poppins(
                                               color: Color(0xFF09a99d),
                                               fontSize: 14,
