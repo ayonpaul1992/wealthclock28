@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'family_scheme_details.dart';
 import 'individual_portfolio.dart';
@@ -1637,7 +1639,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                       ),
                                     ),
                                     SizedBox(width: 12,),
-                                    Icon(
+                                      Icon(
                                       Icons.arrow_forward_ios,
                                       color: Color(0xFF0d958b),
                                       size: 18,
