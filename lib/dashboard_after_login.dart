@@ -849,7 +849,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                                     fontWeight: FontWeight.w400),
                               ),
                               Text(
-                                ' $absReturn%',
+                                '$absReturn%',
                                 style: GoogleFonts.poppins(
                                     color: Color(0xFF0f625c),
                                     fontSize: 15,
@@ -870,7 +870,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                                     fontWeight: FontWeight.w400),
                               ),
                               Text(
-                                ' $xirr%',
+                                '$xirr%',
                                 style: GoogleFonts.poppins(
                                     color: Color(0xFF0f625c),
                                     fontSize: 15,
