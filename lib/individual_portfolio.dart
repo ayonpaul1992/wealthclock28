@@ -44,6 +44,7 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
   String otherAmount = '0.00';
   String currentDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
+
   @override
   void initState() {
     super.initState();
@@ -1017,7 +1018,7 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                eachSchemeDetails()),
+                                                eachSchemeDetails(scheme: validSchemes[index])),
                                       );
                                     },
                                     child: Container(
@@ -1103,7 +1104,7 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                                     ),
                                                   ),
                                                   Text(
-                                                    '${maskFolioNumber(validSchemes[index]['folio_number']?.toString() ?? 'N/A')}', // Dynamic folio number
+                                                    'XX${maskFolioNumber(validSchemes[index]['folio_number']?.toString() ?? 'N/A')}', // Dynamic folio number
                                                     style: GoogleFonts.poppins(
                                                       color: Color(0xFF303131),
                                                       fontSize: 14,
@@ -1377,7 +1378,7 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
 
   String maskFolioNumber(String folioNumber) {
     if (folioNumber.length > 4) {
-      return 'X' * (folioNumber.length - 4) +
+      return '' * (folioNumber.length - 4) +
           folioNumber.substring(folioNumber.length - 4);
     }
     return folioNumber; // If it's less than or equal to 4, show as is
