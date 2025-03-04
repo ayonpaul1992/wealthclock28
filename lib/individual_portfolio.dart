@@ -1558,213 +1558,220 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                     //     },
                     //   ),
                     // ),
-                  Container(
-                    height: 300, // Ensure the container has enough height to be visible
-                    child: schemes.isNotEmpty
-                        ? ListView.builder(
-                      itemCount: schemes.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8), // Adds spacing between items
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              elevation: 3,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              backgroundColor: Colors.white,
-                              padding: EdgeInsets.zero, // Ensure no unwanted padding
+                Container(
+                  height: 300, // Ensure the container has enough height to be visible
+                  child: schemes.isNotEmpty
+                      ? ListView.builder(
+                    itemCount: schemes.where((scheme) =>
+                    (scheme['current_val'] ?? 0) != 0 ||
+                        (scheme['invested_val'] ?? 0) != 0)
+                        .length, // Count only schemes that have non-zero values
+                    itemBuilder: (context, index) {
+                      var validSchemes = schemes.where((scheme) =>
+                      (scheme['current_val'] ?? 0) != 0 ||
+                          (scheme['invested_val'] ?? 0) != 0).toList();
+
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8), // Adds spacing between items
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => eachSchemeDetails()),
-                              );
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(15),
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Colors.white,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          schemes[index]['scheme_name']?.toString() ?? 'N/A', // Dynamically display scheme name
+                            backgroundColor: Colors.white,
+                            padding: EdgeInsets.zero, // Ensure no unwanted padding
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => eachSchemeDetails()),
+                            );
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(15),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        validSchemes[index]['scheme_name']?.toString() ?? 'N/A', // Dynamically display scheme name
+                                        style: GoogleFonts.poppins(
+                                          color: Color(0xFF0f625c),
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: Color(0xFF0d958b),
+                                      size: 18,
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  '₹ ${double.tryParse(validSchemes[index]['current_val']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}', // Format to 2 decimal places, // Dynamic amount
+                                  style: GoogleFonts.poppins(
+                                    color: Color(0xFF0f625c),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Text(
+                                          'Cost Amount',
                                           style: GoogleFonts.poppins(
-                                            color: Color(0xFF0f625c),
-                                            fontSize: 17,
+                                            color: Color(0xFF8c8c8c),
+                                            fontSize: 14,
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
-                                      ),
-                                      Icon(
-                                        Icons.arrow_forward_ios,
-                                        color: Color(0xFF0d958b),
-                                        size: 18,
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    '₹${schemes[index]['current_val']?.toString() ?? '0'}', // Dynamic amount
-                                    style: GoogleFonts.poppins(
-                                      color: Color(0xFF0f625c),
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
+                                        Text(
+                                          '₹ ${double.tryParse(validSchemes[index]['invested_val']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}', // Dynamic cost amount
+                                          style: GoogleFonts.poppins(
+                                            color: Color(0xFF303131),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Column(
-                                        children: [
-                                          Text(
-                                            'Cost Amount',
-                                            style: GoogleFonts.poppins(
-                                              color: Color(0xFF8c8c8c),
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                            ),
+                                    Column(
+                                      children: [
+                                        Text(
+                                          'Folio No.',
+                                          style: GoogleFonts.poppins(
+                                            color: Color(0xFF8c8c8c),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
                                           ),
-                                          Text(
-                                            '${schemes[index]['invested_val']?.toString() ?? '0'}', // Dynamic cost amount
-                                            style: GoogleFonts.poppins(
-                                              color: Color(0xFF303131),
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                            ),
+                                        ),
+                                        Text(
+                                          '${maskFolioNumber(validSchemes[index]['folio_number']?.toString() ?? 'N/A')}', // Dynamic folio number
+                                          style: GoogleFonts.poppins(
+                                            color: Color(0xFF303131),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
                                           ),
-                                        ],
-                                      ),
-                                      Column(
-                                        children: [
-                                          Text(
-                                            'Folio No.',
-                                            style: GoogleFonts.poppins(
-                                              color: Color(0xFF8c8c8c),
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                            ),
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        Text(
+                                          'Gain/Loss',
+                                          style: GoogleFonts.poppins(
+                                            color: Color(0xFF8c8c8c),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
                                           ),
-                                          Text(
-                                            '${schemes[index]['folio_number']?.toString() ?? 'N/A'}', // Dynamic folio number
-                                            style: GoogleFonts.poppins(
-                                              color: Color(0xFF303131),
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.arrow_upward,
+                                              color: Color(0xFF09a99d),
+                                              size: 15,
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      Column(
-                                        children: [
-                                          Text(
-                                            'Gain/Loss',
-                                            style: GoogleFonts.poppins(
-                                              color: Color(0xFF8c8c8c),
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.arrow_upward,
+                                            Text(
+                                              '₹ ${calculateGainLoss(validSchemes[index]['current_val'], validSchemes[index]['invested_val'])}', // Dynamic Gain/Loss
+                                              style: GoogleFonts.poppins(
                                                 color: Color(0xFF09a99d),
-                                                size: 15,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
                                               ),
-                                              Text(
-                                                '${schemes[index]['gain_loss']?.toString() ?? '0'}', // Dynamic Gain/Loss
-                                                style: GoogleFonts.poppins(
-                                                  color: Color(0xFF09a99d),
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ],
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(top: 18, bottom: 18),
+                                  width: double.infinity,
+                                  color: Color(0xFFd7d7d7),
+                                  height: 1,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            'Abs. Ret.:',
+                                            style: GoogleFonts.poppins(
+                                                color: Color(0xFF0f625c),
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                          Text(
+                                            ' ${validSchemes[index]['absolute_return']?.toString() ?? '0'}%', // Dynamic Abs. Return
+                                            style: GoogleFonts.poppins(
+                                                color: Color(0xFF0f625c),
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600),
                                           ),
                                         ],
                                       ),
-                                    ],
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(top: 18, bottom: 18),
-                                    width: double.infinity,
-                                    color: Color(0xFFd7d7d7),
-                                    height: 1,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              'Abs. Ret.:',
-                                              style: GoogleFonts.poppins(
-                                                  color: Color(0xFF0f625c),
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w400),
-                                            ),
-                                            Text(
-                                              ' ${schemes[index]['absolute_return']?.toString() ?? '0'}%', // Dynamic Abs. Return
-                                              style: GoogleFonts.poppins(
-                                                  color: Color(0xFF0f625c),
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w600),
-                                            ),
-                                          ],
-                                        ),
+                                    ),
+                                    SizedBox(width: 15),
+                                    Container(
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            'XIRR:',
+                                            style: GoogleFonts.poppins(
+                                                color: Color(0xFF0f625c),
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                          Text(
+                                            ' ${validSchemes[index]['xirr']?.toString() ?? '0'}%', // Dynamic XIRR
+                                            style: GoogleFonts.poppins(
+                                                color: Color(0xFF0f625c),
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600),
+                                          ),
+                                        ],
                                       ),
-                                      SizedBox(width: 15),
-                                      Container(
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              'XIRR:',
-                                              style: GoogleFonts.poppins(
-                                                  color: Color(0xFF0f625c),
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w400),
-                                            ),
-                                            Text(
-                                              ' ${schemes[index]['xirr']?.toString() ?? '0'}%', // Dynamic XIRR
-                                              style: GoogleFonts.poppins(
-                                                  color: Color(0xFF0f625c),
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w600),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      },
-                    )
-                        : Center(
-                      child: Text(
-                        "No schemes available",
-                        style: GoogleFonts.poppins(
-                          color: Colors.red,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
                         ),
+                      );
+                    },
+                  )
+                      : Center(
+                    child: Text(
+                      "No schemes available",
+                      style: GoogleFonts.poppins(
+                        color: Colors.red,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
+                ),
                   // Container(
                   //
                   //   child: ListView.builder(
@@ -2515,5 +2522,19 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
         ],
       ),
     );
+  }
+
+  String maskFolioNumber(String folioNumber) {
+    if (folioNumber.length > 4) {
+      return 'X' * (folioNumber.length - 4) + folioNumber.substring(folioNumber.length - 4);
+    }
+    return folioNumber; // If it's less than or equal to 4, show as is
+  }
+  String calculateGainLoss(dynamic currentVal, dynamic investedVal) {
+    double current = double.tryParse(currentVal?.toString() ?? '0') ?? 0.0;
+    double invested = double.tryParse(investedVal?.toString() ?? '0') ?? 0.0;
+    double difference = current - invested; // Calculate gain/loss
+
+    return difference.toStringAsFixed(2); // Format to 2 decimal places
   }
 }
