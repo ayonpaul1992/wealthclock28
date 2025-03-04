@@ -5,6 +5,7 @@ import 'each_scheme_details.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class individualPortfolioPage extends StatefulWidget {
   const individualPortfolioPage({super.key});
@@ -42,8 +43,6 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
   String otherPercentage = '0.00';
   String otherAmount = '0.00';
   String currentDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
-
-
 
   @override
   void initState() {
@@ -216,407 +215,6 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
     }
   }
 
-  // old fetchUserName,fetchUserCurrentValue and fetchUserTotalGain start
-
-  // Future<void> fetchUserName() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final String? authToken = prefs.getString('auth_token');
-  //   const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
-  //
-  //   if (authToken == null || authToken.isEmpty) {
-  //     setState(() {
-  //       userName = "Auth token not found!";
-  //     });
-  //     return;
-  //   }
-  //
-  //   try {
-  //     print("Auth Token: $authToken"); // Debugging: Check if token exists
-  //
-  //     final response = await http.get(
-  //       Uri.parse(apiUrl),
-  //       headers: {
-  //         'Authorization': 'Bearer $authToken',
-  //         'Content-Type': 'application/json',
-  //       },
-  //     );
-  //
-  //     print("Response Status Code: ${response.statusCode}");
-  //     print("Full Response: ${response.body}");
-  //
-  //     final String responseBody = response.body.trim();
-  //
-  //     if (response.statusCode == 200) {
-  //       if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
-  //         final Map<String, dynamic> data = json.decode(responseBody);
-  //         print("Parsed Data: $data");
-  //
-  //         if (data.containsKey("clientData") && data["clientData"] is List) {
-  //           if (data["clientData"].isEmpty) {
-  //             print("clientData is empty. Setting userName to blank.");
-  //             setState(() {
-  //               userName = ""; // If clientData is empty, show blank string
-  //             });
-  //             return;
-  //           }
-  //
-  //           String? fetchedName = data["clientData"][0]["user_name"];
-  //           String? fetchedPan = data["clientData"][0]["pan"];
-  //
-  //           print("Fetched Name: $fetchedName");
-  //           print("Fetched PAN: $fetchedPan");
-  //
-  //           setState(() {
-  //             if (fetchedPan == null || fetchedPan.isEmpty) {
-  //               userName = ""; // PAN is missing, set userName to blank
-  //             } else {
-  //               userName = fetchedName ?? "No Name Found";
-  //             }
-  //           });
-  //         } else {
-  //           setState(() {
-  //             userName = "Invalid data format";
-  //           });
-  //         }
-  //       } else {
-  //         setState(() {
-  //           userName = "Invalid response format (Not JSON)";
-  //         });
-  //       }
-  //     } else if (response.statusCode == 400) {
-  //       final Map<String, dynamic> data = json.decode(responseBody);
-  //       String errorMessage = data["message"] ?? "Bad Request";
-  //
-  //       print("Received 400 Error: $errorMessage");
-  //
-  //       setState(() {
-  //         if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
-  //           print("Detected 'sorry user pan does not exist'. Setting userName to blank.");
-  //           userName = ""; // If error message contains this phrase, set blank
-  //         } else {
-  //           userName = errorMessage;
-  //         }
-  //       });
-  //     } else if (response.statusCode == 401) {
-  //       setState(() {
-  //         userName = "Unauthorized: Please login again!";
-  //       });
-  //     } else {
-  //       setState(() {
-  //         userName = "Error ${response.statusCode}: Something went wrong!";
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print("Error: $e");
-  //     setState(() {
-  //       userName = "Error fetching data!";
-  //     });
-  //   }
-  // }
-  // Future<void> fetchUserCurrentValue() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final String? authToken = prefs.getString('auth_token');
-  //   const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
-  //
-  //   if (authToken == null || authToken.isEmpty) {
-  //     setState(() {
-  //       userCurrentValue = "Auth token not found!";
-  //     });
-  //     return;
-  //   }
-  //
-  //   try {
-  //     print("Auth Token: $authToken");
-  //     final response = await http.get(
-  //       Uri.parse(apiUrl),
-  //       headers: {
-  //         'Authorization': 'Bearer $authToken',
-  //         'Content-Type': 'application/json',
-  //       },
-  //     );
-  //
-  //     print("Response Status Code: ${response.statusCode}");
-  //     print("Raw Response Body: '${response.body}'");
-  //
-  //     final String responseBody = response.body.trim();
-  //
-  //     if (response.statusCode == 200) {
-  //       if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
-  //         try {
-  //           final Map<String, dynamic> data = json.decode(responseBody);
-  //           print("Parsed Data: $data");
-  //
-  //           if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
-  //             String? fetchedPan = data["clientData"][0]["pan"];
-  //
-  //             // If PAN does not exist, return "0.00"
-  //             if (fetchedPan == null || fetchedPan.isEmpty) {
-  //               print("PAN does not exist. Setting userCurrentValue to 0.00");
-  //               setState(() {
-  //                 userCurrentValue = "0.00";
-  //               });
-  //               return;
-  //             }
-  //
-  //             double totalGain = (data["clientData"][0]["total_current_val"] ?? 0).toDouble();
-  //
-  //             // Ensure totalGain is not negative or NaN
-  //             if (totalGain.isNaN || totalGain < 0) {
-  //               totalGain = 0;
-  //             }
-  //
-  //             String formattedTotalGain = NumberFormat('#,##0.00').format(totalGain);
-  //
-  //             setState(() {
-  //               userCurrentValue = formattedTotalGain;
-  //             });
-  //           } else {
-  //             setState(() {
-  //               userCurrentValue = "0.00"; // If clientData is missing, return "0.00"
-  //             });
-  //           }
-  //         } catch (e) {
-  //           print("Error decoding JSON: $e");
-  //           setState(() {
-  //             userCurrentValue = "0.00"; // Default to "0.00" on JSON error
-  //           });
-  //         }
-  //       } else {
-  //         setState(() {
-  //           userCurrentValue = "0.00"; // Response not JSON, default to "0.00"
-  //         });
-  //       }
-  //     } else if (response.statusCode == 400) {
-  //       final Map<String, dynamic> data = json.decode(responseBody);
-  //       String errorMessage = data["message"] ?? "";
-  //
-  //       if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
-  //         print("Detected 'sorry user pan does not exist'. Setting userCurrentValue to 0.00");
-  //         setState(() {
-  //           userCurrentValue = "0.00"; // If PAN is missing, return "0.00"
-  //         });
-  //       } else {
-  //         setState(() {
-  //           userCurrentValue = errorMessage;
-  //         });
-  //       }
-  //     } else if (response.statusCode == 401) {
-  //       setState(() {
-  //         userCurrentValue = "Unauthorized: Please login again!";
-  //       });
-  //     } else {
-  //       setState(() {
-  //         userCurrentValue = "Error ${response.statusCode}: Something went wrong!";
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print("Exception caught: $e");
-  //     setState(() {
-  //       userCurrentValue = "0.00"; // Default to "0.00" on any exception
-  //     });
-  //   }
-  // }
-  // Future<void> fetchUserTotalGain() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final String? authToken = prefs.getString('auth_token');
-  //   const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
-  //
-  //   if (authToken == null || authToken.isEmpty) {
-  //     setState(() {
-  //       userTotalGain = "Auth token not found!";
-  //     });
-  //     return;
-  //   }
-  //
-  //   try {
-  //     print("Auth Token: $authToken");
-  //     final response = await http.get(
-  //       Uri.parse(apiUrl),
-  //       headers: {
-  //         'Authorization': 'Bearer $authToken',
-  //         'Content-Type': 'application/json',
-  //       },
-  //     );
-  //
-  //     print("Response Status Code: ${response.statusCode}");
-  //     print("Raw Response Body: '${response.body}'");
-  //
-  //     final String responseBody = response.body.trim();
-  //
-  //     if (response.statusCode == 200) {
-  //       if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
-  //         try {
-  //           final Map<String, dynamic> data = json.decode(responseBody);
-  //           print("Parsed Data: $data");
-  //
-  //           if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
-  //             String? fetchedPan = data["clientData"][0]["pan"];
-  //
-  //             // If PAN does not exist, return "0.00"
-  //             if (fetchedPan == null || fetchedPan.isEmpty) {
-  //               print("PAN does not exist. Setting userCurrentValue to 0.00");
-  //               setState(() {
-  //                 userTotalGain = "0.00";
-  //               });
-  //               return;
-  //             }
-  //
-  //             double totalGain = (data["clientData"][0]["totalGain"] ?? 0).toDouble();
-  //
-  //             // Ensure totalGain is not negative or NaN
-  //             if (totalGain.isNaN || totalGain < 0) {
-  //               totalGain = 0;
-  //             }
-  //
-  //             String formattedTotalGain = NumberFormat('#,##0.00').format(totalGain);
-  //
-  //             setState(() {
-  //               userTotalGain = formattedTotalGain;
-  //             });
-  //           } else {
-  //             setState(() {
-  //               userTotalGain = "0.00"; // If clientData is missing, return "0.00"
-  //             });
-  //           }
-  //         } catch (e) {
-  //           print("Error decoding JSON: $e");
-  //           setState(() {
-  //             userTotalGain = "0.00"; // Default to "0.00" on JSON error
-  //           });
-  //         }
-  //       } else {
-  //         setState(() {
-  //           userTotalGain = "0.00"; // Response not JSON, default to "0.00"
-  //         });
-  //       }
-  //     } else if (response.statusCode == 400) {
-  //       final Map<String, dynamic> data = json.decode(responseBody);
-  //       String errorMessage = data["message"] ?? "";
-  //
-  //       if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
-  //         print("Detected 'sorry user pan does not exist'. Setting userCurrentValue to 0.00");
-  //         setState(() {
-  //           userTotalGain = "0.00"; // If PAN is missing, return "0.00"
-  //         });
-  //       } else {
-  //         setState(() {
-  //           userTotalGain = errorMessage;
-  //         });
-  //       }
-  //     } else if (response.statusCode == 401) {
-  //       setState(() {
-  //         userTotalGain = "Unauthorized: Please login again!";
-  //       });
-  //     } else {
-  //       setState(() {
-  //         userTotalGain = "Error ${response.statusCode}: Something went wrong!";
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print("Exception caught: $e");
-  //     setState(() {
-  //       userTotalGain = "0.00"; // Default to "0.00" on any exception
-  //     });
-  //   }
-  // }
-
-  // old fetchUserName,fetchUserCurrentValue and fetchUserTotalGain end
-
-  // Future<void> fetchUserDtlsPopUp() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final String? authToken = prefs.getString('auth_token');
-  //   const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
-  //
-  //   if (authToken == null || authToken.isEmpty) {
-  //     setState(() {
-  //       userName = "Auth token not found!";
-  //     });
-  //     return;
-  //   }
-  //
-  //   try {
-  //     print("Auth Token: $authToken"); // Debugging: Check if token exists
-  //
-  //     final response = await http.get(
-  //       Uri.parse(apiUrl),
-  //       headers: {
-  //         'Authorization': 'Bearer $authToken',
-  //         'Content-Type': 'application/json',
-  //       },
-  //     );
-  //
-  //     print("Response Status Code: ${response.statusCode}");
-  //     print("Full Response: ${response.body}");
-  //
-  //     final String responseBody = response.body.trim();
-  //
-  //     if (response.statusCode == 200) {
-  //       if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
-  //         final Map<String, dynamic> data = json.decode(responseBody);
-  //         print("Parsed Data: $data");
-  //
-  //         if (data.containsKey("clientData") && data["clientData"] is List) {
-  //           if (data["clientData"].isEmpty) {
-  //             print("clientData is empty. Setting userName to blank.");
-  //             setState(() {
-  //               userName = ""; // If clientData is empty, show blank string
-  //             });
-  //             return;
-  //           }
-  //
-  //           String? fetchedName = data["clientData"][0]["user_name"];
-  //           String? fetchedPan = data["clientData"][0]["pan"];
-  //
-  //           print("Fetched Name: $fetchedName");
-  //           print("Fetched PAN: $fetchedPan");
-  //
-  //           setState(() {
-  //             if (fetchedPan == null || fetchedPan.isEmpty) {
-  //               userName = ""; // PAN is missing, set userName to blank
-  //             } else {
-  //               userName = fetchedName ?? "No Name Found";
-  //             }
-  //           });
-  //         } else {
-  //           setState(() {
-  //             userName = "Invalid data format";
-  //           });
-  //         }
-  //       } else {
-  //         setState(() {
-  //           userName = "Invalid response format (Not JSON)";
-  //         });
-  //       }
-  //     } else if (response.statusCode == 400) {
-  //       final Map<String, dynamic> data = json.decode(responseBody);
-  //       String errorMessage = data["message"] ?? "Bad Request";
-  //
-  //       print("Received 400 Error: $errorMessage");
-  //
-  //       setState(() {
-  //         if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
-  //           print("Detected 'sorry user pan does not exist'. Setting userName to blank.");
-  //           userName = ""; // If error message contains this phrase, set blank
-  //         } else {
-  //           userName = errorMessage;
-  //         }
-  //       });
-  //     } else if (response.statusCode == 401) {
-  //       setState(() {
-  //         userName = "Unauthorized: Please login again!";
-  //       });
-  //     } else {
-  //       setState(() {
-  //         userName = "Error ${response.statusCode}: Something went wrong!";
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print("Error: $e");
-  //     setState(() {
-  //       userName = "Error fetching data!";
-  //     });
-  //   }
-  // }
   Future<void> _logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -1308,7 +906,7 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                           top: 26,
                           bottom: 13,
                           left: 18,
-                          right: 18,
+                          right: 40,
                         ),
                         child: Column(
                           children: [
@@ -1316,201 +914,40 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                               scrollDirection: Axis.horizontal,
                               child: Row(
                                 children: [
+                                  // Left Section: Labels and Percentages
                                   Container(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Row(
-                                          children: [
-                                            Container(
-                                              color: Color(0xFF2cbefc),
-                                              width: 4,
-                                              height: 30,
-                                            ),
-                                            SizedBox(width: 10),
-                                            SizedBox(
-                                              width: 60,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'Equity',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF303131),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                  Text(
-                                                    '$equityPercentage%',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF8c8c8c),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(width: 3),
-                                            Text(
-                                              '$equityAmount',
-                                              style: GoogleFonts.poppins(
-                                                  color: Color(0xFF0f625c),
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
-                                        ),
+                                        buildLegendItem("Equity", equityPercentage, Color(0xFF2cbefc), equityAmount),
                                         SizedBox(height: 10),
-                                        Row(
-                                          children: [
-                                            Container(
-                                              color: Color(0xFFf79e3b),
-                                              width: 4,
-                                              height: 30,
-                                            ),
-                                            SizedBox(width: 10),
-                                            SizedBox(
-                                              width: 60,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'Hybrid',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF303131),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                  Text(
-                                                    '$hybridPercentage%',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF8c8c8c),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(width: 3),
-                                            Text(
-                                              '$hybridAmount',
-                                              style: GoogleFonts.poppins(
-                                                  color: Color(0xFF0f625c),
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
-                                        ),
+                                        buildLegendItem("Hybrid", hybridPercentage, Color(0xFFf79e3b), hybridAmount),
                                         SizedBox(height: 10),
-                                        Row(
-                                          children: [
-                                            Container(
-                                              color: Color(0xFFa6a8a7),
-                                              width: 4,
-                                              height: 30,
-                                            ),
-                                            SizedBox(width: 10),
-                                            SizedBox(
-                                              width: 60,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'Debt',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF303131),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                  Text(
-                                                    '$debtPercentage%',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF8c8c8c),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(width: 3),
-                                            Text(
-                                              '$debtAmount',
-                                              style: GoogleFonts.poppins(
-                                                  color: Color(0xFF0f625c),
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
-                                        ),
+                                        buildLegendItem("Debt", debtPercentage, Color(0xFFa6a8a7), debtAmount),
                                         SizedBox(height: 10),
-                                        Row(
-                                          children: [
-                                            Container(
-                                              color: Color(0xFFdac45e),
-                                              width: 4,
-                                              height: 30,
-                                            ),
-                                            SizedBox(width: 10),
-                                            SizedBox(
-                                              width: 60,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'Other',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF303131),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                  Text(
-                                                    '$otherPercentage%',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF8c8c8c),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(width: 3),
-                                            Text(
-                                              '$otherAmount',
-                                              style: GoogleFonts.poppins(
-                                                  color: Color(0xFF0f625c),
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
-                                        ),
+                                        buildLegendItem("Other", otherPercentage, Color(0xFFdac45e), otherAmount),
                                       ],
                                     ),
                                   ),
                                   SizedBox(width: 20),
+
+                                  // Right Section: Pie Chart
                                   Container(
-                                    child: Image.asset(
-                                        'assets/images/rtt_brd.png'),
+                                    height: 100, // Adjust as needed
+                                    width: 100,  // Adjust as needed
+                                    child: PieChart(
+                                      PieChartData(
+                                        sections: [
+                                          createPieSection(double.tryParse(equityPercentage) ?? 0, Color(0xFF2cbefc), "Equity"),
+                                          createPieSection(double.tryParse(hybridPercentage) ?? 0, Color(0xFFf79e3b), "Hybrid"),
+                                          createPieSection(double.tryParse(debtPercentage) ?? 0, Color(0xFFa6a8a7), "Debt"),
+                                          createPieSection(double.tryParse(otherPercentage) ?? 0, Color(0xFFdac45e), "Other"),
+                                        ],
+                                        borderData: FlBorderData(show: false), // Hide border
+                                        sectionsSpace: 2,
+                                        centerSpaceRadius: 30, // Creates a donut effect
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -1531,7 +968,7 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                       fontSize: 14),
                                 ),
                                 Text(
-                                  '29/03/2023',
+                                  currentDate,
                                   style: GoogleFonts.poppins(
                                       color: Color(0xFF648683),
                                       fontWeight: FontWeight.w600,
@@ -1543,850 +980,264 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                         ),
                       ),
                     ),
-                    // Container(
-                    //   height: 300, // Set a height to ensure visibility
-                    //   child: ListView.builder(
-                    //     itemCount: schemes.length,
-                    //     itemBuilder: (context, index) {
-                    //       return Padding(
-                    //         padding: EdgeInsets.symmetric(vertical: 8), // Adds spacing between items
-                    //         child: Text(
-                    //           schemes[index]['scheme_name'],  // Displays each scheme name
-                    //           style: TextStyle(color: Colors.red, fontSize: 18),
-                    //         ),
-                    //       );
-                    //     },
-                    //   ),
-                    // ),
-                Container(
-                  height: 300, // Ensure the container has enough height to be visible
-                  child: schemes.isNotEmpty
-                      ? ListView.builder(
-                    itemCount: schemes.where((scheme) =>
-                    (scheme['current_val'] ?? 0) != 0 ||
-                        (scheme['invested_val'] ?? 0) != 0)
-                        .length, // Count only schemes that have non-zero values
-                    itemBuilder: (context, index) {
-                      var validSchemes = schemes.where((scheme) =>
-                      (scheme['current_val'] ?? 0) != 0 ||
-                          (scheme['invested_val'] ?? 0) != 0).toList();
 
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8), // Adds spacing between items
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            backgroundColor: Colors.white,
-                            padding: EdgeInsets.zero, // Ensure no unwanted padding
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => eachSchemeDetails()),
-                            );
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(15),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.white,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        validSchemes[index]['scheme_name']?.toString() ?? 'N/A', // Dynamically display scheme name
-                                        style: GoogleFonts.poppins(
-                                          color: Color(0xFF0f625c),
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w500,
-                                        ),
+                    Container(
+                      height:
+                          300, // Ensure the container has enough height to be visible
+                      child: schemes.isNotEmpty
+                          ? ListView.builder(
+                              itemCount: schemes
+                                  .where((scheme) =>
+                                      (scheme['current_val'] ?? 0) != 0 ||
+                                      (scheme['invested_val'] ?? 0) != 0)
+                                  .length, // Count only schemes that have non-zero values
+                              itemBuilder: (context, index) {
+                                var validSchemes = schemes
+                                    .where((scheme) =>
+                                        (scheme['current_val'] ?? 0) != 0 ||
+                                        (scheme['invested_val'] ?? 0) != 0)
+                                    .toList();
+
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical:
+                                          8), // Adds spacing between items
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 3,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
                                       ),
+                                      backgroundColor: Colors.white,
+                                      padding: EdgeInsets
+                                          .zero, // Ensure no unwanted padding
                                     ),
-                                    Icon(
-                                      Icons.arrow_forward_ios,
-                                      color: Color(0xFF0d958b),
-                                      size: 18,
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  '₹ ${double.tryParse(validSchemes[index]['current_val']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}', // Format to 2 decimal places, // Dynamic amount
-                                  style: GoogleFonts.poppins(
-                                    color: Color(0xFF0f625c),
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Text(
-                                          'Cost Amount',
-                                          style: GoogleFonts.poppins(
-                                            color: Color(0xFF8c8c8c),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        Text(
-                                          '₹ ${double.tryParse(validSchemes[index]['invested_val']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}', // Dynamic cost amount
-                                          style: GoogleFonts.poppins(
-                                            color: Color(0xFF303131),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text(
-                                          'Folio No.',
-                                          style: GoogleFonts.poppins(
-                                            color: Color(0xFF8c8c8c),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        Text(
-                                          '${maskFolioNumber(validSchemes[index]['folio_number']?.toString() ?? 'N/A')}', // Dynamic folio number
-                                          style: GoogleFonts.poppins(
-                                            color: Color(0xFF303131),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text(
-                                          'Gain/Loss',
-                                          style: GoogleFonts.poppins(
-                                            color: Color(0xFF8c8c8c),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.arrow_upward,
-                                              color: Color(0xFF09a99d),
-                                              size: 15,
-                                            ),
-                                            Text(
-                                              '₹ ${calculateGainLoss(validSchemes[index]['current_val'], validSchemes[index]['invested_val'])}', // Dynamic Gain/Loss
-                                              style: GoogleFonts.poppins(
-                                                color: Color(0xFF09a99d),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                eachSchemeDetails()),
+                                      );
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(15),
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.white,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  validSchemes[index]
+                                                              ['scheme_name']
+                                                          ?.toString() ??
+                                                      'N/A', // Dynamically display scheme name
+                                                  style: GoogleFonts.poppins(
+                                                    color: Color(0xFF0f625c),
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
                                               ),
+                                              Icon(
+                                                Icons.arrow_forward_ios,
+                                                color: Color(0xFF0d958b),
+                                                size: 18,
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 10),
+                                          Text(
+                                            '₹ ${double.tryParse(validSchemes[index]['current_val']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}', // Format to 2 decimal places, // Dynamic amount
+                                            style: GoogleFonts.poppins(
+                                              color: Color(0xFF0f625c),
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
                                             ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(top: 18, bottom: 18),
-                                  width: double.infinity,
-                                  color: Color(0xFFd7d7d7),
-                                  height: 1,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            'Abs. Ret.:',
-                                            style: GoogleFonts.poppins(
-                                                color: Color(0xFF0f625c),
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w400),
                                           ),
-                                          Text(
-                                            ' ${validSchemes[index]['absolute_return']?.toString() ?? '0'}%', // Dynamic Abs. Return
-                                            style: GoogleFonts.poppins(
-                                                color: Color(0xFF0f625c),
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600),
+                                          SizedBox(height: 10),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Column(
+                                                children: [
+                                                  Text(
+                                                    'Cost Amount',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF8c8c8c),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    '₹ ${double.tryParse(validSchemes[index]['invested_val']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}', // Dynamic cost amount
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF303131),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Column(
+                                                children: [
+                                                  Text(
+                                                    'Folio No.',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF8c8c8c),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    '${maskFolioNumber(validSchemes[index]['folio_number']?.toString() ?? 'N/A')}', // Dynamic folio number
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF303131),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Column(
+                                                children: [
+                                                  Text(
+                                                    'Gain/Loss',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF8c8c8c),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.arrow_upward,
+                                                        color:
+                                                            Color(0xFF09a99d),
+                                                        size: 15,
+                                                      ),
+                                                      Text(
+                                                        '₹ ${calculateGainLoss(validSchemes[index]['current_val'], validSchemes[index]['invested_val'])}', // Dynamic Gain/Loss
+                                                        style:
+                                                            GoogleFonts.poppins(
+                                                          color:
+                                                              Color(0xFF09a99d),
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                                top: 18, bottom: 18),
+                                            width: double.infinity,
+                                            color: Color(0xFFd7d7d7),
+                                            height: 1,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                child: Row(
+                                                  children: [
+                                                    Text(
+                                                      'Abs. Ret.:',
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                              color: Color(
+                                                                  0xFF0f625c),
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400),
+                                                    ),
+                                                    Text(
+                                                      ' ${validSchemes[index]['absolute_return']?.toString() ?? '0'}%', // Dynamic Abs. Return
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                              color: Color(
+                                                                  0xFF0f625c),
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              SizedBox(width: 15),
+                                              Container(
+                                                child: Row(
+                                                  children: [
+                                                    Text(
+                                                      'XIRR:',
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                              color: Color(
+                                                                  0xFF0f625c),
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400),
+                                                    ),
+                                                    Text(
+                                                      ' ${validSchemes[index]['xirr']?.toString() ?? '0'}%', // Dynamic XIRR
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                              color: Color(
+                                                                  0xFF0f625c),
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
                                     ),
-                                    SizedBox(width: 15),
-                                    Container(
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            'XIRR:',
-                                            style: GoogleFonts.poppins(
-                                                color: Color(0xFF0f625c),
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w400),
-                                          ),
-                                          Text(
-                                            ' ${validSchemes[index]['xirr']?.toString() ?? '0'}%', // Dynamic XIRR
-                                            style: GoogleFonts.poppins(
-                                                color: Color(0xFF0f625c),
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                                  ),
+                                );
+                              },
+                            )
+                          : Center(
+                              child: Text(
+                                "No schemes available",
+                                style: GoogleFonts.poppins(
+                                  color: Colors.red,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                      );
-                    },
-                  )
-                      : Center(
-                    child: Text(
-                      "No schemes available",
-                      style: GoogleFonts.poppins(
-                        color: Colors.red,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
                     ),
-                  ),
-                ),
-                  // Container(
-                  //
-                  //   child: ListView.builder(
-                  //     itemCount: schemes.length, // Number of schemes determines the button count
-                  //     itemBuilder: (context, index) {
-                  //        // Get each scheme data dynamically
-                  //       return Container(
-                  //         height: 600,
-                  //         margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10), // Add margin for spacing
-                  //         decoration: BoxDecoration(
-                  //           borderRadius: BorderRadius.circular(10),
-                  //           boxShadow: [
-                  //             BoxShadow(
-                  //               color: Colors.grey.withOpacity(0.3),
-                  //               blurRadius: 5,
-                  //               spreadRadius: 2,
-                  //               offset: Offset(0, 3),
-                  //             ),
-                  //           ],
-                  //         ),
-                  //         child: ElevatedButton(
-                  //           style: ElevatedButton.styleFrom(
-                  //             elevation: 3,
-                  //             shape: RoundedRectangleBorder(
-                  //               borderRadius: BorderRadius.circular(10),
-                  //             ),
-                  //             backgroundColor: Colors.white,
-                  //             padding: EdgeInsets.zero, // Ensure no unwanted padding
-                  //           ),
-                  //           onPressed: () {
-                  //             Navigator.push(
-                  //               context,
-                  //               MaterialPageRoute(builder: (context) => eachSchemeDetails()),
-                  //             );
-                  //           },
-                  //           child: Container(
-                  //             padding: EdgeInsets.all(15),
-                  //             width: double.infinity,
-                  //             decoration: BoxDecoration(
-                  //               borderRadius: BorderRadius.circular(10),
-                  //               color: Colors.white,
-                  //             ),
-                  //             child: Column(
-                  //               crossAxisAlignment: CrossAxisAlignment.start,
-                  //               children: [
-                  //                 Row(
-                  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //                   children: [
-                  //                     Expanded(
-                  //                       child: Text(
-                  //                         schemes[index]['scheme_name'], // Dynamically display scheme name
-                  //                         style: GoogleFonts.poppins(
-                  //                           color: Color(0xFF0f625c),
-                  //                           fontSize: 17,
-                  //                           fontWeight: FontWeight.w500,
-                  //                         ),
-                  //                       ),
-                  //                     ),
-                  //                     Icon(
-                  //                       Icons.arrow_forward_ios,
-                  //                       color: Color(0xFF0d958b),
-                  //                       size: 18,
-                  //                     ),
-                  //                   ],
-                  //                 ),
-                  //                 SizedBox(height: 10),
-                  //                 Text(
-                  //                   '₹${schemes[index]['current_val']}', // Dynamic amount
-                  //                   style: GoogleFonts.poppins(
-                  //                     color: Color(0xFF0f625c),
-                  //                     fontSize: 18,
-                  //                     fontWeight: FontWeight.w600,
-                  //                   ),
-                  //                 ),
-                  //                 SizedBox(height: 10),
-                  //                 Row(
-                  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //                   children: [
-                  //                     Column(
-                  //                       children: [
-                  //                         Text(
-                  //                           'Cost Amount',
-                  //                           style: GoogleFonts.poppins(
-                  //                             color: Color(0xFF8c8c8c),
-                  //                             fontSize: 14,
-                  //                             fontWeight: FontWeight.w500,
-                  //                           ),
-                  //                         ),
-                  //                         Text(
-                  //                           '${schemes[index]['invested_val']}', // Dynamic cost amount
-                  //                           style: GoogleFonts.poppins(
-                  //                             color: Color(0xFF303131),
-                  //                             fontSize: 14,
-                  //                             fontWeight: FontWeight.w600,
-                  //                           ),
-                  //                         ),
-                  //                       ],
-                  //                     ),
-                  //                     Column(
-                  //                       children: [
-                  //                         Text(
-                  //                           'Folio No.',
-                  //                           style: GoogleFonts.poppins(
-                  //                             color: Color(0xFF8c8c8c),
-                  //                             fontSize: 14,
-                  //                             fontWeight: FontWeight.w500,
-                  //                           ),
-                  //                         ),
-                  //                         Text(
-                  //                           '${schemes[index]['folio_number']}', // Dynamic folio number
-                  //                           style: GoogleFonts.poppins(
-                  //                             color: Color(0xFF303131),
-                  //                             fontSize: 14,
-                  //                             fontWeight: FontWeight.w600,
-                  //                           ),
-                  //                         ),
-                  //                       ],
-                  //                     ),
-                  //                     Column(
-                  //                       children: [
-                  //                         Text(
-                  //                           'Gain/Loss',
-                  //                           style: GoogleFonts.poppins(
-                  //                             color: Color(0xFF8c8c8c),
-                  //                             fontSize: 14,
-                  //                             fontWeight: FontWeight.w500,
-                  //                           ),
-                  //                         ),
-                  //                         Row(
-                  //                           children: [
-                  //                             Icon(
-                  //                               Icons.arrow_upward,
-                  //                               color: Color(0xFF09a99d),
-                  //                               size: 15,
-                  //                             ),
-                  //                             Text(
-                  //                               '${schemes[index]['gain_loss']}', // Dynamic Gain/Loss
-                  //                               style: GoogleFonts.poppins(
-                  //                                 color: Color(0xFF09a99d),
-                  //                                 fontSize: 14,
-                  //                                 fontWeight: FontWeight.w600,
-                  //                               ),
-                  //                             ),
-                  //                           ],
-                  //                         ),
-                  //                       ],
-                  //                     ),
-                  //                   ],
-                  //                 ),
-                  //                 Container(
-                  //                   margin: EdgeInsets.only(top: 18, bottom: 18),
-                  //                   width: double.infinity,
-                  //                   color: Color(0xFFd7d7d7),
-                  //                   height: 1,
-                  //                 ),
-                  //                 Row(
-                  //                   mainAxisAlignment: MainAxisAlignment.center,
-                  //                   children: [
-                  //                     Container(
-                  //                       child: Row(
-                  //                         children: [
-                  //                           Text(
-                  //                             'Abs. Ret.:',
-                  //                             style: GoogleFonts.poppins(
-                  //                                 color: Color(0xFF0f625c),
-                  //                                 fontSize: 15,
-                  //                                 fontWeight: FontWeight.w400),
-                  //                           ),
-                  //                           Text(
-                  //                             ' ${schemes[index]['absolute_return']}%', // Dynamic Abs. Return
-                  //                             style: GoogleFonts.poppins(
-                  //                                 color: Color(0xFF0f625c),
-                  //                                 fontSize: 15,
-                  //                                 fontWeight: FontWeight.w600),
-                  //                           ),
-                  //                         ],
-                  //                       ),
-                  //                     ),
-                  //                     SizedBox(width: 15),
-                  //                     Container(
-                  //                       child: Row(
-                  //                         children: [
-                  //                           Text(
-                  //                             'XIRR:',
-                  //                             style: GoogleFonts.poppins(
-                  //                                 color: Color(0xFF0f625c),
-                  //                                 fontSize: 15,
-                  //                                 fontWeight: FontWeight.w400),
-                  //                           ),
-                  //                           Text(
-                  //                             ' ${schemes[index]['xirr']}%', // Dynamic XIRR
-                  //                             style: GoogleFonts.poppins(
-                  //                                 color: Color(0xFF0f625c),
-                  //                                 fontSize: 15,
-                  //                                 fontWeight: FontWeight.w600),
-                  //                           ),
-                  //                         ],
-                  //                       ),
-                  //                     ),
-                  //                   ],
-                  //                 ),
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
 
-                  // ElevatedButton(
-                    //   style: ElevatedButton.styleFrom(
-                    //     elevation: 3, // Adjust elevation as needed
-                    //     shape: RoundedRectangleBorder(
-                    //       borderRadius: BorderRadius.circular(
-                    //           10), // Match container's border radius
-                    //     ),
-                    //     backgroundColor:
-                    //         Colors.white, // Match container's color
-                    //   ),
-                    //   onPressed: () {
-                    //     // Navigator.push(context, MaterialPageRoute(builder: (context) => const SignupPage()));
-                    //     // Define the action for the button here
-                    //     Navigator.push(
-                    //         context,
-                    //         MaterialPageRoute(
-                    //             builder: (context) =>
-                    //                 const eachSchemeDetails()));
-                    //   },
-                    //   child: Container(
-                    //     margin: EdgeInsets.only(top: 20, bottom: 20),
-                    //     width: double.infinity,
-                    //     child: Padding(
-                    //       padding: EdgeInsets.only(top: 0, bottom: 0),
-                    //       child: Column(
-                    //         crossAxisAlignment: CrossAxisAlignment.start,
-                    //         children: [
-                    //           SingleChildScrollView(
-                    //             scrollDirection: Axis.horizontal,
-                    //             child: Row(
-                    //               mainAxisAlignment:
-                    //                   MainAxisAlignment.spaceBetween,
-                    //               crossAxisAlignment: CrossAxisAlignment.start,
-                    //               children: [
-                    //                 Container(
-                    //                   width: 276,
-                    //                   child: Text(
-                    //                     schemeName,
-                    //                     style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF0f625c),
-                    //                       fontSize: 17,
-                    //                       fontWeight: FontWeight.w500,
-                    //                     ),
-                    //                   ),
-                    //                 ),
-                    //                 SizedBox(
-                    //                   width: 12,
-                    //                 ),
-                    //                 Container(
-                    //                   margin: EdgeInsets.only(top: 4),
-                    //                   child: Icon(
-                    //                     Icons.arrow_forward_ios,
-                    //                     color: Color(0xFF0d958b),
-                    //                     size: 18,
-                    //                   ),
-                    //                 )
-                    //               ],
-                    //             ),
-                    //           ),
-                    //           Container(
-                    //             margin: EdgeInsets.only(top: 10, bottom: 10),
-                    //             child: Text(
-                    //               '₹7,32,690',
-                    //               style: GoogleFonts.poppins(
-                    //                 color: Color(0xFF0f625c),
-                    //                 fontSize: 18,
-                    //                 fontWeight: FontWeight.w600,
-                    //               ),
-                    //             ),
-                    //           ),
-                    //           Row(
-                    //             mainAxisAlignment:
-                    //                 MainAxisAlignment.spaceBetween,
-                    //             children: [
-                    //               Column(
-                    //                 children: [
-                    //                   Text(
-                    //                     'Cost Amount',
-                    //                     style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF8c8c8c),
-                    //                       fontSize: 14,
-                    //                       fontWeight: FontWeight.w500,
-                    //                     ),
-                    //                   ),
-                    //                   Text(
-                    //                     '5,00,000',
-                    //                     style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF303131),
-                    //                       fontSize: 14,
-                    //                       fontWeight: FontWeight.w600,
-                    //                     ),
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //               Column(
-                    //                 children: [
-                    //                   Text(
-                    //                     'Folio No.',
-                    //                     style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF8c8c8c),
-                    //                       fontSize: 14,
-                    //                       fontWeight: FontWeight.w500,
-                    //                     ),
-                    //                   ),
-                    //                   Text(
-                    //                     'xxx7/73',
-                    //                     style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF303131),
-                    //                       fontSize: 14,
-                    //                       fontWeight: FontWeight.w600,
-                    //                     ),
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //               Column(
-                    //                 children: [
-                    //                   Text(
-                    //                     'Gain/Loss',
-                    //                     style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF8c8c8c),
-                    //                       fontSize: 14,
-                    //                       fontWeight: FontWeight.w500,
-                    //                     ),
-                    //                   ),
-                    //                   Row(
-                    //                     children: [
-                    //                       Icon(
-                    //                         Icons.arrow_upward,
-                    //                         color: Color(0xFF09a99d),
-                    //                         size: 15,
-                    //                       ),
-                    //                       Text(
-                    //                         '2,32,690',
-                    //                         style: GoogleFonts.poppins(
-                    //                           color: Color(0xFF09a99d),
-                    //                           fontSize: 14,
-                    //                           fontWeight: FontWeight.w600,
-                    //                         ),
-                    //                       ),
-                    //                     ],
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //             ],
-                    //           ),
-                    //           Container(
-                    //             margin: EdgeInsets.only(top: 18, bottom: 18),
-                    //             width: double.infinity,
-                    //             color: Color(0xFFd7d7d7),
-                    //             height: 1,
-                    //           ),
-                    //           Row(
-                    //             mainAxisAlignment: MainAxisAlignment.center,
-                    //             children: [
-                    //               Container(
-                    //                 child: Row(
-                    //                   children: [
-                    //                     Text(
-                    //                       'Abs. Ret.:',
-                    //                       style: GoogleFonts.poppins(
-                    //                           color: Color(0xFF0f625c),
-                    //                           fontSize: 15,
-                    //                           fontWeight: FontWeight.w400),
-                    //                     ),
-                    //                     Text(
-                    //                       ' 46.54%',
-                    //                       style: GoogleFonts.poppins(
-                    //                           color: Color(0xFF0f625c),
-                    //                           fontSize: 15,
-                    //                           fontWeight: FontWeight.w600),
-                    //                     ),
-                    //                   ],
-                    //                 ),
-                    //               ),
-                    //               SizedBox(width: 15),
-                    //               Container(
-                    //                 child: Row(
-                    //                   children: [
-                    //                     Text(
-                    //                       'XIRR:',
-                    //                       style: GoogleFonts.poppins(
-                    //                           color: Color(0xFF0f625c),
-                    //                           fontSize: 15,
-                    //                           fontWeight: FontWeight.w400),
-                    //                     ),
-                    //                     Text(
-                    //                       ' 12.28%',
-                    //                       style: GoogleFonts.poppins(
-                    //                           color: Color(0xFF0f625c),
-                    //                           fontSize: 15,
-                    //                           fontWeight: FontWeight.w600),
-                    //                     ),
-                    //                   ],
-                    //                 ),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ],
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    SizedBox(height: 20),
-                    // ElevatedButton(
-                    //   style: ElevatedButton.styleFrom(
-                    //     elevation: 3, // Adjust elevation as needed
-                    //     shape: RoundedRectangleBorder(
-                    //       borderRadius: BorderRadius.circular(
-                    //           10), // Match container's border radius
-                    //     ),
-                    //     backgroundColor:
-                    //         Colors.white, // Match container's color
-                    //   ),
-                    //   onPressed: () {
-                    //     Navigator.push(
-                    //         context,
-                    //         MaterialPageRoute(
-                    //             builder: (context) =>
-                    //                 const eachSchemeDetails()));
-                    //   },
-                    //   child: Container(
-                    //     margin: EdgeInsets.only(top: 20, bottom: 20),
-                    //     width: double.infinity,
-                    //     child: Padding(
-                    //       padding: EdgeInsets.only(top: 0, bottom: 0),
-                    //       child: Column(
-                    //         crossAxisAlignment: CrossAxisAlignment.start,
-                    //         children: [
-                    //           SingleChildScrollView(
-                    //             scrollDirection: Axis.horizontal,
-                    //             child: Row(
-                    //               mainAxisAlignment:
-                    //                   MainAxisAlignment.spaceBetween,
-                    //               children: [
-                    //                 Text(
-                    //                   'Invesco India Focused 20 Equity',
-                    //                   style: GoogleFonts.poppins(
-                    //                     color: Color(0xFF0f625c),
-                    //                     fontSize: 17,
-                    //                     fontWeight: FontWeight.w500,
-                    //                   ),
-                    //                 ),
-                    //                 SizedBox(
-                    //                   width: 12,
-                    //                 ),
-                    //                 Icon(
-                    //                   Icons.arrow_forward_ios,
-                    //                   color: Color(0xFF0d958b),
-                    //                   size: 18,
-                    //                 )
-                    //               ],
-                    //             ),
-                    //           ),
-                    //           Text(
-                    //             'Fund Regilar Growth',
-                    //             style: GoogleFonts.poppins(
-                    //               color: Color(0xFF0f625c),
-                    //               fontSize: 17,
-                    //               fontWeight: FontWeight.w500,
-                    //             ),
-                    //           ),
-                    //           Container(
-                    //             margin: EdgeInsets.only(top: 10, bottom: 10),
-                    //             child: Text(
-                    //               '₹10,34,198',
-                    //               style: GoogleFonts.poppins(
-                    //                 color: Color(0xFF0f625c),
-                    //                 fontSize: 18,
-                    //                 fontWeight: FontWeight.w600,
-                    //               ),
-                    //             ),
-                    //           ),
-                    //           Row(
-                    //             mainAxisAlignment:
-                    //                 MainAxisAlignment.spaceBetween,
-                    //             children: [
-                    //               Column(
-                    //                 children: [
-                    //                   Text(
-                    //                     'Cost Amount',
-                    //                     style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF8c8c8c),
-                    //                       fontSize: 14,
-                    //                       fontWeight: FontWeight.w500,
-                    //                     ),
-                    //                   ),
-                    //                   Text(
-                    //                     '7,50,000',
-                    //                     style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF303131),
-                    //                       fontSize: 14,
-                    //                       fontWeight: FontWeight.w600,
-                    //                     ),
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //               Column(
-                    //                 children: [
-                    //                   Text(
-                    //                     'Folio No.',
-                    //                     style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF8c8c8c),
-                    //                       fontSize: 14,
-                    //                       fontWeight: FontWeight.w500,
-                    //                     ),
-                    //                   ),
-                    //                   Text(
-                    //                     'xxx4234',
-                    //                     style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF303131),
-                    //                       fontSize: 14,
-                    //                       fontWeight: FontWeight.w600,
-                    //                     ),
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //               Column(
-                    //                 children: [
-                    //                   Text(
-                    //                     'Gain/Loss',
-                    //                     style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF8c8c8c),
-                    //                       fontSize: 14,
-                    //                       fontWeight: FontWeight.w500,
-                    //                     ),
-                    //                   ),
-                    //                   Row(
-                    //                     children: [
-                    //                       Icon(
-                    //                         Icons.arrow_upward,
-                    //                         color: Color(0xFF09a99d),
-                    //                         size: 15,
-                    //                       ),
-                    //                       Text(
-                    //                         '2,84,192',
-                    //                         style: GoogleFonts.poppins(
-                    //                           color: Color(0xFF09a99d),
-                    //                           fontSize: 14,
-                    //                           fontWeight: FontWeight.w600,
-                    //                         ),
-                    //                       ),
-                    //                     ],
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //             ],
-                    //           ),
-                    //           Container(
-                    //             margin: EdgeInsets.only(top: 18, bottom: 18),
-                    //             width: double.infinity,
-                    //             color: Color(0xFFd7d7d7),
-                    //             height: 1,
-                    //           ),
-                    //           Row(
-                    //             mainAxisAlignment: MainAxisAlignment.center,
-                    //             children: [
-                    //               Container(
-                    //                 child: Row(
-                    //                   children: [
-                    //                     Text(
-                    //                       'Abs. Ret.:',
-                    //                       style: GoogleFonts.poppins(
-                    //                           color: Color(0xFF0f625c),
-                    //                           fontSize: 15,
-                    //                           fontWeight: FontWeight.w400),
-                    //                     ),
-                    //                     Text(
-                    //                       ' 46.54%',
-                    //                       style: GoogleFonts.poppins(
-                    //                           color: Color(0xFF0f625c),
-                    //                           fontSize: 15,
-                    //                           fontWeight: FontWeight.w600),
-                    //                     ),
-                    //                   ],
-                    //                 ),
-                    //               ),
-                    //               SizedBox(width: 15),
-                    //               Container(
-                    //                 child: Row(
-                    //                   children: [
-                    //                     Text(
-                    //                       'XIRR:',
-                    //                       style: GoogleFonts.poppins(
-                    //                           color: Color(0xFF0f625c),
-                    //                           fontSize: 15,
-                    //                           fontWeight: FontWeight.w400),
-                    //                     ),
-                    //                     Text(
-                    //                       ' 12.28%',
-                    //                       style: GoogleFonts.poppins(
-                    //                           color: Color(0xFF0f625c),
-                    //                           fontSize: 15,
-                    //                           fontWeight: FontWeight.w600),
-                    //                     ),
-                    //                   ],
-                    //                 ),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ],
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    SizedBox(height: 20),
                     // Add more widgets here
                   ],
                 ),
@@ -2526,15 +1377,73 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
 
   String maskFolioNumber(String folioNumber) {
     if (folioNumber.length > 4) {
-      return 'X' * (folioNumber.length - 4) + folioNumber.substring(folioNumber.length - 4);
+      return 'X' * (folioNumber.length - 4) +
+          folioNumber.substring(folioNumber.length - 4);
     }
     return folioNumber; // If it's less than or equal to 4, show as is
   }
+
   String calculateGainLoss(dynamic currentVal, dynamic investedVal) {
     double current = double.tryParse(currentVal?.toString() ?? '0') ?? 0.0;
     double invested = double.tryParse(investedVal?.toString() ?? '0') ?? 0.0;
     double difference = current - invested; // Calculate gain/loss
 
     return difference.toStringAsFixed(2); // Format to 2 decimal places
+  }
+  Widget buildLegendItem(String title, String percentage, Color color, String amount) {
+    return Row(
+      children: [
+        Container(
+          color: color,
+          width: 4,
+          height: 30,
+        ),
+        SizedBox(width: 10),
+        SizedBox(
+          width: 60,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.poppins(
+                    color: Color(0xFF303131),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500),
+              ),
+              Text(
+                '$percentage%',
+                style: GoogleFonts.poppins(
+                    color: Color(0xFF8c8c8c),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(width: 3),
+        Text(
+          amount,
+          style: GoogleFonts.poppins(
+              color: Color(0xFF0f625c),
+              fontSize: 14,
+              fontWeight: FontWeight.w500),
+        ),
+      ],
+    );
+  }
+  PieChartSectionData createPieSection(double value, Color color, String title) {
+    return PieChartSectionData(
+      color: color,
+      value: value,
+      title: value > 0 ? '$value%' : '',
+      // Hide if 0
+      titleStyle: GoogleFonts.poppins(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: Colors.transparent,
+      ),
+      radius: 50, // Adjust pie slice size
+    );
   }
 }

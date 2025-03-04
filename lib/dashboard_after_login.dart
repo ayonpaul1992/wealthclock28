@@ -6,6 +6,7 @@ import 'family_portfolio.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class dashboardAfterLogin extends StatefulWidget {
   const dashboardAfterLogin({super.key, required String userId});
@@ -893,7 +894,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                           top: 26,
                           bottom: 13,
                           left: 18,
-                          right: 18,
+                          right: 40,
                         ),
                         child: Column(
                           children: [
@@ -901,201 +902,40 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                               scrollDirection: Axis.horizontal,
                               child: Row(
                                 children: [
+                                  // Left Section: Labels and Percentages
                                   Container(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Row(
-                                          children: [
-                                            Container(
-                                              color: Color(0xFF2cbefc),
-                                              width: 4,
-                                              height: 30,
-                                            ),
-                                            SizedBox(width: 10),
-                                            SizedBox(
-                                              width: 60,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'Equity',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF303131),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                  Text(
-                                                    '$equityPercentage%',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF8c8c8c),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(width: 3),
-                                            Text(
-                                              '$equityAmount',
-                                              style: GoogleFonts.poppins(
-                                                  color: Color(0xFF0f625c),
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
-                                        ),
+                                        buildLegendItem("Equity", equityPercentage, Color(0xFF2cbefc), equityAmount),
                                         SizedBox(height: 10),
-                                        Row(
-                                          children: [
-                                            Container(
-                                              color: Color(0xFFf79e3b),
-                                              width: 4,
-                                              height: 30,
-                                            ),
-                                            SizedBox(width: 10),
-                                            SizedBox(
-                                              width: 60,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'Hybrid',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF303131),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                  Text(
-                                                    '$hybridPercentage%',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF8c8c8c),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(width: 3),
-                                            Text(
-                                              '$hybridAmount',
-                                              style: GoogleFonts.poppins(
-                                                  color: Color(0xFF0f625c),
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
-                                        ),
+                                        buildLegendItem("Hybrid", hybridPercentage, Color(0xFFf79e3b), hybridAmount),
                                         SizedBox(height: 10),
-                                        Row(
-                                          children: [
-                                            Container(
-                                              color: Color(0xFFa6a8a7),
-                                              width: 4,
-                                              height: 30,
-                                            ),
-                                            SizedBox(width: 10),
-                                            SizedBox(
-                                              width: 60,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'Debt',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF303131),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                  Text(
-                                                    '$debtPercentage%',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF8c8c8c),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(width: 3),
-                                            Text(
-                                              '$debtAmount',
-                                              style: GoogleFonts.poppins(
-                                                  color: Color(0xFF0f625c),
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
-                                        ),
+                                        buildLegendItem("Debt", debtPercentage, Color(0xFFa6a8a7), debtAmount),
                                         SizedBox(height: 10),
-                                        Row(
-                                          children: [
-                                            Container(
-                                              color: Color(0xFFdac45e),
-                                              width: 4,
-                                              height: 30,
-                                            ),
-                                            SizedBox(width: 10),
-                                            SizedBox(
-                                              width: 60,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'Other',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF303131),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                  Text(
-                                                    '$otherPercentage%',
-                                                    style: GoogleFonts.poppins(
-                                                        color:
-                                                            Color(0xFF8c8c8c),
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(width: 3),
-                                            Text(
-                                              '$otherAmount',
-                                              style: GoogleFonts.poppins(
-                                                  color: Color(0xFF0f625c),
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
-                                        ),
+                                        buildLegendItem("Other", otherPercentage, Color(0xFFdac45e), otherAmount),
                                       ],
                                     ),
                                   ),
                                   SizedBox(width: 20),
+
+                                  // Right Section: Pie Chart
                                   Container(
-                                    child: Image.asset(
-                                        'assets/images/rtt_brd.png'),
+                                    height: 100, // Adjust as needed
+                                    width: 100,  // Adjust as needed
+                                    child: PieChart(
+                                      PieChartData(
+                                        sections: [
+                                          createPieSection(double.tryParse(equityPercentage) ?? 0, Color(0xFF2cbefc), "Equity"),
+                                          createPieSection(double.tryParse(hybridPercentage) ?? 0, Color(0xFFf79e3b), "Hybrid"),
+                                          createPieSection(double.tryParse(debtPercentage) ?? 0, Color(0xFFa6a8a7), "Debt"),
+                                          createPieSection(double.tryParse(otherPercentage) ?? 0, Color(0xFFdac45e), "Other"),
+                                        ],
+                                        borderData: FlBorderData(show: false), // Hide border
+                                        sectionsSpace: 2,
+                                        centerSpaceRadius: 30, // Creates a donut effect
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -1699,4 +1539,61 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
       ),
     );
   }
-}
+  Widget buildLegendItem(String title, String percentage, Color color, String amount) {
+    return Row(
+      children: [
+        Container(
+          color: color,
+          width: 4,
+          height: 30,
+        ),
+        SizedBox(width: 10),
+        SizedBox(
+          width: 60,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.poppins(
+                    color: Color(0xFF303131),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500),
+              ),
+              Text(
+                '$percentage%',
+                style: GoogleFonts.poppins(
+                    color: Color(0xFF8c8c8c),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(width: 3),
+        Text(
+          amount,
+          style: GoogleFonts.poppins(
+              color: Color(0xFF0f625c),
+              fontSize: 14,
+              fontWeight: FontWeight.w500),
+        ),
+      ],
+    );
+  }
+  PieChartSectionData createPieSection(double value, Color color, String title) {
+    return PieChartSectionData(
+      color: color,
+      value: value,
+      title: value > 0 ? '$value%' : '',
+      // Hide if 0
+      titleStyle: GoogleFonts.poppins(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: Colors.transparent,
+      ),
+      radius: 50, // Adjust pie slice size
+    );
+  }
+  }
+
