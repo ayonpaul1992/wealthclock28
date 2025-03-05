@@ -1127,22 +1127,32 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                                   ),
                                                   Row(
                                                     children: [
-                                                      Icon(
-                                                        Icons.arrow_upward,
-                                                        color:
-                                                            Color(0xFF09a99d),
-                                                        size: 15,
-                                                      ),
-                                                      Text(
-                                                        '₹ ${calculateGainLoss(validSchemes[index]['current_val'], validSchemes[index]['invested_val'])}', // Dynamic Gain/Loss
-                                                        style:
-                                                            GoogleFonts.poppins(
-                                                          color:
-                                                              Color(0xFF09a99d),
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                        ),
+                                                      // Parse gain/loss value from string to double
+                                                      Builder(
+                                                        builder: (context) {
+                                                          double gainLoss = double.tryParse(
+                                                              calculateGainLoss(validSchemes[index]['current_val'],
+                                                                  validSchemes[index]['invested_val'])
+                                                          ) ?? 0.0; // Default to 0.0 if parsing fails
+
+                                                          return Row(
+                                                            children: [
+                                                              Icon(
+                                                                gainLoss >= 0 ? Icons.arrow_upward : Icons.arrow_downward,
+                                                                color: gainLoss >= 0 ? Color(0xFF09a99d) : Color(0xFFD32F2F),
+                                                                size: 15,
+                                                              ),
+                                                              Text(
+                                                                '₹ ${gainLoss.toStringAsFixed(2)}', // Format to 2 decimal places
+                                                                style: GoogleFonts.poppins(
+                                                                  color: gainLoss >= 0 ? Color(0xFF09a99d) : Color(0xFFD32F2F),
+                                                                  fontSize: 14,
+                                                                  fontWeight: FontWeight.w600,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
                                                       ),
                                                     ],
                                                   ),
