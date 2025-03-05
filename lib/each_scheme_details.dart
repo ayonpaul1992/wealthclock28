@@ -1055,12 +1055,24 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails>{
                           // Match container's color
                         ),
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => eachFundInvstDtls(), // ✅ Pass scheme correctly
-                            ),
-                          );
+                          var validSchemes = schemes
+                              .where((scheme) =>
+                          (scheme['current_val'] ?? 0) != 0 ||
+                              (scheme['invested_val'] ?? 0) != 0)
+                              .toList();
+
+                          if (validSchemes.isNotEmpty) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => eachFundInvstDtls(scheme: validSchemes.first), // Pass the first valid scheme
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("No valid schemes available")),
+                            );
+                          }
                         },
                         child: Text('Click Here For More Details',style: GoogleFonts.poppins(color: Color(0xFF09a99d),fontWeight: FontWeight.w500,fontSize: 14),),
                       ),
