@@ -813,237 +813,45 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
                           ),
                         )
                     ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Table(
-
-                        border: TableBorder(
-                          // Top border
-                          // Bottom border
-                          left: BorderSide.none, // No left border
-                          right: BorderSide.none, // No right border
-                          horizontalInside: BorderSide(color: Colors.grey), // Borders between rows
-                          verticalInside: BorderSide(color: Colors.grey), // No borders between columns
-                        ), // Adds a border to the table
-                        columnWidths: const {
-                          0: FlexColumnWidth(5.2), // Adjust the width of each column
-                          1: FlexColumnWidth(3.6),
-                          2: FlexColumnWidth(5.2),
-                          3: FlexColumnWidth(4.9),
-                          4: FlexColumnWidth(5.5),
-                        },
-                        children: [
-                          // Table header row
-                          TableRow(
-                            decoration: BoxDecoration(color: Color(0xFFdceefc)), // Highlight header
-                            children: [
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'Date',
-                                    style: GoogleFonts.poppins(fontWeight: FontWeight.w500,fontSize: 14,color: Color(0xFF0f625c)),
+                    ListView(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(), // Prevents conflict with scroll
+                      children: [
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal, // Allow horizontal scrolling
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical, // Allow vertical scrolling
+                            child: Container(
+                              width: 450, // Set a reasonable width
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Table(
+                                  border: TableBorder(
+                                    left: BorderSide.none,
+                                    right: BorderSide.none,
+                                    horizontalInside: BorderSide(color: Colors.grey),
+                                    verticalInside: BorderSide(color: Colors.grey),
                                   ),
+                                  columnWidths: const {
+                                    0: FlexColumnWidth(5.2),
+                                    1: FlexColumnWidth(3.6),
+                                    2: FlexColumnWidth(5.2),
+                                    3: FlexColumnWidth(4.9),
+                                    4: FlexColumnWidth(5.5),
+                                  },
+                                  children: [
+                                    TableRow(
+                                      decoration: BoxDecoration(color: Color(0xFFdceefc)),
+                                      children: List.generate(5, (index) => tableHeaderCell(['Date', 'Type', 'Amount', 'Units', 'Balance'][index])),
+                                    ),
+                                    ...List.generate(5, (index) => tableRow()), // Auto-generate rows
+                                  ],
                                 ),
                               ),
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'Type',
-                                    style: GoogleFonts.poppins(fontWeight: FontWeight.w500,fontSize: 14,color: Color(0xFF0f625c)),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'Amount',
-                                    style: GoogleFonts.poppins(fontWeight: FontWeight.w500,fontSize: 14,color: Color(0xFF0f625c)),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'Units',
-                                    style: GoogleFonts.poppins(fontWeight: FontWeight.w500,fontSize: 14,color: Color(0xFF0f625c)),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'Balance',
-                                    style: GoogleFonts.poppins(fontWeight: FontWeight.w500,fontSize: 14,color: Color(0xFF0f625c)),
-                                  ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                          // Table data rows
-                          TableRow(
-                            decoration: BoxDecoration(color: Colors.white),
-                            children: [
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('27/05/21',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('PUR',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('1,49,999',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('1807.139',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('7534.163',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),
-                            ],
-                          ),
-                          TableRow(
-                            decoration: BoxDecoration(color: Colors.white),
-                            children: [
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('27/05/21',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('PUR',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('1,49,999',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ), SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('1807.139',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ), SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('7534.163',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),
-                            ],
-                          ),
-                          TableRow(
-                            decoration: BoxDecoration(color: Colors.white),
-                            children: [
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('27/05/21',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('PUR',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('1,49,999',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('1807.139',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('7534.163',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),
-                            ],
-                          ),
-                          TableRow(
-                            decoration: BoxDecoration(color: Colors.white),
-                            children: [
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('27/05/21',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('PUR',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('1,49,999',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('1807.139',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),SizedBox(
-                                width: 80,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text('7534.163',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 13),),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                     // Add more widgets here
                   ],
@@ -1181,4 +989,32 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
       ),
     );
   }
+  // Helper functions
+  Widget tableHeaderCell(String title) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        title,
+        style: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 14, color: Color(0xFF0f625c)),
+      ),
+    );
+  }
+
+  TableRow tableRow() {
+    return TableRow(
+      decoration: BoxDecoration(color: Colors.white),
+      children: List.generate(5, (index) => tableDataCell(['27/05/21', 'PUR', '1,49,999', '1807.139', '7534.163'][index])),
+    );
+  }
+
+  Widget tableDataCell(String text) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        text,
+        style: GoogleFonts.poppins(color: Color(0xFF303131), fontWeight: FontWeight.w500, fontSize: 13),
+      ),
+    );
+  }
+
 }
