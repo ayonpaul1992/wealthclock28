@@ -894,7 +894,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                           top: 26,
                           bottom: 13,
                           left: 18,
-                          right: 40,
+                          right: 18,
                         ),
                         child: Column(
                           children: [
@@ -921,8 +921,8 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
 
                                   // Right Section: Pie Chart
                                   Container(
-                                    height: 100, // Adjust as needed
-                                    width: 100,  // Adjust as needed
+                                    height: 140, // Adjust as needed
+                                    width: 140,  // Adjust as needed
                                     child: PieChart(
                                       PieChartData(
                                         sections: [
@@ -932,8 +932,8 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                                           createPieSection(double.tryParse(otherPercentage) ?? 0, Color(0xFFdac45e), "Other"),
                                         ],
                                         borderData: FlBorderData(show: false), // Hide border
-                                        sectionsSpace: 2,
-                                        centerSpaceRadius: 30, // Creates a donut effect
+                                        sectionsSpace: 0,
+                                        centerSpaceRadius: 20, // Creates a donut effect
                                       ),
                                     ),
                                   ),

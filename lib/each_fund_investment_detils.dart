@@ -1215,7 +1215,6 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
                             ),
                           ),
                         ),
-
                       ],
                     ),
                     // Add more widgets here
