@@ -44,7 +44,6 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
   String otherAmount = '0.00';
   String currentDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
-
   @override
   void initState() {
     super.initState();
@@ -213,6 +212,7 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
         hybridPercentage = "0.00";
         hybridAmount = "0.00";
       });
+
     }
   }
 
@@ -284,7 +284,6 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
       );
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

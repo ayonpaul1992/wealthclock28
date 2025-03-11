@@ -18,6 +18,7 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Map<String, dynamic>> schemes = []; // Store schemes dynamically
   List<Map<String, dynamic>> schemesArr = []; // Store schemes dynamically
+  List<Map<String, dynamic>> apiData = [];
 
   String activeTile = 'Home';
   String userName = "Loading...";
@@ -950,6 +951,167 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
                                                 top: 2,
                                                 bottom:
                                                     2), // Add padding for better appearance
+                                            child: Text(
+                                              'PUR'.toUpperCase(),
+                                              style: GoogleFonts.poppins(
+                                                color: Color(0xFF0f625c),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 15,
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(left: 20),
+                                          child: Icon(
+                                            Icons
+                                                .calendar_month_outlined, // Calendar Icon
+                                            color: Color(
+                                                0xFF09a99d), // Change color as needed
+                                            size: 20, // Adjust size as needed
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 9,
+                                        ),
+                                        Container(
+                                            margin: EdgeInsets.only(left: 20),
+                                            child: Text('27/05/25',
+                                                style: GoogleFonts.poppins(
+                                                    color: Color(0xFF303131),
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w500))),
+                                        SizedBox(
+                                          height: 18,
+                                        ),
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 10,right: 10),
+                                      child: SizedBox(
+                                        height: 130, // Adjust as needed
+                                        child: VerticalDivider(
+                                          color: Color(0xFFe5e5e5),
+                                          thickness: 1,
+                                        ),
+                                      ),
+                                    ),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('Amount',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
+                                            Text('1,11,49,999.01',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 15,
+                                        ),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('Units',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
+                                            Text('1807.139',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 10,right: 10),
+                                      child: SizedBox(
+                                        height: 130, // Adjust as needed
+                                        child: VerticalDivider(
+                                          color: Color(0xFFe5e5e5),
+                                          thickness: 1,
+                                        ),
+                                      ),
+                                    ),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Text('Balance',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
+                                            Text('15,11,49,999.05',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(bottom: 15),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 0,vertical: 0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2), // Shadow color with opacity
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 3), // Shadow position (x, y)
+                                  ),
+                                ],
+                              ),
+                              padding: EdgeInsets.only(right: 15),
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Color(
+                                                  0xFFdceffc), // Background color
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black.withOpacity(
+                                                      0.2), // Shadow color with opacity
+                                                  spreadRadius:
+                                                  2, // How much the shadow spreads
+                                                  blurRadius:
+                                                  5, // How soft the shadow is
+                                                  offset: Offset(0,
+                                                      3), // Shadow position (x, y)
+                                                ),
+                                              ],
+                                              borderRadius: BorderRadius.circular(
+                                                  20), // Optional: Add rounded corners
+                                            ),
+                                            padding: EdgeInsets.only(
+                                                left: 12,
+                                                right: 12,
+                                                top: 2,
+                                                bottom:
+                                                2), // Add padding for better appearance
                                             child: Text(
                                               'PUR'.toUpperCase(),
                                               style: GoogleFonts.poppins(

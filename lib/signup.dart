@@ -14,6 +14,13 @@ class _SignupPageState extends State<SignupPage> {
   final passText = TextEditingController();
   final phoneText = TextEditingController();
   final repassText = TextEditingController();
+  bool isLoading = false;
+  bool _isPanVisible = false;// For showing a loading spinner
+  // Function to show the error or success messages
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,18 +80,39 @@ class _SignupPageState extends State<SignupPage> {
               const SizedBox(height: 14),
               TextField(
                 controller: passText,
-                obscureText: true,
-                decoration: _inputDecoration('Password'),
-                style: const TextStyle(
-                  color: Color(0xFF648683),
-                  fontSize: 15,
+                obscureText: !_isPanVisible, // Toggle text visibility
+                decoration: _inputDecoration('**********').copyWith(
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPanVisible ? Icons.visibility : Icons.visibility_off,
+                      color: Color(0xFF648683),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPanVisible = !_isPanVisible; // Toggle visibility
+                      });
+                    },
+                  ),
                 ),
+                style: const TextStyle(color: Color(0xFF648683), fontSize: 15),
               ),
               const SizedBox(height: 14),
               TextField(
                 controller: repassText,
-                obscureText: true,
-                decoration: _inputDecoration('Re-Password'),
+                obscureText: !_isPanVisible, // Toggle text visibility
+                decoration: _inputDecoration('**********').copyWith(
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPanVisible ? Icons.visibility : Icons.visibility_off,
+                      color: Color(0xFF648683),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPanVisible = !_isPanVisible; // Toggle visibility
+                      });
+                    },
+                  ),
+                ),
                 style: const TextStyle(
                   color: Color(0xFF648683),
                   fontSize: 15,
