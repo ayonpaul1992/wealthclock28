@@ -1592,7 +1592,11 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
         fontWeight: FontWeight.w500,
         color: Colors.transparent,
       ),
-      radius: 50, // Adjust pie slice size
+      radius: 50,
+      borderSide: BorderSide( // 👈 Add a border (stroke) to each section
+        color: Colors.white, // Adjust the border color
+        width: 0, // Adjust the border thickness
+      ),// Adjust pie slice size
     );
   }
   }
