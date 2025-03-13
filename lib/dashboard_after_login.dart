@@ -49,7 +49,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
     final prefs = await SharedPreferences.getInstance();
     final String? authToken = prefs.getString('auth_token');
     const String apiUrl =
-        'http://staging.wealthclockadvisors.com/api/client/dashboard';
+        'https://wealthclockadvisors.com/api/client/dashboard';
 
     if (authToken == null || authToken.isEmpty) {
       setState(() {

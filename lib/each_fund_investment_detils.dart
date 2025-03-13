@@ -49,7 +49,15 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
   @override
   void initState() {
     super.initState();
-
+    setState(() {
+      userName = widget.scheme["user_name"] ?? "No Name Found";
+      schemeName = widget.scheme["scheme_name"] ?? "No Scheme Name";
+      schemeCurrentValue = widget.scheme["current_val"].toString();
+      schemeInvestedValue = widget.scheme["invested_val"].toString();
+      schemeFolioNumber = widget.scheme["folio_number"].toString();
+      schemeCategory = widget.scheme["scheme_category"] ?? "N/A";
+      schemeSubCategory = widget.scheme["scheme_subcategory"] ?? "N/A";
+    });
     fetchUserData();
   }
 
@@ -57,7 +65,9 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
     final prefs = await SharedPreferences.getInstance();
     final String? authToken = prefs.getString('auth_token');
     const String apiUrl =
-        'http://staging.wealthclockadvisors.com/api/client/dashboard';
+        'https://wealthclockadvisors.com/api/client/dashboard';
+    // const String apiEfInvestUrl =
+    //     'http://staging.wealthclockadvisors.com/api/client/clientInvestmentBreakup';
 
     if (authToken == null || authToken.isEmpty) {
       setState(() {
@@ -77,6 +87,7 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
           'Content-Type': 'application/json',
         },
       );
+
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body.trim());
@@ -797,18 +808,17 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
                                 ),
                               ),
                               SizedBox(height: 10),
-                              Container(
-                                child: Text(
-                                  '${widget.scheme['scheme_name']?.toString() ?? 'N/A'}',
-                                  textAlign: TextAlign
-                                      .center, // Apply text alignment here
-                                  style: GoogleFonts.poppins(
-                                    color: Color(0xFF0f625c),
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w500,
+                                Container(
+                                  child: Text(
+                                    '${widget.scheme['scheme_name']?.toString() ?? 'N/A'}',
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.poppins(
+                                      color: Color(0xFF0f625c),
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
-                              ),
                               SizedBox(height: 10),
                               Container(
                                 margin: EdgeInsets.only(bottom: 10),
@@ -1552,4 +1562,24 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
       ),
     );
   }
+  // String getTransactionAmount(Map<String, dynamic> schemeData) {
+  //   List<dynamic> karvyTransactions = schemeData["karvy_transactions"] ?? [];
+  //   List<dynamic> camsTransactions = schemeData["cams_transactions"] ?? [];
+  //
+  //   double totalAmount = 0.0;
+  //
+  //   // Sum up karvy_transactions td_amt
+  //   for (var transaction in karvyTransactions) {
+  //     totalAmount += (transaction["td_amt"] ?? 0).toDouble();
+  //   }
+  //
+  //   // Sum up cams_transactions td_amt
+  //   for (var transaction in camsTransactions) {
+  //     totalAmount += (transaction["amount"] ?? 0).toDouble();
+  //   }
+  //
+  //   // ✅ Return the formatted value (₹ currency format)
+  //   return NumberFormat.currency(locale: 'en_IN', symbol: '₹', decimalDigits: 2)
+  //       .format(totalAmount);
+  // }
 }

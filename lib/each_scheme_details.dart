@@ -58,7 +58,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
     final prefs = await SharedPreferences.getInstance();
     final String? authToken = prefs.getString('auth_token');
     const String apiUrl =
-        'http://staging.wealthclockadvisors.com/api/client/dashboard';
+        'https://wealthclockadvisors.com/api/client/dashboard';
 
     if (authToken == null || authToken.isEmpty) {
       setState(() {
@@ -1188,12 +1188,18 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                               .toList();
 
                           if (validSchemes.isNotEmpty) {
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => eachFundInvstDtls(
+                            //         scheme: validSchemes
+                            //             .first), // Pass the first valid scheme
+                            //   ),
+                            // );
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => eachFundInvstDtls(
-                                    scheme: validSchemes
-                                        .first), // Pass the first valid scheme
+                                builder: (context) => eachFundInvstDtls(scheme: widget.scheme),
                               ),
                             );
                           } else {
