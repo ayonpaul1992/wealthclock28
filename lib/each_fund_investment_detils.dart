@@ -44,6 +44,18 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
 
   String otherPercentage = '0.00';
   String otherAmount = '0.00';
+  bool isLoading = false;
+  bool hasTransactions = false; // ✅ Declare it here
+  String schemeTransactionDataTdAmnt = "";
+  List<double> tdAmounts = [];
+  String schemeTransactionDataTdUnits = "";
+  List<double> tdUnits = [];
+  String schemeTransactionDataTdDate = "";
+  List<String> tdDate = [];
+  String schemeTransactionDataTdPurred = "";
+  List<String> tdPurred = [];
+  String schemeTransactionDataTottal = "";
+  List<Map<String, dynamic>> transactionDataBox = [];
   String currentDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
   @override
@@ -59,6 +71,40 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
       schemeSubCategory = widget.scheme["scheme_subcategory"] ?? "N/A";
     });
     fetchUserData();
+    fetchInvestmentBreakup(
+        schemeFolioNumber,
+        widget.scheme["inf_no"] ?? "", // Ensure this is correct
+        widget.scheme["pan"] ?? "" // Ensure this is correct
+        );
+    isLoading = false;
+    hasTransactions = true;
+    schemeTransactionDataTdAmnt = tdAmounts
+        .map((amt) =>
+            NumberFormat.currency(locale: 'en_IN', symbol: '₹').format(amt))
+        .join(", ");
+    schemeTransactionDataTdUnits = tdUnits
+        .map((amt) =>
+            NumberFormat.currency(locale: 'en_IN', symbol: '₹').format(amt))
+        .join(", ");
+    schemeTransactionDataTdPurred = tdPurred.join(", ");
+    schemeTransactionDataTdDate = tdDate.map((date) {
+      // ✅ Ensure the date is parsed and formatted correctly
+      if (date is String) {
+        try {
+          DateTime parsedDate = DateTime.parse(date as String);
+          return DateFormat('dd/MM/yyyy')
+              .format(parsedDate); // ✅ Format to DD/MM/YYYY
+        } catch (e) {
+          return "Invalid Date"; // Handle parsing errors
+        }
+      }
+      return "Invalid Date";
+    }).join(", ");
+    schemeTransactionDataTottal = transactionDataBox
+        .map((item) =>
+            item.toString()) // Convert each transaction object to a string
+        .join(", ");
+    print("Updated schemeTransactionDataTdAmnt: $schemeTransactionDataTdAmnt");
   }
 
   Future<void> fetchUserData() async {
@@ -87,7 +133,6 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
           'Content-Type': 'application/json',
         },
       );
-
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body.trim());
@@ -222,6 +267,170 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
         otherAmount = "0.00";
         hybridPercentage = "0.00";
         hybridAmount = "0.00";
+      });
+    }
+  }
+
+  Future<void> fetchInvestmentBreakup(
+      String folioNumber, String infNo, String pan) async {
+    setState(() {
+      isLoading = true;
+      hasTransactions = false;
+      schemeTransactionDataTdAmnt = "Loading...";
+      schemeTransactionDataTottal = "Loading...";
+      schemeTransactionDataTdUnits = "Loading...";
+      schemeTransactionDataTdDate = "Loading...";
+      schemeTransactionDataTdPurred = "Loading...";
+    });
+
+    final prefs = await SharedPreferences.getInstance();
+    final String? authToken = prefs.getString('auth_token');
+
+    if (authToken == null || authToken.isEmpty) {
+      setState(() {
+        isLoading = false;
+        schemeTransactionDataTdAmnt = "Auth token missing!";
+        schemeTransactionDataTottal = "Auth token missing!";
+        schemeTransactionDataTdUnits = "Auth token missing!";
+        schemeTransactionDataTdDate = "Auth token missing!";
+        schemeTransactionDataTdPurred = "Auth token missing!";
+        hasTransactions = false;
+      });
+      return;
+    }
+
+    final String apiUrl =
+        'https://wealthclockadvisors.com/api/client/clientInvestmentBreakup'
+        '?folio_number=$folioNumber&inf_no=$infNo&pan=$pan';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $authToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}"); // ✅ Print full response
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body.trim());
+
+        if (data is Map<String, dynamic>) {
+          print("Parsed Data: $data"); // ✅ Check parsed data
+
+          if (data.containsKey('transaction_data') &&
+              data["transaction_data"] is List &&
+              data["transaction_data"].isNotEmpty) {
+            List<Map<String, dynamic>> transactions =
+            List<Map<String, dynamic>>.from(data["transaction_data"]);
+
+            setState(() {
+              // ✅ Extract numerical values
+              tdAmounts = transactions
+                  .map<double>((item) => (item["td_amt"] as num?)?.toDouble() ?? 0.0)
+                  .toList();
+
+              tdUnits = transactions
+                  .map<double>((item) => (item["td_units"] as num?)?.toDouble() ?? 0.0)
+                  .toList();
+              tdPurred = transactions
+                  .map<String>((item) => (item["td_purred"] != null) ? item["td_purred"].toString() : "0.0")
+                  .toList();
+
+              // ✅ Extract & format transaction dates
+              tdDate = transactions.map<String>((item) {
+                var rawDate = item["transactionDate"];
+
+                if (rawDate != null) {
+                  try {
+                    // ✅ Ensure rawDate is always a String before parsing
+                    String dateStr = rawDate.toString();
+                    DateTime parsedDate = DateTime.parse(dateStr);
+                    return DateFormat('dd/MM/yyyy').format(parsedDate);
+                  } catch (e) {
+                    return "Invalid Date";
+                  }
+                }
+                return "Invalid Date";
+              }).toList();
+
+              // ✅ Store full transaction objects
+              transactionDataBox = transactions;
+
+              isLoading = false;
+              hasTransactions = true;
+
+              // ✅ Format amounts as currency
+              schemeTransactionDataTdAmnt = tdAmounts
+                  .map((amt) => NumberFormat.currency(locale: 'en_IN', symbol: '₹').format(amt))
+                  .join(", ");
+
+              // ✅ Format units as plain numbers
+              schemeTransactionDataTdUnits = tdUnits
+                  .map((unit) => unit.toStringAsFixed(2)) // Keep two decimal places
+                  .join(", ");
+              schemeTransactionDataTdPurred = tdPurred.join(", ");
+
+              // ✅ Format transaction dates
+              schemeTransactionDataTdDate = tdDate.join(", ");
+
+              // ✅ Summarize transactions instead of full JSON
+              schemeTransactionDataTottal = transactions
+                  .map((item) => "Amt: ₹${item["td_amt"]}, Units: ${item["td_units"]}, Date: ${item["transactionDate"]}")
+                  .join("\n");
+            });
+
+            print("Updated schemeTransactionDataTdAmnt: $schemeTransactionDataTdAmnt");
+            print("Updated schemeTransactionDataTottal: $schemeTransactionDataTottal");
+          } else {
+            print("⚠️ No transaction_data found or list is empty");
+            setState(() {
+              isLoading = false;
+              hasTransactions = false;
+              schemeTransactionDataTdAmnt = "No transactions available";
+              schemeTransactionDataTottal = "No transactions available";
+              schemeTransactionDataTdUnits = "No transactions available";
+              schemeTransactionDataTdDate = "No transactions available";
+              schemeTransactionDataTdPurred = "No transactions available";
+            });
+          }
+        } else {
+          print("❌ API response is not a valid JSON object");
+          setState(() {
+            isLoading = false;
+            hasTransactions = false;
+            schemeTransactionDataTdAmnt = "Invalid response format";
+            schemeTransactionDataTottal = "Invalid response format";
+            schemeTransactionDataTdUnits = "Invalid response format";
+            schemeTransactionDataTdDate = "Invalid response format";
+            schemeTransactionDataTdPurred = "Invalid response format";
+          });
+        }
+      } else {
+        print("❌ API Error: ${response.statusCode}, Body: ${response.body}");
+        setState(() {
+          isLoading = false;
+          hasTransactions = false;
+          schemeTransactionDataTdAmnt = "❌ Error ${response.statusCode}: ${response.body}";
+          schemeTransactionDataTottal = "❌ Error ${response.statusCode}: ${response.body}";
+          schemeTransactionDataTdUnits = "❌ Error ${response.statusCode}: ${response.body}";
+          schemeTransactionDataTdDate = "❌ Error ${response.statusCode}: ${response.body}";
+          schemeTransactionDataTdPurred = "❌ Error ${response.statusCode}: ${response.body}";
+        });
+      }
+    } catch (e) {
+      print("❌ Exception: $e");
+      setState(() {
+        isLoading = false;
+        hasTransactions = false;
+        schemeTransactionDataTdAmnt = "Error fetching data!";
+        schemeTransactionDataTottal = "Error fetching data!";
+        schemeTransactionDataTdUnits = "Error fetching data!";
+        schemeTransactionDataTdDate = "Error fetching data!";
+        schemeTransactionDataTdPurred = "Error fetching data!";
       });
     }
   }
@@ -808,17 +1017,17 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
                                 ),
                               ),
                               SizedBox(height: 10),
-                                Container(
-                                  child: Text(
-                                    '${widget.scheme['scheme_name']?.toString() ?? 'N/A'}',
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.poppins(
-                                      color: Color(0xFF0f625c),
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                              Container(
+                                child: Text(
+                                  '${widget.scheme['scheme_name']?.toString() ?? 'N/A'}',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.poppins(
+                                    color: Color(0xFF0f625c),
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
+                              ),
                               SizedBox(height: 10),
                               Container(
                                 margin: EdgeInsets.only(bottom: 10),
@@ -905,488 +1114,606 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          margin: EdgeInsets.only(bottom: 15),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 0,vertical: 0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.2), // Shadow color with opacity
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 3), // Shadow position (x, y)
-                                  ),
-                                ],
-                              ),
-                              padding: EdgeInsets.only(right: 15),
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          height: 8,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+                          height: 360,
+                          child: isLoading
+                              ? Center(child: CircularProgressIndicator())
+                              : hasTransactions && transactionDataBox.isNotEmpty
+                                  ? ListView.builder(
+                                      itemCount: transactionDataBox.length,
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: EdgeInsets.only(
+                                              top: 0,
+                                              right: 0,
+                                              left: 0,
+                                              bottom: 12),
                                           child: Container(
                                             decoration: BoxDecoration(
-                                              color: Color(
-                                                  0xFFdceffc), // Background color
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black.withOpacity(
-                                                      0.2), // Shadow color with opacity
-                                                  spreadRadius:
-                                                      2, // How much the shadow spreads
-                                                  blurRadius:
-                                                      5, // How soft the shadow is
-                                                  offset: Offset(0,
-                                                      3), // Shadow position (x, y)
-                                                ),
-                                              ],
-                                              borderRadius: BorderRadius.circular(
-                                                  20), // Optional: Add rounded corners
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
-                                            padding: EdgeInsets.only(
-                                                left: 12,
-                                                right: 12,
-                                                top: 2,
-                                                bottom:
-                                                    2), // Add padding for better appearance
-                                            child: Text(
-                                              'PUR'.toUpperCase(),
-                                              style: GoogleFonts.poppins(
-                                                color: Color(0xFF0f625c),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
+                                            padding: EdgeInsets.only(right: 15),
+                                            child: SingleChildScrollView(
+                                              scrollDirection: Axis.horizontal,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      SizedBox(
+                                                        height: 8,
+                                                      ),
+                                                      Padding(
+                                                        padding: EdgeInsets
+                                                            .symmetric(
+                                                                horizontal: 11,
+                                                                vertical: 8),
+                                                        child: Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Color(
+                                                                0xFFdceffc), // Background color
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                color: Colors
+                                                                    .black
+                                                                    .withOpacity(
+                                                                        0.2), // Shadow color with opacity
+                                                                spreadRadius:
+                                                                    2, // How much the shadow spreads
+                                                                blurRadius:
+                                                                    5, // How soft the shadow is
+                                                                offset: Offset(
+                                                                    0,
+                                                                    3), // Shadow position (x, y)
+                                                              ),
+                                                            ],
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20), // Optional: Add rounded corners
+                                                          ),
+                                                          padding: EdgeInsets.only(
+                                                              left: 15,
+                                                              right: 15,
+                                                              top: 2,
+                                                              bottom:
+                                                                  2), // Add padding for better appearance
+                                                          child: Text(
+                                                            tdPurred[index].toUpperCase(),
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                              color: Color(
+                                                                  0xFF0f625c),
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 15,
+                                                      ),
+                                                      Container(
+                                                        margin: EdgeInsets.only(
+                                                            left: 20),
+                                                        child: Icon(
+                                                          Icons
+                                                              .calendar_month_outlined, // Calendar Icon
+                                                          color: Color(
+                                                              0xFF09a99d), // Change color as needed
+                                                          size:
+                                                              20, // Adjust size as needed
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 9,
+                                                      ),
+                                                      Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 20),
+                                                          child: Text(
+                                                              tdDate[index],
+                                                              style: GoogleFonts.poppins(
+                                                                  color: Color(
+                                                                      0xFF303131),
+                                                                  fontSize: 13,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500))),
+                                                      SizedBox(
+                                                        height: 18,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 10, right: 10),
+                                                    child: SizedBox(
+                                                      height:
+                                                          130, // Adjust as needed
+                                                      child: VerticalDivider(
+                                                        color:
+                                                            Color(0xFFe5e5e5),
+                                                        thickness: 1,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            'Amount',
+                                                            style: GoogleFonts.poppins(
+                                                                color: Color(
+                                                                    0xFF0f625c),
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500),
+                                                          ),
+                                                          Text(
+                                                            NumberFormat.currency(
+                                                                    locale:
+                                                                        'en_IN',
+                                                                    symbol: '₹')
+                                                                .format(tdAmounts[
+                                                                    index]), // ✅ Using `index` to show the correct value
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                              color: Color(
+                                                                  0xFF303131),
+                                                              fontSize: 13,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(
+                                                        height: 15,
+                                                      ),
+                                                      Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            'Units',
+                                                            style: GoogleFonts.poppins(
+                                                                color: Color(
+                                                                    0xFF0f625c),
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500),
+                                                          ),
+                                                          Text(
+                                                            NumberFormat.currency(
+                                                                    locale:
+                                                                        'en_IN',
+                                                                    symbol: '₹')
+                                                                .format(tdUnits[
+                                                                    index]),
+                                                            style: GoogleFonts.poppins(
+                                                                color: Color(
+                                                                    0xFF303131),
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(
+                                                        height: 10,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 10, right: 10),
+                                                    child: SizedBox(
+                                                      height:
+                                                          130, // Adjust as needed
+                                                      child: VerticalDivider(
+                                                        color:
+                                                            Color(0xFFe5e5e5),
+                                                        thickness: 1,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Text(
+                                                            'Balance',
+                                                            style: GoogleFonts.poppins(
+                                                                color: Color(
+                                                                    0xFF0f625c),
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500),
+                                                          ),
+                                                          Text(
+                                                            '15,11,49,999.05',
+                                                            style: GoogleFonts.poppins(
+                                                                color: Color(
+                                                                    0xFF303131),
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(
+                                                        height: 10,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(left: 20),
-                                          child: Icon(
-                                            Icons
-                                                .calendar_month_outlined, // Calendar Icon
-                                            color: Color(
-                                                0xFF09a99d), // Change color as needed
-                                            size: 20, // Adjust size as needed
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 9,
-                                        ),
-                                        Container(
-                                            margin: EdgeInsets.only(left: 20),
-                                            child: Text('27/05/25',
-                                                style: GoogleFonts.poppins(
-                                                    color: Color(0xFF303131),
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w500))),
-                                        SizedBox(
-                                          height: 18,
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 10,right: 10),
-                                      child: SizedBox(
-                                        height: 130, // Adjust as needed
-                                        child: VerticalDivider(
-                                          color: Color(0xFFe5e5e5),
-                                          thickness: 1,
-                                        ),
-                                      ),
-                                    ),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Amount',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                                            Text('1,11,49,999.01',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Units',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                                            Text('1807.139',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 10,right: 10),
-                                      child: SizedBox(
-                                        height: 130, // Adjust as needed
-                                        child: VerticalDivider(
-                                          color: Color(0xFFe5e5e5),
-                                          thickness: 1,
-                                        ),
-                                      ),
-                                    ),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Text('Balance',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                                            Text('15,11,49,999.05',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                        );
+                                      },
+                                    )
+                                  : Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFF0f625c),
                               ),
-                            ),
-                          ),
+                                    ),
                         ),
-                        Container(
-                          margin: EdgeInsets.only(bottom: 15),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 0,vertical: 0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.2), // Shadow color with opacity
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 3), // Shadow position (x, y)
-                                  ),
-                                ],
-                              ),
-                              padding: EdgeInsets.only(right: 15),
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          height: 8,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 11, vertical: 8),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Color(
-                                                  0xFFdceffc), // Background color
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black.withOpacity(
-                                                      0.2), // Shadow color with opacity
-                                                  spreadRadius:
-                                                  2, // How much the shadow spreads
-                                                  blurRadius:
-                                                  5, // How soft the shadow is
-                                                  offset: Offset(0,
-                                                      3), // Shadow position (x, y)
-                                                ),
-                                              ],
-                                              borderRadius: BorderRadius.circular(
-                                                  20), // Optional: Add rounded corners
-                                            ),
-                                            padding: EdgeInsets.only(
-                                                left: 12,
-                                                right: 12,
-                                                top: 2,
-                                                bottom:
-                                                2), // Add padding for better appearance
-                                            child: Text(
-                                              'PUR'.toUpperCase(),
-                                              style: GoogleFonts.poppins(
-                                                color: Color(0xFF0f625c),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(left: 20),
-                                          child: Icon(
-                                            Icons
-                                                .calendar_month_outlined, // Calendar Icon
-                                            color: Color(
-                                                0xFF09a99d), // Change color as needed
-                                            size: 20, // Adjust size as needed
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 9,
-                                        ),
-                                        Container(
-                                            margin: EdgeInsets.only(left: 20),
-                                            child: Text('27/05/25',
-                                                style: GoogleFonts.poppins(
-                                                    color: Color(0xFF303131),
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w500))),
-                                        SizedBox(
-                                          height: 18,
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 10,right: 10),
-                                      child: SizedBox(
-                                        height: 130, // Adjust as needed
-                                        child: VerticalDivider(
-                                          color: Color(0xFFe5e5e5),
-                                          thickness: 1,
-                                        ),
-                                      ),
-                                    ),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Amount',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                                            Text('1,11,49,999.01',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Units',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                                            Text('1807.139',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 10,right: 10),
-                                      child: SizedBox(
-                                        height: 130, // Adjust as needed
-                                        child: VerticalDivider(
-                                          color: Color(0xFFe5e5e5),
-                                          thickness: 1,
-                                        ),
-                                      ),
-                                    ),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Text('Balance',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                                            Text('15,11,49,999.05',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(bottom: 15),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 0,vertical: 0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.2), // Shadow color with opacity
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 3), // Shadow position (x, y)
-                                  ),
-                                ],
-                              ),
-                              padding: EdgeInsets.only(right: 15),
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          height: 8,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 11, vertical: 8),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Color(
-                                                  0xFFdceffc), // Background color
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black.withOpacity(
-                                                      0.2), // Shadow color with opacity
-                                                  spreadRadius:
-                                                  2, // How much the shadow spreads
-                                                  blurRadius:
-                                                  5, // How soft the shadow is
-                                                  offset: Offset(0,
-                                                      3), // Shadow position (x, y)
-                                                ),
-                                              ],
-                                              borderRadius: BorderRadius.circular(
-                                                  20), // Optional: Add rounded corners
-                                            ),
-                                            padding: EdgeInsets.only(
-                                                left: 12,
-                                                right: 12,
-                                                top: 2,
-                                                bottom:
-                                                2), // Add padding for better appearance
-                                            child: Text(
-                                              'PUR'.toUpperCase(),
-                                              style: GoogleFonts.poppins(
-                                                color: Color(0xFF0f625c),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(left: 20),
-                                          child: Icon(
-                                            Icons
-                                                .calendar_month_outlined, // Calendar Icon
-                                            color: Color(
-                                                0xFF09a99d), // Change color as needed
-                                            size: 20, // Adjust size as needed
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 9,
-                                        ),
-                                        Container(
-                                            margin: EdgeInsets.only(left: 20),
-                                            child: Text('27/05/25',
-                                                style: GoogleFonts.poppins(
-                                                    color: Color(0xFF303131),
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w500))),
-                                        SizedBox(
-                                          height: 18,
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 10,right: 10),
-                                      child: SizedBox(
-                                        height: 130, // Adjust as needed
-                                        child: VerticalDivider(
-                                          color: Color(0xFFe5e5e5),
-                                          thickness: 1,
-                                        ),
-                                      ),
-                                    ),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Amount',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                                            Text('1,11,49,999.01',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Units',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                                            Text('1807.139',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 10,right: 10),
-                                      child: SizedBox(
-                                        height: 130, // Adjust as needed
-                                        child: VerticalDivider(
-                                          color: Color(0xFFe5e5e5),
-                                          thickness: 1,
-                                        ),
-                                      ),
-                                    ),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Text('Balance',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                                            Text('15,11,49,999.05',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                        
+                        // Container(
+                        //   margin: EdgeInsets.only(bottom: 15),
+                        //   child: Padding(
+                        //     padding: EdgeInsets.symmetric(horizontal: 0,vertical: 0),
+                        //     child: Container(
+                        //       decoration: BoxDecoration(
+                        //         color: Colors.white,
+                        //         borderRadius: BorderRadius.circular(10),
+                        //         boxShadow: [
+                        //           BoxShadow(
+                        //             color: Colors.black.withOpacity(0.2), // Shadow color with opacity
+                        //             spreadRadius: 2,
+                        //             blurRadius: 5,
+                        //             offset: Offset(0, 3), // Shadow position (x, y)
+                        //           ),
+                        //         ],
+                        //       ),
+                        //       padding: EdgeInsets.only(right: 15),
+                        //       child: SingleChildScrollView(
+                        //         scrollDirection: Axis.horizontal,
+                        //         child: Row(
+                        //           mainAxisAlignment: MainAxisAlignment.start,
+                        //           crossAxisAlignment: CrossAxisAlignment.center,
+                        //           children: [
+                        //             Column(
+                        //               crossAxisAlignment: CrossAxisAlignment.start,
+                        //               children: [
+                        //                 SizedBox(
+                        //                   height: 8,
+                        //                 ),
+                        //                 Padding(
+                        //                   padding: EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+                        //                   child: Container(
+                        //                     decoration: BoxDecoration(
+                        //                       color: Color(
+                        //                           0xFFdceffc), // Background color
+                        //                       boxShadow: [
+                        //                         BoxShadow(
+                        //                           color: Colors.black.withOpacity(
+                        //                               0.2), // Shadow color with opacity
+                        //                           spreadRadius:
+                        //                           2, // How much the shadow spreads
+                        //                           blurRadius:
+                        //                           5, // How soft the shadow is
+                        //                           offset: Offset(0,
+                        //                               3), // Shadow position (x, y)
+                        //                         ),
+                        //                       ],
+                        //                       borderRadius: BorderRadius.circular(
+                        //                           20), // Optional: Add rounded corners
+                        //                     ),
+                        //                     padding: EdgeInsets.only(
+                        //                         left: 12,
+                        //                         right: 12,
+                        //                         top: 2,
+                        //                         bottom:
+                        //                         2), // Add padding for better appearance
+                        //                     child: Text(
+                        //                       'PUR'.toUpperCase(),
+                        //                       style: GoogleFonts.poppins(
+                        //                         color: Color(0xFF0f625c),
+                        //                         fontSize: 14,
+                        //                         fontWeight: FontWeight.w500,
+                        //                       ),
+                        //                     ),
+                        //                   ),
+                        //                 ),
+                        //                 SizedBox(
+                        //                   height: 15,
+                        //                 ),
+                        //                 Container(
+                        //                   margin: EdgeInsets.only(left: 20),
+                        //                   child: Icon(
+                        //                     Icons
+                        //                         .calendar_month_outlined, // Calendar Icon
+                        //                     color: Color(
+                        //                         0xFF09a99d), // Change color as needed
+                        //                     size: 20, // Adjust size as needed
+                        //                   ),
+                        //                 ),
+                        //                 SizedBox(
+                        //                   height: 9,
+                        //                 ),
+                        //                 Container(
+                        //                     margin: EdgeInsets.only(left: 20),
+                        //                     child: Text('27/05/25',
+                        //                         style: GoogleFonts.poppins(
+                        //                             color: Color(0xFF303131),
+                        //                             fontSize: 13,
+                        //                             fontWeight: FontWeight.w500))),
+                        //                 SizedBox(
+                        //                   height: 18,
+                        //                 ),
+                        //               ],
+                        //             ),
+                        //             Padding(
+                        //               padding: EdgeInsets.only(left: 10,right: 10),
+                        //               child: SizedBox(
+                        //                 height: 130, // Adjust as needed
+                        //                 child: VerticalDivider(
+                        //                   color: Color(0xFFe5e5e5),
+                        //                   thickness: 1,
+                        //                 ),
+                        //               ),
+                        //             ),
+                        //             Column(
+                        //               crossAxisAlignment: CrossAxisAlignment.start,
+                        //               children: [
+                        //                 Column(
+                        //                   crossAxisAlignment: CrossAxisAlignment.start,
+                        //                   children: [
+                        //                     Text('Amount',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
+                        //                     Text('1,11,49,999.01',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
+                        //                   ],
+                        //                 ),
+                        //                 SizedBox(
+                        //                   height: 15,
+                        //                 ),
+                        //                 Column(
+                        //                   crossAxisAlignment: CrossAxisAlignment.start,
+                        //                   children: [
+                        //                     Text('Units',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
+                        //                     Text('1807.139',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
+                        //                   ],
+                        //                 ),
+                        //                 SizedBox(
+                        //                   height: 10,
+                        //                 ),
+                        //               ],
+                        //             ),
+                        //             Padding(
+                        //               padding: EdgeInsets.only(left: 10,right: 10),
+                        //               child: SizedBox(
+                        //                 height: 130, // Adjust as needed
+                        //                 child: VerticalDivider(
+                        //                   color: Color(0xFFe5e5e5),
+                        //                   thickness: 1,
+                        //                 ),
+                        //               ),
+                        //             ),
+                        //             Column(
+                        //               crossAxisAlignment: CrossAxisAlignment.start,
+                        //               children: [
+                        //                 Column(
+                        //                   crossAxisAlignment: CrossAxisAlignment.center,
+                        //                   children: [
+                        //                     Text('Balance',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
+                        //                     Text('15,11,49,999.05',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
+                        //                   ],
+                        //                 ),
+                        //                 SizedBox(
+                        //                   height: 10,
+                        //                 ),
+                        //               ],
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        // Container(
+                        //   margin: EdgeInsets.only(bottom: 15),
+                        //   child: Padding(
+                        //     padding: EdgeInsets.symmetric(horizontal: 0,vertical: 0),
+                        //     child: Container(
+                        //       decoration: BoxDecoration(
+                        //         color: Colors.white,
+                        //         borderRadius: BorderRadius.circular(10),
+                        //         boxShadow: [
+                        //           BoxShadow(
+                        //             color: Colors.black.withOpacity(0.2), // Shadow color with opacity
+                        //             spreadRadius: 2,
+                        //             blurRadius: 5,
+                        //             offset: Offset(0, 3), // Shadow position (x, y)
+                        //           ),
+                        //         ],
+                        //       ),
+                        //       padding: EdgeInsets.only(right: 15),
+                        //       child: SingleChildScrollView(
+                        //         scrollDirection: Axis.horizontal,
+                        //         child: Row(
+                        //           mainAxisAlignment: MainAxisAlignment.start,
+                        //           crossAxisAlignment: CrossAxisAlignment.center,
+                        //           children: [
+                        //             Column(
+                        //               crossAxisAlignment: CrossAxisAlignment.start,
+                        //               children: [
+                        //                 SizedBox(
+                        //                   height: 8,
+                        //                 ),
+                        //                 Padding(
+                        //                   padding: EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+                        //                   child: Container(
+                        //                     decoration: BoxDecoration(
+                        //                       color: Color(
+                        //                           0xFFdceffc), // Background color
+                        //                       boxShadow: [
+                        //                         BoxShadow(
+                        //                           color: Colors.black.withOpacity(
+                        //                               0.2), // Shadow color with opacity
+                        //                           spreadRadius:
+                        //                           2, // How much the shadow spreads
+                        //                           blurRadius:
+                        //                           5, // How soft the shadow is
+                        //                           offset: Offset(0,
+                        //                               3), // Shadow position (x, y)
+                        //                         ),
+                        //                       ],
+                        //                       borderRadius: BorderRadius.circular(
+                        //                           20), // Optional: Add rounded corners
+                        //                     ),
+                        //                     padding: EdgeInsets.only(
+                        //                         left: 12,
+                        //                         right: 12,
+                        //                         top: 2,
+                        //                         bottom:
+                        //                         2), // Add padding for better appearance
+                        //                     child: Text(
+                        //                       'PUR'.toUpperCase(),
+                        //                       style: GoogleFonts.poppins(
+                        //                         color: Color(0xFF0f625c),
+                        //                         fontSize: 14,
+                        //                         fontWeight: FontWeight.w500,
+                        //                       ),
+                        //                     ),
+                        //                   ),
+                        //                 ),
+                        //                 SizedBox(
+                        //                   height: 15,
+                        //                 ),
+                        //                 Container(
+                        //                   margin: EdgeInsets.only(left: 20),
+                        //                   child: Icon(
+                        //                     Icons
+                        //                         .calendar_month_outlined, // Calendar Icon
+                        //                     color: Color(
+                        //                         0xFF09a99d), // Change color as needed
+                        //                     size: 20, // Adjust size as needed
+                        //                   ),
+                        //                 ),
+                        //                 SizedBox(
+                        //                   height: 9,
+                        //                 ),
+                        //                 Container(
+                        //                     margin: EdgeInsets.only(left: 20),
+                        //                     child: Text('27/05/25',
+                        //                         style: GoogleFonts.poppins(
+                        //                             color: Color(0xFF303131),
+                        //                             fontSize: 13,
+                        //                             fontWeight: FontWeight.w500))),
+                        //                 SizedBox(
+                        //                   height: 18,
+                        //                 ),
+                        //               ],
+                        //             ),
+                        //             Padding(
+                        //               padding: EdgeInsets.only(left: 10,right: 10),
+                        //               child: SizedBox(
+                        //                 height: 130, // Adjust as needed
+                        //                 child: VerticalDivider(
+                        //                   color: Color(0xFFe5e5e5),
+                        //                   thickness: 1,
+                        //                 ),
+                        //               ),
+                        //             ),
+                        //             Column(
+                        //               crossAxisAlignment: CrossAxisAlignment.start,
+                        //               children: [
+                        //                 Column(
+                        //                   crossAxisAlignment: CrossAxisAlignment.start,
+                        //                   children: [
+                        //                     Text('Amount',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
+                        //                     Text('1,11,49,999.01',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
+                        //                   ],
+                        //                 ),
+                        //                 SizedBox(
+                        //                   height: 15,
+                        //                 ),
+                        //                 Column(
+                        //                   crossAxisAlignment: CrossAxisAlignment.start,
+                        //                   children: [
+                        //                     Text('Units',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
+                        //                     Text('1807.139',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
+                        //                   ],
+                        //                 ),
+                        //                 SizedBox(
+                        //                   height: 10,
+                        //                 ),
+                        //               ],
+                        //             ),
+                        //             Padding(
+                        //               padding: EdgeInsets.only(left: 10,right: 10),
+                        //               child: SizedBox(
+                        //                 height: 130, // Adjust as needed
+                        //                 child: VerticalDivider(
+                        //                   color: Color(0xFFe5e5e5),
+                        //                   thickness: 1,
+                        //                 ),
+                        //               ),
+                        //             ),
+                        //             Column(
+                        //               crossAxisAlignment: CrossAxisAlignment.start,
+                        //               children: [
+                        //                 Column(
+                        //                   crossAxisAlignment: CrossAxisAlignment.center,
+                        //                   children: [
+                        //                     Text('Balance',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
+                        //                     Text('15,11,49,999.05',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
+                        //                   ],
+                        //                 ),
+                        //                 SizedBox(
+                        //                   height: 10,
+                        //                 ),
+                        //               ],
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                     // Add more widgets here

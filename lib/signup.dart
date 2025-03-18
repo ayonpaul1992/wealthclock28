@@ -59,6 +59,15 @@ class _SignupPageState extends State<SignupPage> {
                 ),
                 textAlign: TextAlign.center,
               ),
+              Container(
+                child: Row(
+                  children: [
+                    Row(
+
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 20),
               TextField(
                 controller: emailText,
