@@ -918,7 +918,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                 ],
                               ),
                             ),
-                            SizedBox(height: 10),
+                            SizedBox(height: 20),
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Row(
