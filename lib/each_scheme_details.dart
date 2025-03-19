@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'each_fund_investment_detils.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dashboard_after_login.dart';
 
 class eachSchemeDetails extends StatefulWidget {
   final Map<String, dynamic> scheme; // ✅ Define scheme as a property
@@ -298,6 +299,57 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                 context); // You can replace this with any other back navigation
           },
         ),
+        title: InkWell(
+          onTap: (){
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        dashboardAfterLogin(userId: '',)));
+          },
+          child: Image.asset(
+            'assets/images/dshb_logo.png',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              // Add your functionality here
+            },
+            style: TextButton.styleFrom(
+              minimumSize: Size(20,
+                  20), // Adjust clickable area to match image size
+              padding: EdgeInsets.zero, // Remove padding
+              tapTargetSize: MaterialTapTargetSize
+                  .shrinkWrap, // Shrink touch area
+            ),
+            child: Image.asset(
+              'assets/images/bell-svgrepo-com.png',
+              height: 20, // Adjust the height as needed
+              width: 20, // Adjust the width as needed
+            ),
+          ),
+
+          const SizedBox(width: 10),
+          TextButton(
+            onPressed: () {
+              // Add your functionality here
+              // Scaffold.of(context).openDrawer();
+              _scaffoldKey.currentState?.openDrawer();
+            },
+            style: TextButton.styleFrom(
+              minimumSize: Size(20, 20),
+              padding: EdgeInsets.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Image.asset(
+              'assets/images/user-svgrepo-com.png',
+              height: 20,
+              width: 20,
+            ),
+          ),
+          SizedBox(width: 20,),
+        ],
       ),
       drawer: Drawer(
         child: Container(
@@ -666,87 +718,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
       body: Column(
         children: [
           // Header Row with Logo and Text
-          Container(
-            color: Colors.white,
-            child: Padding(
-              padding:
-                  EdgeInsets.only(left: 20, right: 20, bottom: 20, top: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment
-                    .spaceBetween, // Space between the logo and buttons
-                children: [
-                  // Logo on the left
-                  Image.asset(
-                    'assets/images/dshb_logo.png',
-                  ),
 
-                  // Buttons on the right
-                  Row(
-                    children: [
-                      // First button
-                      TextButton(
-                        onPressed: () {
-                          // Add your functionality here
-                        },
-                        style: TextButton.styleFrom(
-                          minimumSize: Size(20,
-                              20), // Adjust clickable area to match image size
-                          padding: EdgeInsets.zero, // Remove padding
-                          tapTargetSize: MaterialTapTargetSize
-                              .shrinkWrap, // Shrink touch area
-                        ),
-                        child: Image.asset(
-                          'assets/images/bell-svgrepo-com.png',
-                          height: 20, // Adjust the height as needed
-                          width: 20, // Adjust the width as needed
-                        ),
-                      ),
-
-                      const SizedBox(width: 10), // Spacing between buttons
-
-                      // Second button
-                      // TextButton(
-                      //   onPressed: () {
-                      //     // Add your functionality here
-                      //   },
-                      //   style: TextButton.styleFrom(
-                      //     minimumSize: Size(20, 20),
-                      //     padding: EdgeInsets.zero,
-                      //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      //   ),
-                      //   child: Image.asset(
-                      //     'assets/images/search-svgrepo-com.png',
-                      //     height: 20,
-                      //     width: 20,
-                      //   ),
-                      // ),
-                      //
-                      // const SizedBox(width: 10), // Spacing between buttons
-
-                      // Third button
-                      TextButton(
-                        onPressed: () {
-                          // Add your functionality here
-                          // Scaffold.of(context).openDrawer();
-                          _scaffoldKey.currentState?.openDrawer();
-                        },
-                        style: TextButton.styleFrom(
-                          minimumSize: Size(20, 20),
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: Image.asset(
-                          'assets/images/user-svgrepo-com.png',
-                          height: 20,
-                          width: 20,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
 
           // Main Content Area with Gradient Background
           Expanded(
@@ -843,7 +815,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                 .toString(),
                                           style: GoogleFonts.poppins(
                                             color: Color(0xFF8c8c8c),
-                                            fontSize: 13,
+                                            fontSize: 12,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
@@ -882,67 +854,67 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                 .toString(), // Directly use the value
                                             style: GoogleFonts.poppins(
                                               color: Color(0xFF8c8c8c),
-                                              fontSize: 13,
+                                              fontSize: 12,
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
                                         ),
                                     ],
                                   ),
-                                  Container(
-                                    margin: EdgeInsets.only(left: 0),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          'Gain/Loss',
-                                          style: GoogleFonts.poppins(
-                                            color: Color(0xFF8c8c8c),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          child: Builder(
-                                            builder: (context) {
-                                              // Convert gain/loss value from String to double
-                                              double gainLoss = double.tryParse(
-                                                      calculateGainLoss(
-                                                          widget.scheme[
-                                                              'current_val'],
-                                                          widget.scheme[
-                                                              'invested_val'])) ??
-                                                  0.0;
-
-                                              return Row(
-                                                children: [
-                                                  Icon(
-                                                    gainLoss >= 0
-                                                        ? Icons.arrow_upward
-                                                        : Icons.arrow_downward,
-                                                    color: gainLoss >= 0
-                                                        ? Color(0xFF09a99d)
-                                                        : Color(0xFFD32F2F),
-                                                    size: 15,
-                                                  ),
-                                                  Text(
-                                                    '₹ ${gainLoss.toStringAsFixed(2)}', // Format to 2 decimal places
-                                                    style: GoogleFonts.poppins(
-                                                      color: gainLoss >= 0
-                                                          ? Color(0xFF09a99d)
-                                                          : Color(0xFFD32F2F),
-                                                      fontSize: 14,
-                                                      fontWeight: FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  // Container(
+                                  //   margin: EdgeInsets.only(left: 0),
+                                  //   child: Column(
+                                  //     children: [
+                                  //       Text(
+                                  //         'Gain/Loss',
+                                  //         style: GoogleFonts.poppins(
+                                  //           color: Color(0xFF8c8c8c),
+                                  //           fontSize: 14,
+                                  //           fontWeight: FontWeight.w500,
+                                  //         ),
+                                  //       ),
+                                  //       SingleChildScrollView(
+                                  //         scrollDirection: Axis.horizontal,
+                                  //         child: Builder(
+                                  //           builder: (context) {
+                                  //             // Convert gain/loss value from String to double
+                                  //             double gainLoss = double.tryParse(
+                                  //                     calculateGainLoss(
+                                  //                         widget.scheme[
+                                  //                             'current_val'],
+                                  //                         widget.scheme[
+                                  //                             'invested_val'])) ??
+                                  //                 0.0;
+                                  //
+                                  //             return Row(
+                                  //               children: [
+                                  //                 Icon(
+                                  //                   gainLoss >= 0
+                                  //                       ? Icons.arrow_upward
+                                  //                       : Icons.arrow_downward,
+                                  //                   color: gainLoss >= 0
+                                  //                       ? Color(0xFF09a99d)
+                                  //                       : Color(0xFFD32F2F),
+                                  //                   size: 15,
+                                  //                 ),
+                                  //                 Text(
+                                  //                   '₹ ${gainLoss.toStringAsFixed(2)}', // Format to 2 decimal places
+                                  //                   style: GoogleFonts.poppins(
+                                  //                     color: gainLoss >= 0
+                                  //                         ? Color(0xFF09a99d)
+                                  //                         : Color(0xFFD32F2F),
+                                  //                     fontSize: 14,
+                                  //                     fontWeight: FontWeight.w600,
+                                  //                   ),
+                                  //                 ),
+                                  //               ],
+                                  //             );
+                                  //           },
+                                  //         ),
+                                  //       ),
+                                  //     ],
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ),
@@ -961,7 +933,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                         'Folio No.',
                                         style: GoogleFonts.poppins(
                                           color: Color(0xFF8c8c8c),
-                                          fontSize: 14,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
@@ -969,7 +941,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                         '${widget.scheme['folio_number']?.toString() ?? 'N/A'}',
                                         style: GoogleFonts.poppins(
                                           color: Color(0xFF303131),
-                                          fontSize: 14,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
@@ -986,7 +958,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                         'Holding Pattern',
                                         style: GoogleFonts.poppins(
                                           color: Color(0xFF8c8c8c),
-                                          fontSize: 14,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
@@ -994,7 +966,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                         'Single',
                                         style: GoogleFonts.poppins(
                                           color: Color(0xFF303131),
-                                          fontSize: 14,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
@@ -1011,7 +983,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                         'Joint Holder',
                                         style: GoogleFonts.poppins(
                                           color: Color(0xFF8c8c8c),
-                                          fontSize: 14,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
@@ -1019,7 +991,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                         '',
                                         style: GoogleFonts.poppins(
                                           color: Color(0xFF303131),
-                                          fontSize: 14,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
@@ -1051,7 +1023,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                           Text(
                                             '₹ $userCurrentValue',
                                             style: GoogleFonts.poppins(
-                                              fontSize: 22,
+                                              fontSize: 19,
                                               fontWeight: FontWeight.w600,
                                               color: Color(0xFF0f625c),
                                             ),
@@ -1059,13 +1031,13 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                         ],
                                       ),
                                     ),
-                                    SizedBox(width: 25),
+                                    SizedBox(width: 23),
                                     Container(
                                       width: 1,
                                       height: 56,
                                       color: Color(0xFFd5d4d0),
                                     ),
-                                    SizedBox(width: 25),
+                                    SizedBox(width: 23),
                                     Container(
                                       child: Column(
                                         crossAxisAlignment:
@@ -1079,13 +1051,33 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                               color: Color(0xFF648683),
                                             ),
                                           ),
-                                          Text(
-                                            '₹ $userTotalGain',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 22,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xFF0f625c),
-                                            ),
+                                          Builder(
+                                            builder: (context) {
+                                              // Convert gain/loss value from String to double
+                                              double gainLoss = double.tryParse(
+                                                  calculateGainLoss(widget.scheme['current_val'], widget.scheme['invested_val'])
+                                              ) ?? 0.0;
+
+                                              // Format with comma as thousands separator
+                                              final formattedGainLoss = NumberFormat.currency(
+                                                locale: 'en_IN', // Indian format
+                                                symbol: '₹ ',     // Currency symbol
+                                                decimalDigits: 2, // Keep two decimal places
+                                              ).format(gainLoss);
+
+                                              return Row(
+                                                children: [
+                                                  Text(
+                                                    formattedGainLoss, // Apply formatted text
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF0f625c),
+                                                      fontSize: 19,
+                                                      fontWeight: FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            },
                                           ),
                                         ],
                                       ),

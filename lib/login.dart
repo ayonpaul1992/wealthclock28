@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 // Make sure to import this for JSON handling
 import 'forgot_password.dart';
-import 'signup.dart';
+import 'signupPds.dart';
 import 'terms_condition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboard_after_login.dart';
@@ -339,7 +339,7 @@ class _LoginPageState extends State<LoginPage> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                      const SignupPage()));
+                                      const SignupPdsPage()));
                             },
                             child: Text(
                               'Sign Up',
