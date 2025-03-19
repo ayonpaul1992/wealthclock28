@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dashboard_after_login.dart';
 
 class familyFundInvstDtls extends StatefulWidget {
   const familyFundInvstDtls({super.key});
@@ -498,9 +499,61 @@ class _familyFundInvstDtlsState extends State<familyFundInvstDtls> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black), // Back arrow
           onPressed: () {
-            Navigator.pop(context); // You can replace this with any other back navigation
+            Navigator.pop(
+                context); // You can replace this with any other back navigation
           },
         ),
+        title: InkWell(
+          onTap: (){
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        dashboardAfterLogin(userId: '',)));
+          },
+          child: Image.asset(
+            'assets/images/dshb_logo.png',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              // Add your functionality here
+            },
+            style: TextButton.styleFrom(
+              minimumSize: Size(20,
+                  20), // Adjust clickable area to match image size
+              padding: EdgeInsets.zero, // Remove padding
+              tapTargetSize: MaterialTapTargetSize
+                  .shrinkWrap, // Shrink touch area
+            ),
+            child: Image.asset(
+              'assets/images/bell-svgrepo-com.png',
+              height: 20, // Adjust the height as needed
+              width: 20, // Adjust the width as needed
+            ),
+          ),
+
+          const SizedBox(width: 10),
+          TextButton(
+            onPressed: () {
+              // Add your functionality here
+              // Scaffold.of(context).openDrawer();
+              _scaffoldKey.currentState?.openDrawer();
+            },
+            style: TextButton.styleFrom(
+              minimumSize: Size(20, 20),
+              padding: EdgeInsets.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Image.asset(
+              'assets/images/user-svgrepo-com.png',
+              height: 20,
+              width: 20,
+            ),
+          ),
+          SizedBox(width: 20,),
+        ],
       ),
       drawer: Drawer(
         child: Container(
@@ -800,87 +853,7 @@ class _familyFundInvstDtlsState extends State<familyFundInvstDtls> {
       body: Column(
         children: [
           // Header Row with Logo and Text
-          Container(
-            color: Colors.white,
-            child: Padding(
-              padding:
-              EdgeInsets.only(left: 20, right: 20, bottom: 20, top: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment
-                    .spaceBetween, // Space between the logo and buttons
-                children: [
-                  // Logo on the left
-                  Image.asset(
-                    'assets/images/dshb_logo.png',
-                  ),
 
-                  // Buttons on the right
-                  Row(
-                    children: [
-                      // First button
-                      TextButton(
-                        onPressed: () {
-                          // Add your functionality here
-                        },
-                        style: TextButton.styleFrom(
-                          minimumSize: Size(20,
-                              20), // Adjust clickable area to match image size
-                          padding: EdgeInsets.zero, // Remove padding
-                          tapTargetSize: MaterialTapTargetSize
-                              .shrinkWrap, // Shrink touch area
-                        ),
-                        child: Image.asset(
-                          'assets/images/bell-svgrepo-com.png',
-                          height: 20, // Adjust the height as needed
-                          width: 20, // Adjust the width as needed
-                        ),
-                      ),
-
-                      const SizedBox(width: 10), // Spacing between buttons
-
-                      // Second button
-                      // TextButton(
-                      //   onPressed: () {
-                      //     // Add your functionality here
-                      //   },
-                      //   style: TextButton.styleFrom(
-                      //     minimumSize: Size(20, 20),
-                      //     padding: EdgeInsets.zero,
-                      //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      //   ),
-                      //   child: Image.asset(
-                      //     'assets/images/search-svgrepo-com.png',
-                      //     height: 20,
-                      //     width: 20,
-                      //   ),
-                      // ),
-                      //
-                      // const SizedBox(width: 10), // Spacing between buttons
-
-                      // Third button
-                      TextButton(
-                        onPressed: () {
-                          // Add your functionality here
-                          // Scaffold.of(context).openDrawer();
-                          _scaffoldKey.currentState?.openDrawer();
-                        },
-                        style: TextButton.styleFrom(
-                          minimumSize: Size(20, 20),
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: Image.asset(
-                          'assets/images/user-svgrepo-com.png',
-                          height: 20,
-                          width: 20,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
 
           // Main Content Area with Gradient Background
           Expanded(
