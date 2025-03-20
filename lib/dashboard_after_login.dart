@@ -23,7 +23,8 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
   String userCurrentValue = "Loading...";
   String userTotalGain = "Loading...";
   String absReturn = '0.00';
-  String xirr = '0.00';
+  String cumulativeXirrValue = '0.00';
+  String absoluteReturnValue = '0.00';
 
   String equityPercentage = '0.00';
   String equityAmount = '0.00';
@@ -53,7 +54,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
 
     if (authToken == null || authToken.isEmpty) {
       setState(() {
-        userName = userCurrentValue = userTotalGain = "Auth token not found!";
+        userName = userCurrentValue = userTotalGain = cumulativeXirrValue = absoluteReturnValue = "Auth token not found!";
       });
       return;
     }
@@ -75,6 +76,8 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
         if (data is Map<String, dynamic>) {
           final fetchedName = data["user_name"] ?? "No Name Found";
           final fetchedPan = data["pan"];
+          final cumulativeXirr = (data["cumulativeXirr"] ?? 0).toString();
+          final absoluteReturn = (data["absoluteReturn"] ?? 0).toString();
           final currentValue = (data["total_current_val"] ?? 0).toDouble();
           final totalGain = (data["totalGain"] ?? 0).toDouble();
           // ✅ Extract `equityPercentage` & `equityAmount`
@@ -96,6 +99,8 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
           if (fetchedPan == null || fetchedPan.isEmpty) {
             setState(() {
               userName = "";
+              cumulativeXirrValue = "0.00";
+              absoluteReturnValue = "0.00";
               userCurrentValue = userTotalGain = "0.00";
               equityPercentage = "0.00";
               equityAmount = "0.00";
@@ -111,6 +116,8 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
 
           setState(() {
             userName = fetchedName;
+            cumulativeXirrValue = cumulativeXirr;
+            absoluteReturnValue = absoluteReturn;
             userCurrentValue = NumberFormat.currency(
                     locale: 'en_IN',
                     symbol: '', // No currency symbol
@@ -155,6 +162,8 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
         } else {
           setState(() {
             userName = "Invalid data format";
+            cumulativeXirrValue = "No Value";
+            absoluteReturnValue = "No Value";
             userCurrentValue = userTotalGain = "0.00";
             equityPercentage = "0.00";
             equityAmount = "0.00";
@@ -171,7 +180,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
             ? json.decode(response.body)["message"] ?? "Bad Request"
             : "Error ${response.statusCode}: Something went wrong!";
         setState(() {
-          userName = userCurrentValue = userTotalGain = errorMessage;
+          userName = userCurrentValue = userTotalGain = cumulativeXirrValue = absoluteReturnValue = errorMessage;
           equityPercentage = "0.00";
           equityAmount = "0.00";
           debtPercentage = "0.00";
@@ -187,6 +196,8 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
       print('StackTrace: $stackTrace');
       setState(() {
         userName = "Error fetching data!";
+        cumulativeXirrValue = "0.00";
+        absoluteReturnValue = "0.00";
         userCurrentValue = userTotalGain = "0.00";
         equityPercentage = "0.00";
         equityAmount = "0.00";
@@ -808,14 +819,14 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                           child: Row(
                             children: [
                               Text(
-                                'Abs. Ret.:',
+                                'Abs. Ret.: ',
                                 style: GoogleFonts.poppins(
                                     color: Color(0xFF0f625c),
                                     fontSize: 15,
                                     fontWeight: FontWeight.w400),
                               ),
                               Text(
-                                '$absReturn%',
+                                '$absoluteReturnValue%',
                                 style: GoogleFonts.poppins(
                                     color: Color(0xFF0f625c),
                                     fontSize: 15,
@@ -829,14 +840,14 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                           child: Row(
                             children: [
                               Text(
-                                'XIRR:',
+                                'XIRR: ',
                                 style: GoogleFonts.poppins(
                                     color: Color(0xFF0f625c),
                                     fontSize: 15,
                                     fontWeight: FontWeight.w400),
                               ),
                               Text(
-                                '$xirr%',
+                                '$cumulativeXirrValue%',
                                 style: GoogleFonts.poppins(
                                     color: Color(0xFF0f625c),
                                     fontSize: 15,

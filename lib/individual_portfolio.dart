@@ -30,8 +30,8 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
   String schemeFolioNumber = "Loading...";
   String userCurrentValue = "Loading...";
   String userTotalGain = "Loading...";
-  String absReturn = '0.00';
-  String xirr = '0.00';
+  String cumulativeXirrValue = '0.00';
+  String absoluteReturnValue = '0.00';
 
   String equityPercentage = '0.00';
   String equityAmount = '0.00';
@@ -44,6 +44,7 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
 
   String otherPercentage = '0.00';
   String otherAmount = '0.00';
+
   String currentDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
   @override
@@ -64,7 +65,7 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
 
     if (authToken == null || authToken.isEmpty) {
       setState(() {
-        userName = userCurrentValue = userTotalGain = "Auth token not found!";
+        userName = userCurrentValue = userTotalGain = cumulativeXirrValue = absoluteReturnValue = "Auth token not found!";
         schemeName = schemeCurrentValue =
             schemeInvestedValue = schemeFolioNumber = "Auth token not found!";
       });
@@ -94,6 +95,8 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                   ? schemesList[0]["scheme_name"] ?? "No Name Found"
                   : "No Name Found";
           final fetchedPan = data["pan"];
+          final cumulativeXirr = (data["cumulativeXirr"] ?? 0).toString();
+          final absoluteReturn = (data["absoluteReturn"] ?? 0).toString();
           final currentValue = (data["total_current_val"] ?? 0).toDouble();
           final totalGain = (data["totalGain"] ?? 0).toDouble();
           // ✅ Extract `equityPercentage` & `equityAmount`
@@ -115,6 +118,8 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
           if (fetchedPan == null || fetchedPan.isEmpty) {
             setState(() {
               userName = "";
+              cumulativeXirrValue = "0.00";
+              absoluteReturnValue = "0.00";
               schemeName = "";
               userCurrentValue = userTotalGain = "0.00";
               equityPercentage = "0.00";
@@ -131,6 +136,8 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
 
           setState(() {
             userName = fetchedName;
+            cumulativeXirrValue = cumulativeXirr;
+            absoluteReturnValue = absoluteReturn;
             schemeName = fetchedSchemeName;
             userCurrentValue = NumberFormat.currency(
                     locale: 'en_IN',
@@ -169,6 +176,8 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
         } else {
           setState(() {
             userName = "Invalid data format";
+            cumulativeXirrValue = "No Value";
+            absoluteReturnValue = "No Value";
             schemeName = "Invalid data format";
             userCurrentValue = userTotalGain = "0.00";
             equityPercentage = "0.00";
@@ -186,7 +195,7 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
             ? json.decode(response.body)["message"] ?? "Bad Request"
             : "Error ${response.statusCode}: Something went wrong!";
         setState(() {
-          userName = userCurrentValue = userTotalGain = errorMessage;
+          userName = userCurrentValue = userTotalGain = cumulativeXirrValue = absoluteReturnValue = errorMessage;
           schemeName = errorMessage;
           equityPercentage = "0.00";
           equityAmount = "0.00";
@@ -203,6 +212,8 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
       print('StackTrace: $stackTrace');
       setState(() {
         userName = "Error fetching data!";
+        cumulativeXirrValue = "0.00";
+        absoluteReturnValue = "0.00";
         schemeName = "Error fetching data!";
         userCurrentValue = userTotalGain = "0.00";
         equityPercentage = "0.00";
@@ -828,14 +839,14 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                           child: Row(
                             children: [
                               Text(
-                                'Abs. Ret.:',
+                                'Abs. Ret.: ',
                                 style: GoogleFonts.poppins(
                                     color: Color(0xFF0f625c),
                                     fontSize: 15,
                                     fontWeight: FontWeight.w400),
                               ),
                               Text(
-                                '$absReturn%',
+                                '$absoluteReturnValue%',
                                 style: GoogleFonts.poppins(
                                     color: Color(0xFF0f625c),
                                     fontSize: 15,
@@ -849,14 +860,14 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                           child: Row(
                             children: [
                               Text(
-                                'XIRR:',
+                                'XIRR: ',
                                 style: GoogleFonts.poppins(
                                     color: Color(0xFF0f625c),
                                     fontSize: 15,
                                     fontWeight: FontWeight.w400),
                               ),
                               Text(
-                                '$xirr%',
+                                '$cumulativeXirrValue%',
                                 style: GoogleFonts.poppins(
                                     color: Color(0xFF0f625c),
                                     fontSize: 15,
@@ -1147,7 +1158,7 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                                 child: Row(
                                                   children: [
                                                     Text(
-                                                      'Abs. Ret.:',
+                                                      'Abs. Ret.: ',
                                                       style:
                                                           GoogleFonts.poppins(
                                                               color: Color(
@@ -1158,15 +1169,17 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                                                       .w400),
                                                     ),
                                                     Text(
-                                                      ' ${validSchemes[index]['absolute_return']?.toString() ?? '0'}%', // Dynamic Abs. Return
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                              color: Color(
-                                                                  0xFF0f625c),
-                                                              fontSize: 15,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600),
+                                                      '${((double.tryParse(
+                                                          calculateGainLoss(validSchemes[index]['current_val'],
+                                                              validSchemes[index]['invested_val'])
+                                                      ) ?? 0.0) /
+                                                          (double.tryParse(validSchemes[index]['current_val']?.toString() ?? '0') ?? 1.0)
+                                                          * 100).toStringAsFixed(2)}%', // 🔥 Dynamic Absolute Return
+                                                      style: GoogleFonts.poppins(
+                                                        color: Color(0xFF0f625c),
+                                                        fontSize: 15,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
