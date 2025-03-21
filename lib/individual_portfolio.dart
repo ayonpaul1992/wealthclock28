@@ -966,10 +966,11 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                     ),
 
                     Container(
-                      height:
-                          300, // Ensure the container has enough height to be visible
+
                       child: schemes.isNotEmpty
                           ? ListView.builder(
+                        shrinkWrap: true,
+                        physics: BouncingScrollPhysics(),
                               itemCount: schemes
                                   .where((scheme) =>
                                       (scheme['current_val'] ?? 0) != 0 ||
@@ -1041,7 +1042,11 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                           ),
                                           SizedBox(height: 10),
                                           Text(
-                                            '₹ ${double.tryParse(validSchemes[index]['current_val']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}', // Format to 2 decimal places, // Dynamic amount
+                                            NumberFormat.currency(
+                                              locale: 'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
+                                              symbol: '₹ ', // Change to '$', '€', etc., as needed
+                                              decimalDigits: 2, // Ensures two decimal places
+                                            ).format(double.tryParse(validSchemes[index]['current_val']?.toString().replaceAll(',', '') ?? '0') ?? 0.00),
                                             style: GoogleFonts.poppins(
                                               color: Color(0xFF0f625c),
                                               fontSize: 18,
@@ -1065,12 +1070,15 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                                     ),
                                                   ),
                                                   Text(
-                                                    '₹ ${double.tryParse(validSchemes[index]['invested_val']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}', // Dynamic cost amount
+                                                    NumberFormat.currency(
+                                                      locale: 'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
+                                                      symbol: '₹ ', // Change this as needed
+                                                      decimalDigits: 2, // Ensures two decimal places
+                                                    ).format(double.tryParse(validSchemes[index]['invested_val']?.toString().replaceAll(',', '') ?? '0') ?? 0.00),
                                                     style: GoogleFonts.poppins(
                                                       color: Color(0xFF303131),
                                                       fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w600,
+                                                      fontWeight: FontWeight.w600,
                                                     ),
                                                   ),
                                                 ],
@@ -1114,7 +1122,8 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                                       Builder(
                                                         builder: (context) {
                                                           double gainLoss = double.tryParse(
-                                                              calculateGainLoss(validSchemes[index]['current_val'],
+                                                              calculateGainLoss(
+                                                                  validSchemes[index]['current_val'],
                                                                   validSchemes[index]['invested_val'])
                                                           ) ?? 0.0; // Default to 0.0 if parsing fails
 
@@ -1126,7 +1135,11 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                                                 size: 15,
                                                               ),
                                                               Text(
-                                                                '₹ ${gainLoss.toStringAsFixed(2)}', // Format to 2 decimal places
+                                                                NumberFormat.currency(
+                                                                  locale: 'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
+                                                                  symbol: '₹ ', // Change symbol as needed
+                                                                  decimalDigits: 2, // Ensures two decimal places
+                                                                ).format(gainLoss),
                                                                 style: GoogleFonts.poppins(
                                                                   color: gainLoss >= 0 ? Color(0xFF09a99d) : Color(0xFFD32F2F),
                                                                   fontSize: 14,
