@@ -1236,13 +1236,8 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                               },
                             )
                           : Center(
-                              child: Text(
-                                "No schemes available",
-                                style: GoogleFonts.poppins(
-                                  color: Colors.red,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                              child: CircularProgressIndicator(
+                                color: Color(0xFF0f625c),
                               ),
                             ),
                     ),

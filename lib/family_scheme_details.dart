@@ -7,7 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class familySchemeDetails extends StatefulWidget {
-  const familySchemeDetails({super.key});
+  final Map<String, dynamic> scheme; // ✅ Define scheme as a property
+  const familySchemeDetails({super.key, required this.scheme});
 
   @override
   State<familySchemeDetails> createState() => _familySchemeDetailsState();
