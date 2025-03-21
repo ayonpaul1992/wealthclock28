@@ -1539,7 +1539,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                       Text(
                                         NumberFormat.currency(
                                           locale: 'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
-                                          symbol: '₹ ', // Change to '$', '€', etc., as needed
+                                          symbol: '', // Change to '$', '€', etc., as needed
                                           decimalDigits: 2, // Ensures two decimal places
                                         ).format(double.tryParse(widget.scheme['balancedUnits'].toString().replaceAll(',', '')) ?? 0.00),
                                         style: GoogleFonts.poppins(
@@ -1563,7 +1563,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                         ),
                                       ),
                                       Text(
-                                        '${double.tryParse(widget.scheme['nav']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}',
+                                        '₹ ${double.tryParse(widget.scheme['nav']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}',
                                         style: GoogleFonts.poppins(
                                           color: Color(0xFF303131),
                                           fontSize: 14,
@@ -1810,7 +1810,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                     NumberFormat.currency(
                                                         locale:
                                                         'en_IN',
-                                                        symbol: '₹ ')
+                                                        symbol: '')
                                                         .format(tdUnits[
                                                     index]),
                                                     style: GoogleFonts.poppins(
@@ -1867,7 +1867,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                   Text(
                                                     NumberFormat.currency(
                                                       locale: 'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
-                                                      symbol: '₹ ', // Change the symbol as needed
+                                                      symbol: '', // Change the symbol as needed
                                                       decimalDigits: 2, // Number of decimal places
                                                     ).format(double.tryParse(transBalancedUnits[index].replaceAll(',', '')) ?? 0.00),
                                                     style: GoogleFonts.poppins(
