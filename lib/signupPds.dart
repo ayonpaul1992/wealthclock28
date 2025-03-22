@@ -82,7 +82,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
   final passText = TextEditingController();
   final repassText = TextEditingController();
   bool isLoading = false;
-  bool _isPanVisible = false; // For showing a loading spinner
+  final bool _isPanVisible = false; // For showing a loading spinner
   // Function to show the error or success messages
   void _showMessage(String message) {
     ScaffoldMessenger.of(context)
@@ -183,7 +183,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         SizedBox(
                           height: 10,
                         ),
-                        Container(
+                        SizedBox(
                           width: 171,
                           child: TextField(
                             controller: firstNameText,
@@ -215,7 +215,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         SizedBox(
                           height: 10,
                         ),
-                        Container(
+                        SizedBox(
                           width: 171,
                           child: TextField(
                             controller: lastNameText,
@@ -249,7 +249,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         ),
                         CompositedTransformTarget(
                           link: _layerLink,
-                          child: Container(
+                          child: SizedBox(
                             width: 171,
                             child: GestureDetector(
                               onTap: toggleDropdown,
@@ -301,7 +301,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         SizedBox(
                           height: 10,
                         ),
-                        Container(
+                        SizedBox(
                           width: 171,
                           child: TextField(
                             controller: panNoText,

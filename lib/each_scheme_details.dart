@@ -78,10 +78,10 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
     schemeCategory = widget.scheme["scheme_category"] ?? "N/A";
     schemeSubCategory = widget.scheme["scheme_subcategory"] ?? "N/A";
     fetchInvestmentBreakup(
-        schemeFolioNumber,
-        widget.scheme["inf_no"] ?? "", // Ensure this is correct
-         // Ensure this is correct
-        );
+      schemeFolioNumber,
+      widget.scheme["inf_no"] ?? "", // Ensure this is correct
+      // Ensure this is correct
+    );
     isLoading = false;
     hasTransactions = true;
     schemeTransactionDataTdAmnt = tdAmounts
@@ -97,14 +97,12 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
     schemeTransactionDataBalancedUnits = transBalancedUnits.join(", ");
     schemeTransactionDataTdDate = tdDate.map((date) {
       // ✅ Ensure the date is parsed and formatted correctly
-      if (date is String) {
-        try {
-          DateTime parsedDate = DateTime.parse(date as String);
-          return DateFormat('dd/MM/yyyy')
-              .format(parsedDate); // ✅ Format to DD/MM/YYYY
-        } catch (e) {
-          return "Invalid Date"; // Handle parsing errors
-        }
+      try {
+        DateTime parsedDate = DateTime.parse(date as String);
+        return DateFormat('dd/MM/yyyy')
+            .format(parsedDate); // ✅ Format to DD/MM/YYYY
+      } catch (e) {
+        return "Invalid Date"; // Handle parsing errors
       }
       return "Invalid Date";
     }).join(", ");
@@ -280,8 +278,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
     }
   }
 
-  Future<void> fetchInvestmentBreakup(
-      String folioNumber, String infNo) async {
+  Future<void> fetchInvestmentBreakup(String folioNumber, String infNo) async {
     setState(() {
       isLoading = true;
       hasTransactions = false;
@@ -342,8 +339,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                 List<Map<String, dynamic>>.from(data["transaction_data"]);
             print(transactions);
             if (transactions.isNotEmpty) {
-              String latestBalancedUnits =
-                  transactions[0]["balancedUnits"];
+              String latestBalancedUnits = transactions[0]["balancedUnits"];
 
               setState(() {
                 hasTransactions = true;
@@ -378,8 +374,8 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                   .toList();
               transBalancedUnits = transactions
                   .map<String>((item) => (item["balancedUnits"] != null)
-                  ? item["balancedUnits"].toString()
-                  : "0.0")
+                      ? item["balancedUnits"].toString()
+                      : "0.0")
                   .toList();
 
               // ✅ Extract & format transaction dates
@@ -418,7 +414,8 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                       unit.toStringAsFixed(2)) // Keep two decimal places
                   .join(", ");
               schemeTransactionDataTdPurred = tdPurred.join(", ");
-              schemeTransactionDataBalancedUnits = transBalancedUnits.join(", ");
+              schemeTransactionDataBalancedUnits =
+                  transBalancedUnits.join(", ");
 
               // ✅ Format transaction dates
               schemeTransactionDataTdDate = tdDate.join(", ");
@@ -478,7 +475,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
           schemeTransactionDataTdPurred =
               "❌ Error ${response.statusCode}: ${response.body}";
           schemeTransactionDataBalancedUnits =
-          "❌ Error ${response.statusCode}: ${response.body}";
+              "❌ Error ${response.statusCode}: ${response.body}";
           widget.scheme['balancedUnits'] = "0.00";
         });
       }
@@ -655,7 +652,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                         height: 64,
                       ),
                     ),
-                    Container(
+                    SizedBox(
                       width: 150,
                       child: Text(
                         userName,
@@ -1045,7 +1042,8 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                             SizedBox(height: 10),
                             Container(
                               child: Text(
-                                '${widget.scheme['scheme_name']?.toString() ?? 'N/A'}',
+                                widget.scheme['scheme_name']?.toString() ??
+                                    'N/A',
                                 textAlign: TextAlign
                                     .center, // Apply text alignment here
                                 style: GoogleFonts.poppins(
@@ -1219,7 +1217,9 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                         ),
                                       ),
                                       Text(
-                                        '${widget.scheme['folio_number']?.toString() ?? 'N/A'}',
+                                        widget.scheme['folio_number']
+                                                ?.toString() ??
+                                            'N/A',
                                         style: GoogleFonts.poppins(
                                           color: Color(0xFF303131),
                                           fontSize: 12,
@@ -1303,10 +1303,16 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                           ),
                                           Text(
                                             NumberFormat.currency(
-                                              locale: 'en_IN', // Indian number format
+                                              locale:
+                                                  'en_IN', // Indian number format
                                               symbol: '₹ ', // Currency symbol
-                                              decimalDigits: 2, // Two decimal places
-                                            ).format(double.tryParse(widget.scheme['current_val']?.toString() ?? '') ?? 0.0),
+                                              decimalDigits:
+                                                  2, // Two decimal places
+                                            ).format(double.tryParse(widget
+                                                        .scheme['current_val']
+                                                        ?.toString() ??
+                                                    '') ??
+                                                0.0),
                                             style: GoogleFonts.poppins(
                                               fontSize: 19,
                                               fontWeight: FontWeight.w600,
@@ -1398,12 +1404,8 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                             fontWeight: FontWeight.w400),
                                       ),
                                       Text(
-                                        (((double.tryParse(
-                                            calculateGainLoss(widget.scheme['current_val'], widget.scheme['invested_val'])) ??
-                                            0.0) /
-                                            (double.tryParse(widget.scheme['invested_val']?.toString() ?? '0') ?? 1))
-                                            * 100) // Multiply by 100
-                                            .toStringAsFixed(2) + " %", // Append percentage symbol
+                                        "${(((double.tryParse(calculateGainLoss(widget.scheme['current_val'], widget.scheme['invested_val'])) ?? 0.0) / (double.tryParse(widget.scheme['invested_val']?.toString() ?? '0') ?? 1)) * 100) // Multiply by 100
+                                            .toStringAsFixed(2)} %", // Append percentage symbol
                                         style: GoogleFonts.poppins(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w600,
@@ -1538,10 +1540,17 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                       ),
                                       Text(
                                         NumberFormat.currency(
-                                          locale: 'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
-                                          symbol: '', // Change to '$', '€', etc., as needed
-                                          decimalDigits: 2, // Ensures two decimal places
-                                        ).format(double.tryParse(widget.scheme['balancedUnits'].toString().replaceAll(',', '')) ?? 0.00),
+                                          locale:
+                                              'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
+                                          symbol:
+                                              '', // Change to '$', '€', etc., as needed
+                                          decimalDigits:
+                                              2, // Ensures two decimal places
+                                        ).format(double.tryParse(widget
+                                                .scheme['balancedUnits']
+                                                .toString()
+                                                .replaceAll(',', '')) ??
+                                            0.00),
                                         style: GoogleFonts.poppins(
                                           color: Color(0xFF303131),
                                           fontSize: 14,
@@ -1577,7 +1586,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        'Market Value',
+                                        'Invested Value',
                                         style: GoogleFonts.poppins(
                                           color: Color(0xFF8c8c8c),
                                           fontSize: 14,
@@ -1586,10 +1595,16 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                       ),
                                       Text(
                                         NumberFormat.currency(
-                                          locale: 'en_IN', // Indian number format
+                                          locale:
+                                              'en_IN', // Indian number format
                                           symbol: '₹ ', // Currency symbol
-                                          decimalDigits: 2, // Two decimal places
-                                        ).format(double.tryParse(widget.scheme['current_val']?.toString() ?? '') ?? 0.0),
+                                          decimalDigits:
+                                              2, // Two decimal places
+                                        ).format(double.tryParse(widget
+                                                    .scheme['invested_val']
+                                                    ?.toString() ??
+                                                '') ??
+                                            0.0),
                                         style: GoogleFonts.poppins(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
@@ -1603,7 +1618,9 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                             ],
                           ),
                         )),
-                    SizedBox(height: 20,),
+                    SizedBox(
+                      height: 20,
+                    ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
@@ -1611,291 +1628,312 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                         // dynamic work start on 20.03.2025
 
                         Container(
-
                           child: isLoading
                               ? Center(child: CircularProgressIndicator())
                               : hasTransactions && transactionDataBox.isNotEmpty
-                              ? Flexible(
-                                child: ListView.builder(
-                                                            shrinkWrap: true,
-                                  physics: BouncingScrollPhysics(),
-                                                            itemCount: transactionDataBox.length,
-                                                            itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: EdgeInsets.only(
-                                      top: 0,
-                                      right: 0,
-                                      left: 0,
-                                      bottom: 12),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius:
-                                      BorderRadius.circular(10),
-                                    ),
-                                    padding: EdgeInsets.only(right: 15),
-                                    child: SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                        children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment
-                                                .start,
-                                            children: [
-                                              SizedBox(
-                                                height: 8,
+                                  ? Flexible(
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: BouncingScrollPhysics(),
+                                        itemCount: transactionDataBox.length,
+                                        itemBuilder: (context, index) {
+                                          return Padding(
+                                            padding: EdgeInsets.only(
+                                                top: 0,
+                                                right: 0,
+                                                left: 0,
+                                                bottom: 12),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
                                               ),
-                                              Padding(
-                                                padding: EdgeInsets
-                                                    .symmetric(
-                                                    horizontal: 11,
-                                                    vertical: 8),
-                                                child: Container(
-                                                  decoration:
-                                                  BoxDecoration(
-                                                    color: Color(
-                                                        0xFFdceffc), // Background color
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: Colors
-                                                            .black
-                                                            .withOpacity(
-                                                            0.2), // Shadow color with opacity
-                                                        spreadRadius:
-                                                        2, // How much the shadow spreads
-                                                        blurRadius:
-                                                        5, // How soft the shadow is
-                                                        offset: Offset(
-                                                            0,
-                                                            3), // Shadow position (x, y)
+                                              padding:
+                                                  EdgeInsets.only(right: 15),
+                                              child: SingleChildScrollView(
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        SizedBox(
+                                                          height: 8,
+                                                        ),
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                                  horizontal:
+                                                                      11,
+                                                                  vertical: 8),
+                                                          child: Container(
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: Color(
+                                                                  0xFFdceffc), // Background color
+                                                              boxShadow: [
+                                                                BoxShadow(
+                                                                  color: Colors
+                                                                      .black
+                                                                      .withOpacity(
+                                                                          0.2), // Shadow color with opacity
+                                                                  spreadRadius:
+                                                                      2, // How much the shadow spreads
+                                                                  blurRadius:
+                                                                      5, // How soft the shadow is
+                                                                  offset: Offset(
+                                                                      0,
+                                                                      3), // Shadow position (x, y)
+                                                                ),
+                                                              ],
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          20), // Optional: Add rounded corners
+                                                            ),
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                                    left: 15,
+                                                                    right: 15,
+                                                                    top: 2,
+                                                                    bottom:
+                                                                        2), // Add padding for better appearance
+                                                            child: Text(
+                                                              tdPurred[index]
+                                                                  .toUpperCase(),
+                                                              style: GoogleFonts
+                                                                  .poppins(
+                                                                color: Color(
+                                                                    0xFF0f625c),
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 15,
+                                                        ),
+                                                        Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 20),
+                                                          child: Icon(
+                                                            Icons
+                                                                .calendar_month_outlined, // Calendar Icon
+                                                            color: Color(
+                                                                0xFF09a99d), // Change color as needed
+                                                            size:
+                                                                20, // Adjust size as needed
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 9,
+                                                        ),
+                                                        Container(
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    left: 20),
+                                                            child: Text(
+                                                                tdDate[index],
+                                                                style: GoogleFonts.poppins(
+                                                                    color: Color(
+                                                                        0xFF303131),
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500))),
+                                                        SizedBox(
+                                                          height: 18,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Padding(
+                                                      padding: EdgeInsets.only(
+                                                          left: 10, right: 10),
+                                                      child: SizedBox(
+                                                        height:
+                                                            130, // Adjust as needed
+                                                        child: VerticalDivider(
+                                                          color:
+                                                              Color(0xFFe5e5e5),
+                                                          thickness: 1,
+                                                        ),
                                                       ),
-                                                    ],
-                                                    borderRadius:
-                                                    BorderRadius
-                                                        .circular(
-                                                        20), // Optional: Add rounded corners
-                                                  ),
-                                                  padding: EdgeInsets.only(
-                                                      left: 15,
-                                                      right: 15,
-                                                      top: 2,
-                                                      bottom:
-                                                      2), // Add padding for better appearance
-                                                  child: Text(
-                                                    tdPurred[index].toUpperCase(),
-                                                    style: GoogleFonts
-                                                        .poppins(
-                                                      color: Color(
-                                                          0xFF0f625c),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                      FontWeight
-                                                          .w500,
                                                     ),
-                                                  ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              'Amount',
+                                                              style: GoogleFonts.poppins(
+                                                                  color: Color(
+                                                                      0xFF0f625c),
+                                                                  fontSize: 13,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500),
+                                                            ),
+                                                            Text(
+                                                              NumberFormat.currency(
+                                                                      locale:
+                                                                          'en_IN',
+                                                                      symbol:
+                                                                          '₹ ')
+                                                                  .format(tdAmounts[
+                                                                      index]), // ✅ Using `index` to show the correct value
+                                                              style: GoogleFonts
+                                                                  .poppins(
+                                                                color: Color(
+                                                                    0xFF303131),
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          height: 15,
+                                                        ),
+                                                        Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              'Units',
+                                                              style: GoogleFonts.poppins(
+                                                                  color: Color(
+                                                                      0xFF0f625c),
+                                                                  fontSize: 13,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500),
+                                                            ),
+                                                            Text(
+                                                              NumberFormat.currency(
+                                                                      locale:
+                                                                          'en_IN',
+                                                                      symbol:
+                                                                          '')
+                                                                  .format(tdUnits[
+                                                                      index]),
+                                                              style: GoogleFonts.poppins(
+                                                                  color: Color(
+                                                                      0xFF303131),
+                                                                  fontSize: 13,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          height: 10,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Padding(
+                                                      padding: EdgeInsets.only(
+                                                          left: 10, right: 10),
+                                                      child: SizedBox(
+                                                        height:
+                                                            130, // Adjust as needed
+                                                        child: VerticalDivider(
+                                                          color:
+                                                              Color(0xFFe5e5e5),
+                                                          thickness: 1,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            SizedBox(
+                                                              height: 54,
+                                                            ),
+                                                            Text(
+                                                              'Balance',
+                                                              style: GoogleFonts.poppins(
+                                                                  color: Color(
+                                                                      0xFF0f625c),
+                                                                  fontSize: 13,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500),
+                                                            ),
+                                                            Text(
+                                                              NumberFormat
+                                                                  .currency(
+                                                                locale:
+                                                                    'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
+                                                                symbol:
+                                                                    '', // Change the symbol as needed
+                                                                decimalDigits:
+                                                                    2, // Number of decimal places
+                                                              ).format(double.tryParse(transBalancedUnits[
+                                                                          index]
+                                                                      .replaceAll(
+                                                                          ',',
+                                                                          '')) ??
+                                                                  0.00),
+                                                              style: GoogleFonts
+                                                                  .poppins(
+                                                                color: Color(
+                                                                    0xFF0f625c),
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          height: 10,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
-                                              SizedBox(
-                                                height: 15,
-                                              ),
-                                              Container(
-                                                margin: EdgeInsets.only(
-                                                    left: 20),
-                                                child: Icon(
-                                                  Icons
-                                                      .calendar_month_outlined, // Calendar Icon
-                                                  color: Color(
-                                                      0xFF09a99d), // Change color as needed
-                                                  size:
-                                                  20, // Adjust size as needed
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: 9,
-                                              ),
-                                              Container(
-                                                  margin:
-                                                  EdgeInsets.only(
-                                                      left: 20),
-                                                  child: Text(
-                                                      tdDate[index],
-                                                      style: GoogleFonts.poppins(
-                                                          color: Color(
-                                                              0xFF303131),
-                                                          fontSize: 13,
-                                                          fontWeight:
-                                                          FontWeight
-                                                              .w500))),
-                                              SizedBox(
-                                                height: 18,
-                                              ),
-                                            ],
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.only(
-                                                left: 10, right: 10),
-                                            child: SizedBox(
-                                              height:
-                                              130, // Adjust as needed
-                                              child: VerticalDivider(
-                                                color:
-                                                Color(0xFFe5e5e5),
-                                                thickness: 1,
-                                              ),
                                             ),
-                                          ),
-                                          Column(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment
-                                                .start,
-                                            children: [
-                                              Column(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
-                                                children: [
-                                                  Text(
-                                                    'Amount',
-                                                    style: GoogleFonts.poppins(
-                                                        color: Color(
-                                                            0xFF0f625c),
-                                                        fontSize: 13,
-                                                        fontWeight:
-                                                        FontWeight
-                                                            .w500),
-                                                  ),
-                                                  Text(
-                                                    NumberFormat.currency(
-                                                        locale:
-                                                        'en_IN',
-                                                        symbol: '₹ ')
-                                                        .format(tdAmounts[
-                                                    index]), // ✅ Using `index` to show the correct value
-                                                    style: GoogleFonts
-                                                        .poppins(
-                                                      color: Color(
-                                                          0xFF303131),
-                                                      fontSize: 13,
-                                                      fontWeight:
-                                                      FontWeight
-                                                          .w500,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                height: 15,
-                                              ),
-                                              Column(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
-                                                children: [
-                                                  Text(
-                                                    'Units',
-                                                    style: GoogleFonts.poppins(
-                                                        color: Color(
-                                                            0xFF0f625c),
-                                                        fontSize: 13,
-                                                        fontWeight:
-                                                        FontWeight
-                                                            .w500),
-                                                  ),
-                                                  Text(
-                                                    NumberFormat.currency(
-                                                        locale:
-                                                        'en_IN',
-                                                        symbol: '')
-                                                        .format(tdUnits[
-                                                    index]),
-                                                    style: GoogleFonts.poppins(
-                                                        color: Color(
-                                                            0xFF303131),
-                                                        fontSize: 13,
-                                                        fontWeight:
-                                                        FontWeight
-                                                            .w500),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                height: 10,
-                                              ),
-                                            ],
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.only(
-                                                left: 10, right: 10),
-                                            child: SizedBox(
-                                              height:
-                                              130, // Adjust as needed
-                                              child: VerticalDivider(
-                                                color:
-                                                Color(0xFFe5e5e5),
-                                                thickness: 1,
-                                              ),
-                                            ),
-                                          ),
-                                          Column(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment
-                                                .start,
-                                            children: [
-                                              Column(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .center,
-                                                children: [
-                                                  SizedBox(
-                                                    height: 54,
-                                                  ),
-                                                  Text(
-                                                    'Balance',
-                                                    style: GoogleFonts.poppins(
-                                                        color: Color(
-                                                            0xFF0f625c),
-                                                        fontSize: 13,
-                                                        fontWeight:
-                                                        FontWeight
-                                                            .w500),
-                                                  ),
-                                                  Text(
-                                                    NumberFormat.currency(
-                                                      locale: 'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
-                                                      symbol: '', // Change the symbol as needed
-                                                      decimalDigits: 2, // Number of decimal places
-                                                    ).format(double.tryParse(transBalancedUnits[index].replaceAll(',', '')) ?? 0.00),
-                                                    style: GoogleFonts.poppins(
-                                                      color: Color(0xFF0f625c),
-                                                      fontSize: 14,
-                                                      fontWeight: FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                height: 10,
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                          );
+                                        },
+                                      ),
+                                    )
+                                  : Center(
+                                      child: CircularProgressIndicator(
+                                        color: Color(0xFF0f625c),
                                       ),
                                     ),
-                                  ),
-                                );
-                                                            },
-                                                          ),
-                              )
-                              : Center(
-                            child: CircularProgressIndicator(
-                              color: Color(0xFF0f625c),
-                            ),
-                          ),
                         ),
 
                         // dynamic work end on 20.03.2025

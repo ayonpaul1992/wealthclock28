@@ -90,14 +90,12 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
     schemeTransactionDataTdPurred = tdPurred.join(", ");
     schemeTransactionDataTdDate = tdDate.map((date) {
       // ✅ Ensure the date is parsed and formatted correctly
-      if (date is String) {
-        try {
-          DateTime parsedDate = DateTime.parse(date as String);
-          return DateFormat('dd/MM/yyyy')
-              .format(parsedDate); // ✅ Format to DD/MM/YYYY
-        } catch (e) {
-          return "Invalid Date"; // Handle parsing errors
-        }
+      try {
+        DateTime parsedDate = DateTime.parse(date as String);
+        return DateFormat('dd/MM/yyyy')
+            .format(parsedDate); // ✅ Format to DD/MM/YYYY
+      } catch (e) {
+        return "Invalid Date"; // Handle parsing errors
       }
       return "Invalid Date";
     }).join(", ");
@@ -326,19 +324,23 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
               data["transaction_data"] is List &&
               data["transaction_data"].isNotEmpty) {
             List<Map<String, dynamic>> transactions =
-            List<Map<String, dynamic>>.from(data["transaction_data"]);
+                List<Map<String, dynamic>>.from(data["transaction_data"]);
 
             setState(() {
               // ✅ Extract numerical values
               tdAmounts = transactions
-                  .map<double>((item) => (item["td_amt"] as num?)?.toDouble() ?? 0.0)
+                  .map<double>(
+                      (item) => (item["td_amt"] as num?)?.toDouble() ?? 0.0)
                   .toList();
 
               tdUnits = transactions
-                  .map<double>((item) => (item["td_units"] as num?)?.toDouble() ?? 0.0)
+                  .map<double>(
+                      (item) => (item["td_units"] as num?)?.toDouble() ?? 0.0)
                   .toList();
               tdPurred = transactions
-                  .map<String>((item) => (item["td_purred"] != null) ? item["td_purred"].toString() : "0.0")
+                  .map<String>((item) => (item["td_purred"] != null)
+                      ? item["td_purred"].toString()
+                      : "0.0")
                   .toList();
 
               // ✅ Extract & format transaction dates
@@ -366,12 +368,15 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
 
               // ✅ Format amounts as currency
               schemeTransactionDataTdAmnt = tdAmounts
-                  .map((amt) => NumberFormat.currency(locale: 'en_IN', symbol: '₹').format(amt))
+                  .map((amt) =>
+                      NumberFormat.currency(locale: 'en_IN', symbol: '₹')
+                          .format(amt))
                   .join(", ");
 
               // ✅ Format units as plain numbers
               schemeTransactionDataTdUnits = tdUnits
-                  .map((unit) => unit.toStringAsFixed(2)) // Keep two decimal places
+                  .map((unit) =>
+                      unit.toStringAsFixed(2)) // Keep two decimal places
                   .join(", ");
               schemeTransactionDataTdPurred = tdPurred.join(", ");
 
@@ -380,12 +385,15 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
 
               // ✅ Summarize transactions instead of full JSON
               schemeTransactionDataTottal = transactions
-                  .map((item) => "Amt: ₹${item["td_amt"]}, Units: ${item["td_units"]}, Date: ${item["transactionDate"]}")
+                  .map((item) =>
+                      "Amt: ₹${item["td_amt"]}, Units: ${item["td_units"]}, Date: ${item["transactionDate"]}")
                   .join("\n");
             });
 
-            print("Updated schemeTransactionDataTdAmnt: $schemeTransactionDataTdAmnt");
-            print("Updated schemeTransactionDataTottal: $schemeTransactionDataTottal");
+            print(
+                "Updated schemeTransactionDataTdAmnt: $schemeTransactionDataTdAmnt");
+            print(
+                "Updated schemeTransactionDataTottal: $schemeTransactionDataTottal");
           } else {
             print("⚠️ No transaction_data found or list is empty");
             setState(() {
@@ -415,11 +423,16 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
         setState(() {
           isLoading = false;
           hasTransactions = false;
-          schemeTransactionDataTdAmnt = "❌ Error ${response.statusCode}: ${response.body}";
-          schemeTransactionDataTottal = "❌ Error ${response.statusCode}: ${response.body}";
-          schemeTransactionDataTdUnits = "❌ Error ${response.statusCode}: ${response.body}";
-          schemeTransactionDataTdDate = "❌ Error ${response.statusCode}: ${response.body}";
-          schemeTransactionDataTdPurred = "❌ Error ${response.statusCode}: ${response.body}";
+          schemeTransactionDataTdAmnt =
+              "❌ Error ${response.statusCode}: ${response.body}";
+          schemeTransactionDataTottal =
+              "❌ Error ${response.statusCode}: ${response.body}";
+          schemeTransactionDataTdUnits =
+              "❌ Error ${response.statusCode}: ${response.body}";
+          schemeTransactionDataTdDate =
+              "❌ Error ${response.statusCode}: ${response.body}";
+          schemeTransactionDataTdPurred =
+              "❌ Error ${response.statusCode}: ${response.body}";
         });
       }
     } catch (e) {
@@ -519,12 +532,13 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
           },
         ),
         title: InkWell(
-          onTap: (){
+          onTap: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        dashboardAfterLogin(userId: '',)));
+                    builder: (context) => dashboardAfterLogin(
+                          userId: '',
+                        )));
           },
           child: Image.asset(
             'assets/images/dshb_logo.png',
@@ -536,11 +550,11 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
               // Add your functionality here
             },
             style: TextButton.styleFrom(
-              minimumSize: Size(20,
-                  20), // Adjust clickable area to match image size
+              minimumSize:
+                  Size(20, 20), // Adjust clickable area to match image size
               padding: EdgeInsets.zero, // Remove padding
-              tapTargetSize: MaterialTapTargetSize
-                  .shrinkWrap, // Shrink touch area
+              tapTargetSize:
+                  MaterialTapTargetSize.shrinkWrap, // Shrink touch area
             ),
             child: Image.asset(
               'assets/images/bell-svgrepo-com.png',
@@ -548,7 +562,6 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
               width: 20, // Adjust the width as needed
             ),
           ),
-
           const SizedBox(width: 10),
           TextButton(
             onPressed: () {
@@ -567,7 +580,9 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
               width: 20,
             ),
           ),
-          SizedBox(width: 20,),
+          SizedBox(
+            width: 20,
+          ),
         ],
       ),
       drawer: Drawer(
@@ -591,7 +606,7 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
                         height: 64,
                       ),
                     ),
-                    Container(
+                    SizedBox(
                       width: 150,
                       child: Text(
                         userName,
@@ -938,7 +953,6 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
         children: [
           // Header Row with Logo and Text
 
-
           // Main Content Area with Gradient Background
           Expanded(
             child: Container(
@@ -991,7 +1005,8 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
                               SizedBox(height: 10),
                               Container(
                                 child: Text(
-                                  '${widget.scheme['scheme_name']?.toString() ?? 'N/A'}',
+                                  widget.scheme['scheme_name']?.toString() ??
+                                      'N/A',
                                   textAlign: TextAlign.center,
                                   style: GoogleFonts.poppins(
                                     color: Color(0xFF0f625c),
@@ -1023,7 +1038,11 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
                                         ),
                                       ),
                                       Text(
-                                        '${double.tryParse(widget.scheme['unit']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}',
+                                        double.tryParse(widget.scheme['unit']
+                                                        ?.toString() ??
+                                                    '0')
+                                                ?.toStringAsFixed(2) ??
+                                            '0.00',
                                         style: GoogleFonts.poppins(
                                           color: Color(0xFF303131),
                                           fontSize: 14,
@@ -1045,7 +1064,11 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
                                         ),
                                       ),
                                       Text(
-                                        '${double.tryParse(widget.scheme['nav']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}',
+                                        double.tryParse(widget.scheme['nav']
+                                                        ?.toString() ??
+                                                    '0')
+                                                ?.toStringAsFixed(2) ??
+                                            '0.00',
                                         style: GoogleFonts.poppins(
                                           color: Color(0xFF303131),
                                           fontSize: 14,
@@ -1059,7 +1082,7 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        'Market Value',
+                                        'Invested Value',
                                         style: GoogleFonts.poppins(
                                           color: Color(0xFF8c8c8c),
                                           fontSize: 14,
@@ -1085,7 +1108,7 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
+                        SizedBox(
                           height: 360,
                           child: isLoading
                               ? Center(child: CircularProgressIndicator())
@@ -1159,7 +1182,8 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
                                                               bottom:
                                                                   2), // Add padding for better appearance
                                                           child: Text(
-                                                            tdPurred[index].toUpperCase(),
+                                                            tdPurred[index]
+                                                                .toUpperCase(),
                                                             style: GoogleFonts
                                                                 .poppins(
                                                               color: Color(
@@ -1358,12 +1382,12 @@ class _eachFundInvstDtlsState extends State<eachFundInvstDtls> {
                                       },
                                     )
                                   : Center(
-                              child: CircularProgressIndicator(
-                                color: Color(0xFF0f625c),
-                              ),
+                                      child: CircularProgressIndicator(
+                                        color: Color(0xFF0f625c),
+                                      ),
                                     ),
                         ),
-                        
+
                         // Container(
                         //   margin: EdgeInsets.only(bottom: 15),
                         //   child: Padding(

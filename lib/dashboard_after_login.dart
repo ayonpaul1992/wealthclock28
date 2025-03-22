@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'individual_portfolio.dart';
-import 'family_portfolio.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'individual_portfolio.dart';
+import 'family_portfolio.dart';
+import 'custom_bottom_nav_bar.dart';
 
 class dashboardAfterLogin extends StatefulWidget {
   const dashboardAfterLogin({super.key, required String userId});
@@ -54,7 +55,8 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
 
     if (authToken == null || authToken.isEmpty) {
       setState(() {
-        userName = userCurrentValue = userTotalGain = cumulativeXirrValue = absoluteReturnValue = "Auth token not found!";
+        userName = userCurrentValue = userTotalGain =
+            cumulativeXirrValue = absoluteReturnValue = "Auth token not found!";
       });
       return;
     }
@@ -133,30 +135,22 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
             // ✅ Format & Assign `equityPercentage` & `equityAmount`
             equityPercentage = equityPercent.toStringAsFixed(2);
             equityAmount = NumberFormat.currency(
-                locale: 'en_IN',
-                symbol: '₹',
-                decimalDigits: 2)
+                    locale: 'en_IN', symbol: '₹', decimalDigits: 2)
                 .format(equityValue);
             // ✅ Format & Assign `debtPercentage` & `debtAmount`
             debtPercentage = debtPercent.toStringAsFixed(2);
             debtAmount = NumberFormat.currency(
-                locale: 'en_IN',
-                symbol: '₹',
-                decimalDigits: 2)
+                    locale: 'en_IN', symbol: '₹', decimalDigits: 2)
                 .format(debtValue);
             // ✅ Format & Assign `otherPercentage` & `otherAmount`
             otherPercentage = otherPercent.toStringAsFixed(2);
             otherAmount = NumberFormat.currency(
-                locale: 'en_IN',
-                symbol: '₹',
-                decimalDigits: 2)
+                    locale: 'en_IN', symbol: '₹', decimalDigits: 2)
                 .format(otherValue);
             // ✅ Format & Assign `hybridPercentage` & `hybridAmount`
             hybridPercentage = hybridPercent.toStringAsFixed(2);
             hybridAmount = NumberFormat.currency(
-                locale: 'en_IN',
-                symbol: '₹',
-                decimalDigits: 2)
+                    locale: 'en_IN', symbol: '₹', decimalDigits: 2)
                 .format(hybridValue);
           });
         } else {
@@ -180,7 +174,8 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
             ? json.decode(response.body)["message"] ?? "Bad Request"
             : "Error ${response.statusCode}: Something went wrong!";
         setState(() {
-          userName = userCurrentValue = userTotalGain = cumulativeXirrValue = absoluteReturnValue = errorMessage;
+          userName = userCurrentValue = userTotalGain =
+              cumulativeXirrValue = absoluteReturnValue = errorMessage;
           equityPercentage = "0.00";
           equityAmount = "0.00";
           debtPercentage = "0.00";
@@ -291,12 +286,13 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
         backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
         title: InkWell(
-          onTap: (){
+          onTap: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                    const dashboardAfterLogin(userId: '',)));
+                    builder: (context) => const dashboardAfterLogin(
+                          userId: '',
+                        )));
           },
           child: Image.asset(
             'assets/images/dshb_logo.png',
@@ -308,11 +304,11 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
               // Add your functionality here
             },
             style: TextButton.styleFrom(
-              minimumSize: Size(20,
-                  20), // Adjust clickable area to match image size
+              minimumSize:
+                  Size(20, 20), // Adjust clickable area to match image size
               padding: EdgeInsets.zero, // Remove padding
-              tapTargetSize: MaterialTapTargetSize
-                  .shrinkWrap, // Shrink touch area
+              tapTargetSize:
+                  MaterialTapTargetSize.shrinkWrap, // Shrink touch area
             ),
             child: Image.asset(
               'assets/images/bell-svgrepo-com.png',
@@ -320,7 +316,6 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
               width: 20, // Adjust the width as needed
             ),
           ),
-
           const SizedBox(width: 10),
           TextButton(
             onPressed: () {
@@ -339,7 +334,9 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
               width: 20,
             ),
           ),
-          SizedBox(width: 20,),
+          SizedBox(
+            width: 20,
+          ),
         ],
       ),
       drawer: Drawer(
@@ -710,7 +707,6 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
         children: [
           // Header Row with Logo and Text
 
-
           // Main Content Area with Gradient Background
           Expanded(
             child: Container(
@@ -881,35 +877,70 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                                   // Left Section: Labels and Percentages
                                   Container(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        buildLegendItem("Equity", equityPercentage, Color(0xFF2cbefc), equityAmount),
+                                        buildLegendItem(
+                                            "Equity",
+                                            equityPercentage,
+                                            Color(0xFF2cbefc),
+                                            equityAmount),
                                         SizedBox(height: 10),
-                                        buildLegendItem("Hybrid", hybridPercentage, Color(0xFFf79e3b), hybridAmount),
+                                        buildLegendItem(
+                                            "Hybrid",
+                                            hybridPercentage,
+                                            Color(0xFFf79e3b),
+                                            hybridAmount),
                                         SizedBox(height: 10),
-                                        buildLegendItem("Debt", debtPercentage, Color(0xFFa6a8a7), debtAmount),
+                                        buildLegendItem("Debt", debtPercentage,
+                                            Color(0xFFa6a8a7), debtAmount),
                                         SizedBox(height: 10),
-                                        buildLegendItem("Other", otherPercentage, Color(0xFFdac45e), otherAmount),
+                                        buildLegendItem(
+                                            "Other",
+                                            otherPercentage,
+                                            Color(0xFFdac45e),
+                                            otherAmount),
                                       ],
                                     ),
                                   ),
                                   SizedBox(width: 20),
 
                                   // Right Section: Pie Chart
-                                  Container(
+                                  SizedBox(
                                     height: 140, // Adjust as needed
-                                    width: 140,  // Adjust as needed
+                                    width: 140, // Adjust as needed
                                     child: PieChart(
                                       PieChartData(
                                         sections: [
-                                          createPieSection(double.tryParse(equityPercentage) ?? 0, Color(0xFF2cbefc), "Equity"),
-                                          createPieSection(double.tryParse(hybridPercentage) ?? 0, Color(0xFFf79e3b), "Hybrid"),
-                                          createPieSection(double.tryParse(debtPercentage) ?? 0, Color(0xFFa6a8a7), "Debt"),
-                                          createPieSection(double.tryParse(otherPercentage) ?? 0, Color(0xFFdac45e), "Other"),
+                                          createPieSection(
+                                              double.tryParse(
+                                                      equityPercentage) ??
+                                                  0,
+                                              Color(0xFF2cbefc),
+                                              "Equity"),
+                                          createPieSection(
+                                              double.tryParse(
+                                                      hybridPercentage) ??
+                                                  0,
+                                              Color(0xFFf79e3b),
+                                              "Hybrid"),
+                                          createPieSection(
+                                              double.tryParse(debtPercentage) ??
+                                                  0,
+                                              Color(0xFFa6a8a7),
+                                              "Debt"),
+                                          createPieSection(
+                                              double.tryParse(
+                                                      otherPercentage) ??
+                                                  0,
+                                              Color(0xFFdac45e),
+                                              "Other"),
                                         ],
-                                        borderData: FlBorderData(show: false), // Hide border
+                                        borderData: FlBorderData(
+                                            show: false), // Hide border
                                         sectionsSpace: 0,
-                                        centerSpaceRadius: 20, // Creates a donut effect
+                                        centerSpaceRadius:
+                                            20, // Creates a donut effect
                                       ),
                                     ),
                                   ),
@@ -1385,137 +1416,14 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
               ),
             ),
           ),
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.only(top: 10, bottom: 10, left: 25, right: 25),
-            color: Colors.white,
-            child: Wrap(
-              spacing: 15,
-              runSpacing: 15,
-              children: [
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 60,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/ftr_hmm.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Home',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 60,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/ftr_prtflo.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Portfolio',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 50,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/ftr_invst.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Invest',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 50,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/rptt.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Report',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 60,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/stng.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Settings',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
+      bottomNavigationBar: CustomBottomNavBar(selectedIndex: 0),
     );
   }
-  Widget buildLegendItem(String title, String percentage, Color color, String amount) {
+
+  Widget buildLegendItem(
+      String title, String percentage, Color color, String amount) {
     return Row(
       children: [
         Container(
@@ -1557,7 +1465,9 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
       ],
     );
   }
-  PieChartSectionData createPieSection(double value, Color color, String title) {
+
+  PieChartSectionData createPieSection(
+      double value, Color color, String title) {
     return PieChartSectionData(
       color: color,
       value: value,
@@ -1569,11 +1479,11 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
         color: Colors.transparent,
       ),
       radius: 50,
-      borderSide: BorderSide( // 👈 Add a border (stroke) to each section
+      borderSide: BorderSide(
+        // 👈 Add a border (stroke) to each section
         color: Colors.white, // Adjust the border color
         width: 0, // Adjust the border thickness
-      ),// Adjust pie slice size
+      ), // Adjust pie slice size
     );
   }
-  }
-
+}

@@ -383,7 +383,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                         height: 64,
                       ),
                     ),
-                    Container(
+                    SizedBox(
                       width: 150,
                       child: Text(
                         userName,
@@ -916,7 +916,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                   SizedBox(width: 20),
 
                                   // Right Section: Pie Chart
-                                  Container(
+                                  SizedBox(
                                     height: 140, // Adjust as needed
                                     width: 140,  // Adjust as needed
                                     child: PieChart(

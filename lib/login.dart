@@ -29,7 +29,6 @@ class _LoginPageState extends State<LoginPage> {
         .showSnackBar(SnackBar(content: Text(message)));
   }
 
-  // Function to handle login API request
   Future<void> _login() async {
     String uEmail = emailText.text.trim();
     String uPass = passText.text.trim();
@@ -39,12 +38,6 @@ class _LoginPageState extends State<LoginPage> {
       _showMessage("Please enter email and password");
       print("Login failed: Email or Password is empty");
       return;
-    } else if (uPan.isEmpty) {
-      // If PAN is empty, proceed with login using email and password
-      print("Warning: PAN ID is empty. Proceeding with login...");
-    } else {
-      // All fields are filled, continue with normal sign-in process
-      print("Proceeding with login...");
     }
 
     setState(() {
@@ -52,22 +45,17 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
-      // API URL is updated for login with PAN
+      // API URL based on whether PAN is provided
       final apiUrl = uPan.isEmpty
           ? 'https://wealthclockadvisors.com/api/client/login'
           : 'https://wealthclockadvisors.com/api/client/login-with-pan';
-      print("Attempting to login with email: $uEmail"); // Print email for debugging
+
+      print("Attempting to login with email: $uEmail");
 
       final response = await http.post(
         Uri.parse(apiUrl),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: {
-          'email': uEmail,
-          'password': uPass,
-          'pan': uPan, // Send PAN if available
-        },
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: {'email': uEmail, 'password': uPass, 'pan': uPan},
       );
 
       setState(() {
@@ -79,12 +67,12 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        print("Login successful, response data: $responseData");
 
         if (responseData.containsKey('token')) {
           String token = responseData['token'];
           String userId = responseData['user_id'].toString();
 
+          // Store user data in SharedPreferences asynchronously
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('auth_token', token);
           await prefs.setString('user_id', userId);
@@ -94,28 +82,22 @@ class _LoginPageState extends State<LoginPage> {
           // Navigate to dashboard
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => dashboardAfterLogin(userId: userId)),
+            MaterialPageRoute(
+              builder: (context) => dashboardAfterLogin(userId: userId),
+            ),
           );
         } else {
           print("Unexpected response structure.");
           _showMessage("Unexpected response from server.");
         }
-      } else if (response.statusCode == 400) {
-        final Map<String, dynamic> errorResponse = json.decode(response.body);
-        print("Bad request: ${errorResponse['message']}");
-        _showMessage(errorResponse['message'] ?? "Login failed. Please try again.");
-      } else if (response.statusCode == 401) {
-        final Map<String, dynamic> errorResponse = json.decode(response.body);
-        print("Unauthorized: ${errorResponse['message']}");
-        _showMessage(errorResponse['message'] ?? "Login failed. Please try again.");
-      } else if (response.statusCode == 409) {
-        final Map<String, dynamic> errorResponse = json.decode(response.body);
-        print("Conflict: ${errorResponse['message']}");
-        _showMessage(errorResponse['message'] ?? "Login failed. Please try again.");
       } else {
+        // Handle different status codes with better error handling
         final Map<String, dynamic> errorResponse = json.decode(response.body);
-        print("Login error: ${errorResponse['message']}");
-        _showMessage(errorResponse['message'] ?? "Login failed. Please try again.");
+        String errorMessage =
+            errorResponse['message'] ?? "Login failed. Please try again.";
+
+        print("Login error: $errorMessage");
+        _showMessage(errorMessage);
       }
     } catch (e) {
       setState(() {
@@ -125,6 +107,7 @@ class _LoginPageState extends State<LoginPage> {
       _showMessage("Error: Unable to connect to the server.");
     }
   }
+
   bool _isPanVisible = false;
   @override
   Widget build(BuildContext context) {
@@ -197,26 +180,26 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 14),
               ElevatedButton(
                 onPressed:
-                isLoading ? null : _login, // Disable button while loading
+                    isLoading ? null : _login, // Disable button while loading
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFfdd1a0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
                   ),
                   padding:
-                  const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
                 ),
                 child: isLoading
                     ? const CircularProgressIndicator(
-                    color: Colors.white) // Show loading spinner
+                        color: Colors.white) // Show loading spinner
                     : Text(
-                  'SIGN IN',
-                  style: GoogleFonts.poppins(
-                    color: const Color(0xFF222222),
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                        'SIGN IN',
+                        style: GoogleFonts.poppins(
+                          color: const Color(0xFF222222),
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 3),
@@ -262,7 +245,7 @@ class _LoginPageState extends State<LoginPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                    const termsCondPage()));
+                                        const termsCondPage()));
                           },
                           child: Text(
                             'Terms & Conditions',
@@ -339,7 +322,7 @@ class _LoginPageState extends State<LoginPage> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                      const SignupPdsPage()));
+                                          const SignupPdsPage()));
                             },
                             child: Text(
                               'Sign Up',

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'each_fund_investment_detils.dart';
 
 class termsCondPage extends StatefulWidget {
   const termsCondPage({super.key});

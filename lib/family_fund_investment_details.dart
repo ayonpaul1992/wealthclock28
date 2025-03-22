@@ -579,7 +579,7 @@ class _familyFundInvstDtlsState extends State<familyFundInvstDtls> {
                       ),
                     ),
 
-                    Container(
+                    SizedBox(
                       width: 150,
                       child: Text(
                         userName,
