@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
+
 import 'individual_portfolio.dart';
 import 'family_portfolio.dart';
 import 'custom_bottom_nav_bar.dart';
@@ -288,11 +289,13 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
         title: InkWell(
           onTap: () {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const dashboardAfterLogin(
-                          userId: '',
-                        )));
+              context,
+              MaterialPageRoute(
+                builder: (context) => const dashboardAfterLogin(
+                  userId: '',
+                ),
+              ),
+            );
           },
           child: Image.asset(
             'assets/images/dshb_logo.png',

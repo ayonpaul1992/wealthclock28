@@ -9,6 +9,7 @@ import 'signupPds.dart';
 import 'terms_condition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboard_after_login.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,6 +19,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  // Create a storage instance
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
   final emailText = TextEditingController();
   final passText = TextEditingController();
   final panText = TextEditingController();
@@ -27,6 +30,26 @@ class _LoginPageState extends State<LoginPage> {
   void _showMessage(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials(); // ✅ Load saved credentials when screen loads
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    String? savedEmail = await secureStorage.read(key: 'saved_email');
+    String? savedPassword = await secureStorage.read(key: 'saved_password');
+    String? savedPan = await secureStorage.read(key: 'saved_pan');
+
+    if (savedEmail != null && savedPassword != null && savedPan != null) {
+      setState(() {
+        emailText.text = savedEmail;
+        passText.text = savedPassword;
+        panText.text = savedPan;
+      });
+    }
   }
 
   Future<void> _login() async {
@@ -76,6 +99,10 @@ class _LoginPageState extends State<LoginPage> {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('auth_token', token);
           await prefs.setString('user_id', userId);
+
+          await secureStorage.write(key: 'saved_email', value: uEmail);
+          await secureStorage.write(key: 'saved_password', value: uPass);
+          await secureStorage.write(key: 'saved_pan', value: uPan);
 
           _showMessage("Login successful.");
 
@@ -151,6 +178,7 @@ class _LoginPageState extends State<LoginPage> {
                 controller: emailText,
                 decoration: _inputDecoration('youremail@gmail.com'),
                 style: const TextStyle(color: Color(0xFF648683), fontSize: 15),
+                autofillHints: [AutofillHints.email],
               ),
               const SizedBox(height: 14),
               TextField(
@@ -170,12 +198,14 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 style: const TextStyle(color: Color(0xFF648683), fontSize: 15),
+                autofillHints: [AutofillHints.password],
               ),
               const SizedBox(height: 14),
               TextField(
                 controller: panText,
                 decoration: _inputDecoration('PAN ID (Optional)'),
                 style: const TextStyle(color: Color(0xFF648683), fontSize: 15),
+                // autofillHints: [AutofillHints.panNumber],
               ),
               const SizedBox(height: 14),
               ElevatedButton(
