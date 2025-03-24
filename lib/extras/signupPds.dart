@@ -1,6 +1,8 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'login.dart';
+import '../screens/login.dart';
 
 class SignupPdsPage extends StatefulWidget {
   const SignupPdsPage({super.key});
@@ -230,7 +232,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                 textAlign: TextAlign.center,
               ),
               Padding(
-                padding:  EdgeInsets.only(top: 10,bottom: 10),
+                padding: EdgeInsets.only(top: 10, bottom: 10),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -575,7 +577,8 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
 
                         // Show TextField only if "Others" is selected
                         if (mrtSelectedOption == "Others") ...[
-                          const SizedBox(height: 10), // Spacing before TextField
+                          const SizedBox(
+                              height: 10), // Spacing before TextField
                           SizedBox(
                             width: double.infinity, // Adjust width as needed
                             child: TextField(
@@ -615,18 +618,24 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             controller: pdsAddressController,
                             maxLines: 4,
                             decoration: _inputDecoration('').copyWith(
-                              contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12), // Padding inside the box
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 10,
+                                  horizontal: 12), // Padding inside the box
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.white, width: 1),
+                                borderSide:
+                                    BorderSide(color: Colors.white, width: 1),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.white, width: 1),
+                                borderSide:
+                                    BorderSide(color: Colors.white, width: 1),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10), // Same border radius when focused
-                                borderSide: BorderSide(color: Color(0xFF0f625c), width: 1),
+                                borderRadius: BorderRadius.circular(
+                                    10), // Same border radius when focused
+                                borderSide: BorderSide(
+                                    color: Color(0xFF0f625c), width: 1),
                               ),
                             ),
                             style: const TextStyle(
@@ -837,6 +846,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
       ],
     );
   }
+
   Widget maritalStateBoxOption(String option) {
     return Row(
       mainAxisSize: MainAxisSize.min, // Keeps row content compact
