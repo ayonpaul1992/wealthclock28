@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../screens/login.dart';
+import 'login.dart';
 
 class SignupPdsPage extends StatefulWidget {
   const SignupPdsPage({super.key});
@@ -13,12 +13,24 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
   final firstNameText = TextEditingController();
   final lastNameText = TextEditingController();
   final TextEditingController holdingNtrText = TextEditingController();
+  final TextEditingController occupationText =
+      TextEditingController(); // Added for occupation
+  final TextEditingController dobController = TextEditingController();
   bool isDropdownOpen = false;
+  bool isOcptnDropdownOpen = false;
   OverlayEntry? dropdownOverlay;
+  OverlayEntry? occupationOverlay;
   final LayerLink _layerLink = LayerLink();
-
+  final LayerLink _layerOcptnLink = LayerLink(); // Fixed incorrect class
   List<String> dropdownItems = ["Option 1", "Option 2", "Option 3"];
+  List<String> occupationItems = [
+    "Business",
+    "Service",
+    "Self Employed",
+    "Student"
+  ];
   String selectedItem = "Select";
+  String selectedOccupation = "Select";
 
   void toggleDropdown() {
     if (isDropdownOpen) {
@@ -27,6 +39,15 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
       openDropdown();
     }
   }
+
+  void toggleOcptnDropdown() {
+    if (isOcptnDropdownOpen) {
+      closeOcptnDropdown();
+    } else {
+      openOcptnDropdown();
+    }
+  }
+
   void openDropdown() {
     final overlay = Overlay.of(context);
     dropdownOverlay = OverlayEntry(
@@ -71,6 +92,52 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
     });
   }
 
+  void openOcptnDropdown() {
+    closeDropdown(); // Close the other dropdown if open
+    final overlay = Overlay.of(context);
+
+    occupationOverlay = OverlayEntry(
+      builder: (context) => Positioned(
+        width: 171,
+        child: CompositedTransformFollower(
+          link: _layerOcptnLink,
+          offset: const Offset(0, 45),
+          child: Material(
+            elevation: 4,
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.white,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: occupationItems.map((item) {
+                return ListTile(
+                  title: Text(
+                    item,
+                    style: const TextStyle(
+                      color: Color(0xFF648683),
+                      fontSize: 15,
+                    ),
+                  ),
+                  onTap: () {
+                    setState(() {
+                      selectedOccupation = item;
+                      occupationText.text = item;
+                      closeOcptnDropdown();
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlay.insert(occupationOverlay!);
+    setState(() {
+      isOcptnDropdownOpen = true;
+    });
+  }
+
   void closeDropdown() {
     dropdownOverlay?.remove();
     dropdownOverlay = null;
@@ -78,12 +145,48 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
       isDropdownOpen = false;
     });
   }
+
+  void closeOcptnDropdown() {
+    occupationOverlay?.remove();
+    occupationOverlay = null;
+    setState(() {
+      isOcptnDropdownOpen = false;
+    });
+  }
+
   final panNoText = TextEditingController();
   final passText = TextEditingController();
   final repassText = TextEditingController();
+  final othersController = TextEditingController();
+  final pdsAddressController = TextEditingController();
   bool isLoading = false;
   final bool _isPanVisible = false; // For showing a loading spinner
   // Function to show the error or success messages
+  Future<void> _selectDate() async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2000, 1, 1), // Default date
+      firstDate: DateTime(1900, 1, 1), // Minimum date
+      lastDate: DateTime.now(), // Maximum date (cannot select future dates)
+    );
+
+    if (picked != null) {
+      setState(() {
+        dobController.text = "${picked.day}/${picked.month}/${picked.year}";
+      });
+    }
+  }
+
+  // check button gender purpose start
+  List<String> options = ['Male', 'Female'];
+  String selectedOption = "Male";
+  // check button gender purpose end
+
+  // check button Marital Status purpose start
+  List<String> mrtOptions = ['Single', 'Married', 'Others'];
+  String mrtSelectedOption = "Single";
+  // check button Marital Status purpose end
+
   void _showMessage(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
@@ -92,7 +195,6 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: Container(
         height: double.infinity,
         decoration: const BoxDecoration(
@@ -111,7 +213,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                margin: const EdgeInsets.only(top: 80),
+                margin: const EdgeInsets.only(top: 100),
                 child: Image.asset(
                   'assets/images/logo_img.png',
                   height: 120,
@@ -127,36 +229,39 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 90,
-                      height: 1,
-                      color: const Color(0xFFc7d2d0),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      'Personal Details',
-                      style: GoogleFonts.poppins(
-                        color: const Color(0xFF3F4B4B),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+              Padding(
+                padding:  EdgeInsets.only(top: 10,bottom: 10),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 90,
+                        height: 1,
+                        color: const Color(0xFFc7d2d0),
                       ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Container(
-                      width: 90,
-                      height: 1,
-                      color: const Color(0xFFc7d2d0),
-                    ),
-                  ],
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        'Personal Details',
+                        style: GoogleFonts.poppins(
+                          color: const Color(0xFF3F4B4B),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Container(
+                        width: 90,
+                        height: 1,
+                        color: const Color(0xFFc7d2d0),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Container(
@@ -258,22 +363,33 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                   controller: holdingNtrText,
                                   decoration: InputDecoration(
                                     hintText: 'Select',
+                                    hintStyle: GoogleFonts.poppins(
+                                      color: Color(0xFF648683),
+                                      fontSize: 15,
+                                    ),
+                                    contentPadding: const EdgeInsets.only(
+                                        top: 8, bottom: 8, left: 15, right: 15),
                                     suffixIcon: Icon(
-                                      isDropdownOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                                      isDropdownOpen
+                                          ? Icons.keyboard_arrow_up
+                                          : Icons.keyboard_arrow_down,
                                       color: Color(0xFF648683),
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(50),
-                                      borderSide: BorderSide(color: Color(0xFF648683), width: 1),
+                                      borderSide: BorderSide(
+                                          color: Color(0xFF648683), width: 1),
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(50),
-                                      borderSide: BorderSide(color: Color(0xFF0f625c), width: 1),
+                                      borderSide: BorderSide(
+                                          color: Color(0xFF0f625c), width: 1),
                                     ),
                                   ),
                                   style: const TextStyle(
-                                    color: Color(0xFF648683),
+                                    color: Color(0xFF3F4B4B),
                                     fontSize: 15,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ),
@@ -335,6 +451,192 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         ),
                       ],
                     ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(
+                            left: 10,
+                          ),
+                          child: Text(
+                            'Occupation',
+                            style: GoogleFonts.poppins(
+                              color: Color(0xFF6E7B7A),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        CompositedTransformTarget(
+                          link: _layerOcptnLink,
+                          child: SizedBox(
+                            width: 171,
+                            child: GestureDetector(
+                              onTap: toggleOcptnDropdown,
+                              child: AbsorbPointer(
+                                child: TextField(
+                                  controller: occupationText,
+                                  decoration: InputDecoration(
+                                    hintText: 'Select',
+                                    hintStyle: GoogleFonts.poppins(
+                                      color: Color(0xFF648683),
+                                      fontSize: 15,
+                                    ),
+                                    contentPadding: const EdgeInsets.only(
+                                        top: 8, bottom: 8, left: 15, right: 15),
+                                    suffixIcon: Icon(
+                                      isDropdownOpen
+                                          ? Icons.keyboard_arrow_up
+                                          : Icons.keyboard_arrow_down,
+                                      color: Color(0xFF648683),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(50),
+                                      borderSide: BorderSide(
+                                          color: Color(0xFF648683), width: 1),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(50),
+                                      borderSide: BorderSide(
+                                          color: Color(0xFF0f625c), width: 1),
+                                    ),
+                                  ),
+                                  style: const TextStyle(
+                                    color: Color(0xFF3F4B4B),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(
+                            left: 10,
+                          ),
+                          child: Text(
+                            'DOB',
+                            style: GoogleFonts.poppins(
+                              color: Color(0xFF6E7B7A),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        SizedBox(
+                          width: 171,
+                          child: TextField(
+                            controller: dobController,
+                            readOnly: true, // Prevent manual typing
+                            decoration: _inputDecoration('').copyWith(
+                              suffixIcon: IconButton(
+                                icon: const Icon(Icons.calendar_month_outlined,
+                                    color: Color(0xFF648683)),
+                                onPressed: _selectDate, // Open DatePicker
+                              ),
+                            ),
+                            style: const TextStyle(
+                              color: Color(0xFF648683),
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Wrap(
+                      spacing: 10, // Horizontal space between checkboxes
+                      runSpacing: 10, // Vertical space if wrapped
+                      children: options
+                          .map((option) => checkboxOption(option))
+                          .toList(),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Wrap(
+                          spacing: 10, // Horizontal space between checkboxes
+                          runSpacing: 10, // Vertical space if wrapped
+                          children: mrtOptions
+                              .map((option) => maritalStateBoxOption(option))
+                              .toList(),
+                        ),
+
+                        // Show TextField only if "Others" is selected
+                        if (mrtSelectedOption == "Others") ...[
+                          const SizedBox(height: 10), // Spacing before TextField
+                          SizedBox(
+                            width: double.infinity, // Adjust width as needed
+                            child: TextField(
+                              controller: othersController,
+                              decoration: _inputDecoration('Type here'),
+                              style: const TextStyle(
+                                color: Color(0xFF648683),
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        ]
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(
+                            left: 10,
+                          ),
+                          child: Text(
+                            'Address',
+                            style: GoogleFonts.poppins(
+                              color: Color(0xFF6E7B7A),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: TextField(
+                            controller: pdsAddressController,
+                            maxLines: 4,
+                            decoration: _inputDecoration('').copyWith(
+                              contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12), // Padding inside the box
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.white, width: 1),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.white, width: 1),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10), // Same border radius when focused
+                                borderSide: BorderSide(color: Color(0xFF0f625c), width: 1),
+                              ),
+                            ),
+                            style: const TextStyle(
+                              color: Color(0xFF648683),
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -344,11 +646,15 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                   String ufName = firstNameText.text.trim();
                   String ulName = lastNameText.text.trim();
                   String uHdNtr = holdingNtrText.text.trim();
+                  String uOcptn = occupationText.text.trim();
+                  String uPdsDob = dobController.text.trim();
+                  String uPdsOthrContrl = othersController.text.trim();
+                  String uPdsAddrsContrl = pdsAddressController.text.trim();
                   String uPanNo = panNoText.text.trim();
                   String urepass = repassText.text.trim();
                   String uPass = passText.text.trim();
                   print(
-                      "First Name: $ufName, Password: $uPass,Re-Password: $urepass,Last Name: $ulName,Pan No.: $uPanNo,Holding nature: $uHdNtr");
+                      "First Name: $ufName, Password: $uPass,Re-Password: $urepass,Last Name: $ulName,Pan No.: $uPanNo,Holding nature: $uHdNtr,Occupation: $uOcptn,DOB: $uPdsDob,Others Controller: $uPdsOthrContrl,Address Controller: $uPdsAddrsContrl");
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFfdd1a0),
@@ -359,7 +665,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
                 ),
                 child: Text(
-                  'SIGN UP'.toUpperCase(),
+                  'Save'.toUpperCase(),
                   style: GoogleFonts.poppins(
                     color: const Color(0xFF222222),
                     fontSize: 17,
@@ -450,6 +756,9 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                   ],
                 ),
               ),
+              SizedBox(
+                height: 30,
+              ),
             ],
           ),
         ),
@@ -481,6 +790,95 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
         color: const Color(0xFF648683),
         fontSize: 15,
       ),
+    );
+  }
+
+  Widget checkboxOption(String option) {
+    return Row(
+      mainAxisSize: MainAxisSize.min, // Keeps row content compact
+      children: [
+        Checkbox(
+          value: selectedOption == option, // Only one can be active
+          activeColor: const Color(0xFF0DA99E), // Active checkbox color
+          fillColor: MaterialStateProperty.resolveWith<Color>((states) {
+            if (states.contains(MaterialState.selected)) {
+              return const Color(0xFF0DA99E); // Background when checked
+            }
+            return Colors.white; // Background when unchecked
+          }),
+          side: BorderSide(
+            color: selectedOption == option
+                ? const Color(0xFF0DA99E) // Green border when selected
+                : const Color(0xFF0DA99E), // Grey border when not selected
+            width: 1, // Border thickness
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4), // Rounded corners
+          ),
+          onChanged: (bool? value) {
+            setState(() {
+              if (value == true) {
+                selectedOption = option; // Only one option stays selected
+              }
+            });
+          },
+        ),
+        Text(
+          option,
+          style: GoogleFonts.poppins(
+            color: selectedOption == option
+                ? const Color(0xFF0f625c)
+                : const Color(0xFF3F4B4B),
+            fontWeight: FontWeight.w500,
+            fontSize: 15,
+          ),
+        ),
+        // Space between checkboxes
+      ],
+    );
+  }
+  Widget maritalStateBoxOption(String option) {
+    return Row(
+      mainAxisSize: MainAxisSize.min, // Keeps row content compact
+      children: [
+        Checkbox(
+          value: mrtSelectedOption == option, // Only one can be active
+          activeColor: const Color(0xFF0DA99E), // Active checkbox color
+          fillColor: MaterialStateProperty.resolveWith<Color>((states) {
+            if (states.contains(MaterialState.selected)) {
+              return const Color(0xFF0DA99E); // Background when checked
+            }
+            return Colors.white; // Background when unchecked
+          }),
+          side: BorderSide(
+            color: mrtSelectedOption == option
+                ? const Color(0xFF0DA99E) // Green border when selected
+                : const Color(0xFF0DA99E), // Grey border when not selected
+            width: 1, // Border thickness
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4), // Rounded corners
+          ),
+          onChanged: (bool? value) {
+            setState(() {
+              if (value == true) {
+                mrtSelectedOption = option; // Only one option stays selected
+              }
+            });
+          },
+        ),
+        Text(
+          option,
+          style: GoogleFonts.poppins(
+            color: mrtSelectedOption == option
+                ? const Color(0xFF0f625c)
+                : const Color(0xFF3F4B4B),
+            fontWeight: FontWeight.w500,
+            fontSize: 15,
+          ),
+        ),
+        // Space between checkboxes
+      ],
     );
   }
 }
