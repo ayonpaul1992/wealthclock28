@@ -1,10 +1,13 @@
+// ignore_for_file: camel_case_types
+
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'each_fund_investment_detils.dart';
+// import 'each_fund_investment_detils.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wealthclock28/components/custom_bottom_nav_bar.dart';
 import 'dashboard_after_login.dart';
 
 class eachSchemeDetails extends StatefulWidget {
@@ -98,7 +101,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
     schemeTransactionDataTdDate = tdDate.map((date) {
       // ✅ Ensure the date is parsed and formatted correctly
       try {
-        DateTime parsedDate = DateTime.parse(date as String);
+        DateTime parsedDate = DateTime.parse(date);
         return DateFormat('dd/MM/yyyy')
             .format(parsedDate); // ✅ Format to DD/MM/YYYY
       } catch (e) {
@@ -2964,134 +2967,9 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
               ),
             ),
           ),
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.only(top: 10, bottom: 10, left: 25, right: 25),
-            color: Colors.white,
-            child: Wrap(
-              spacing: 15,
-              runSpacing: 15,
-              children: [
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 60,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/ftr_hmm.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Home',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 60,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/ftr_prtflo.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Portfolio',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 50,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/ftr_invst.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Invest',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 50,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/rptt.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Report',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 60,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/stng.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Settings',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
+      bottomNavigationBar: CustomBottomNavBar(selectedIndex: 0),
     );
   }
 

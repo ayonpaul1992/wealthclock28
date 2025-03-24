@@ -8,8 +8,9 @@ import 'package:fl_chart/fl_chart.dart';
 
 import 'individual_portfolio.dart';
 import 'family_portfolio.dart';
-import 'custom_bottom_nav_bar.dart';
+import '../components/custom_bottom_nav_bar.dart';
 
+// ignore: camel_case_types
 class dashboardAfterLogin extends StatefulWidget {
   const dashboardAfterLogin({super.key, required String userId});
 
@@ -17,6 +18,7 @@ class dashboardAfterLogin extends StatefulWidget {
   State<dashboardAfterLogin> createState() => _dashboardAfterLoginState();
 }
 
+// ignore: camel_case_types
 class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 

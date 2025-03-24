@@ -1,13 +1,15 @@
+// ignore_for_file: camel_case_types
+
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import '../components/custom_bottom_nav_bar.dart';
 import 'dashboard_after_login.dart';
 import 'each_scheme_details.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'dashboard_after_login.dart';
 
 class individualPortfolioPage extends StatefulWidget {
   const individualPortfolioPage({super.key});
@@ -65,7 +67,8 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
 
     if (authToken == null || authToken.isEmpty) {
       setState(() {
-        userName = userCurrentValue = userTotalGain = cumulativeXirrValue = absoluteReturnValue = "Auth token not found!";
+        userName = userCurrentValue = userTotalGain =
+            cumulativeXirrValue = absoluteReturnValue = "Auth token not found!";
         schemeName = schemeCurrentValue =
             schemeInvestedValue = schemeFolioNumber = "Auth token not found!";
       });
@@ -195,7 +198,8 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
             ? json.decode(response.body)["message"] ?? "Bad Request"
             : "Error ${response.statusCode}: Something went wrong!";
         setState(() {
-          userName = userCurrentValue = userTotalGain = cumulativeXirrValue = absoluteReturnValue = errorMessage;
+          userName = userCurrentValue = userTotalGain =
+              cumulativeXirrValue = absoluteReturnValue = errorMessage;
           schemeName = errorMessage;
           equityPercentage = "0.00";
           equityAmount = "0.00";
@@ -225,7 +229,6 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
         hybridPercentage = "0.00";
         hybridAmount = "0.00";
       });
-
     }
   }
 
@@ -297,6 +300,7 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -311,12 +315,13 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
           },
         ),
         title: InkWell(
-          onTap: (){
+          onTap: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                     dashboardAfterLogin(userId: '',)));
+                    builder: (context) => dashboardAfterLogin(
+                          userId: '',
+                        )));
           },
           child: Image.asset(
             'assets/images/dshb_logo.png',
@@ -328,11 +333,11 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
               // Add your functionality here
             },
             style: TextButton.styleFrom(
-              minimumSize: Size(20,
-                  20), // Adjust clickable area to match image size
+              minimumSize:
+                  Size(20, 20), // Adjust clickable area to match image size
               padding: EdgeInsets.zero, // Remove padding
-              tapTargetSize: MaterialTapTargetSize
-                  .shrinkWrap, // Shrink touch area
+              tapTargetSize:
+                  MaterialTapTargetSize.shrinkWrap, // Shrink touch area
             ),
             child: Image.asset(
               'assets/images/bell-svgrepo-com.png',
@@ -340,7 +345,6 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
               width: 20, // Adjust the width as needed
             ),
           ),
-
           const SizedBox(width: 10),
           TextButton(
             onPressed: () {
@@ -359,7 +363,9 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
               width: 20,
             ),
           ),
-          SizedBox(width: 20,),
+          SizedBox(
+            width: 20,
+          ),
         ],
       ),
       drawer: Drawer(
@@ -730,7 +736,6 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
         children: [
           // Header Row with Logo and Text
 
-
           // Main Content Area with Gradient Background
           Expanded(
             child: Container(
@@ -901,15 +906,29 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                   // Left Section: Labels and Percentages
                                   Container(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        buildLegendItem("Equity", equityPercentage, Color(0xFF2cbefc), equityAmount),
+                                        buildLegendItem(
+                                            "Equity",
+                                            equityPercentage,
+                                            Color(0xFF2cbefc),
+                                            equityAmount),
                                         SizedBox(height: 10),
-                                        buildLegendItem("Hybrid", hybridPercentage, Color(0xFFf79e3b), hybridAmount),
+                                        buildLegendItem(
+                                            "Hybrid",
+                                            hybridPercentage,
+                                            Color(0xFFf79e3b),
+                                            hybridAmount),
                                         SizedBox(height: 10),
-                                        buildLegendItem("Debt", debtPercentage, Color(0xFFa6a8a7), debtAmount),
+                                        buildLegendItem("Debt", debtPercentage,
+                                            Color(0xFFa6a8a7), debtAmount),
                                         SizedBox(height: 10),
-                                        buildLegendItem("Other", otherPercentage, Color(0xFFdac45e), otherAmount),
+                                        buildLegendItem(
+                                            "Other",
+                                            otherPercentage,
+                                            Color(0xFFdac45e),
+                                            otherAmount),
                                       ],
                                     ),
                                   ),
@@ -918,18 +937,39 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                   // Right Section: Pie Chart
                                   SizedBox(
                                     height: 140, // Adjust as needed
-                                    width: 140,  // Adjust as needed
+                                    width: 140, // Adjust as needed
                                     child: PieChart(
                                       PieChartData(
                                         sections: [
-                                          createPieSection(double.tryParse(equityPercentage) ?? 0, Color(0xFF2cbefc), "Equity"),
-                                          createPieSection(double.tryParse(hybridPercentage) ?? 0, Color(0xFFf79e3b), "Hybrid"),
-                                          createPieSection(double.tryParse(debtPercentage) ?? 0, Color(0xFFa6a8a7), "Debt"),
-                                          createPieSection(double.tryParse(otherPercentage) ?? 0, Color(0xFFdac45e), "Other"),
+                                          createPieSection(
+                                              double.tryParse(
+                                                      equityPercentage) ??
+                                                  0,
+                                              Color(0xFF2cbefc),
+                                              "Equity"),
+                                          createPieSection(
+                                              double.tryParse(
+                                                      hybridPercentage) ??
+                                                  0,
+                                              Color(0xFFf79e3b),
+                                              "Hybrid"),
+                                          createPieSection(
+                                              double.tryParse(debtPercentage) ??
+                                                  0,
+                                              Color(0xFFa6a8a7),
+                                              "Debt"),
+                                          createPieSection(
+                                              double.tryParse(
+                                                      otherPercentage) ??
+                                                  0,
+                                              Color(0xFFdac45e),
+                                              "Other"),
                                         ],
-                                        borderData: FlBorderData(show: false), // Hide border
+                                        borderData: FlBorderData(
+                                            show: false), // Hide border
                                         sectionsSpace: 0,
-                                        centerSpaceRadius: 20, // Creates a donut effect
+                                        centerSpaceRadius:
+                                            20, // Creates a donut effect
                                       ),
                                     ),
                                   ),
@@ -966,11 +1006,10 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                     ),
 
                     Container(
-
                       child: schemes.isNotEmpty
                           ? ListView.builder(
-                        shrinkWrap: true,
-                        physics: BouncingScrollPhysics(),
+                              shrinkWrap: true,
+                              physics: BouncingScrollPhysics(),
                               itemCount: schemes
                                   .where((scheme) =>
                                       (scheme['current_val'] ?? 0) != 0 ||
@@ -1002,7 +1041,9 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                eachSchemeDetails(scheme: validSchemes[index])),
+                                                eachSchemeDetails(
+                                                    scheme:
+                                                        validSchemes[index])),
                                       );
                                     },
                                     child: Container(
@@ -1043,10 +1084,20 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                           SizedBox(height: 10),
                                           Text(
                                             NumberFormat.currency(
-                                              locale: 'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
-                                              symbol: '₹ ', // Change to '$', '€', etc., as needed
-                                              decimalDigits: 2, // Ensures two decimal places
-                                            ).format(double.tryParse(validSchemes[index]['current_val']?.toString().replaceAll(',', '') ?? '0') ?? 0.00),
+                                              locale:
+                                                  'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
+                                              symbol:
+                                                  '₹ ', // Change to '$', '€', etc., as needed
+                                              decimalDigits:
+                                                  2, // Ensures two decimal places
+                                            ).format(double.tryParse(
+                                                    validSchemes[index]
+                                                                ['current_val']
+                                                            ?.toString()
+                                                            .replaceAll(
+                                                                ',', '') ??
+                                                        '0') ??
+                                                0.00),
                                             style: GoogleFonts.poppins(
                                               color: Color(0xFF0f625c),
                                               fontSize: 18,
@@ -1071,14 +1122,26 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                                   ),
                                                   Text(
                                                     NumberFormat.currency(
-                                                      locale: 'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
-                                                      symbol: '₹ ', // Change this as needed
-                                                      decimalDigits: 2, // Ensures two decimal places
-                                                    ).format(double.tryParse(validSchemes[index]['invested_val']?.toString().replaceAll(',', '') ?? '0') ?? 0.00),
+                                                      locale:
+                                                          'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
+                                                      symbol:
+                                                          '₹ ', // Change this as needed
+                                                      decimalDigits:
+                                                          2, // Ensures two decimal places
+                                                    ).format(double.tryParse(
+                                                            validSchemes[index][
+                                                                        'invested_val']
+                                                                    ?.toString()
+                                                                    .replaceAll(
+                                                                        ',',
+                                                                        '') ??
+                                                                '0') ??
+                                                        0.00),
                                                     style: GoogleFonts.poppins(
                                                       color: Color(0xFF303131),
                                                       fontSize: 14,
-                                                      fontWeight: FontWeight.w600,
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                     ),
                                                   ),
                                                 ],
@@ -1121,29 +1184,57 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                                       // Parse gain/loss value from string to double
                                                       Builder(
                                                         builder: (context) {
-                                                          double gainLoss = double.tryParse(
-                                                              calculateGainLoss(
-                                                                  validSchemes[index]['current_val'],
-                                                                  validSchemes[index]['invested_val'])
-                                                          ) ?? 0.0; // Default to 0.0 if parsing fails
+                                                          double gainLoss = double.tryParse(calculateGainLoss(
+                                                                  validSchemes[
+                                                                          index]
+                                                                      [
+                                                                      'current_val'],
+                                                                  validSchemes[
+                                                                          index]
+                                                                      [
+                                                                      'invested_val'])) ??
+                                                              0.0; // Default to 0.0 if parsing fails
 
                                                           return Row(
                                                             children: [
                                                               Icon(
-                                                                gainLoss >= 0 ? Icons.arrow_upward : Icons.arrow_downward,
-                                                                color: gainLoss >= 0 ? Color(0xFF09a99d) : Color(0xFFD32F2F),
+                                                                gainLoss >= 0
+                                                                    ? Icons
+                                                                        .arrow_upward
+                                                                    : Icons
+                                                                        .arrow_downward,
+                                                                color: gainLoss >=
+                                                                        0
+                                                                    ? Color(
+                                                                        0xFF09a99d)
+                                                                    : Color(
+                                                                        0xFFD32F2F),
                                                                 size: 15,
                                                               ),
                                                               Text(
-                                                                NumberFormat.currency(
-                                                                  locale: 'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
-                                                                  symbol: '₹ ', // Change symbol as needed
-                                                                  decimalDigits: 2, // Ensures two decimal places
-                                                                ).format(gainLoss),
-                                                                style: GoogleFonts.poppins(
-                                                                  color: gainLoss >= 0 ? Color(0xFF09a99d) : Color(0xFFD32F2F),
+                                                                NumberFormat
+                                                                    .currency(
+                                                                  locale:
+                                                                      'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
+                                                                  symbol:
+                                                                      '₹ ', // Change symbol as needed
+                                                                  decimalDigits:
+                                                                      2, // Ensures two decimal places
+                                                                ).format(
+                                                                    gainLoss),
+                                                                style:
+                                                                    GoogleFonts
+                                                                        .poppins(
+                                                                  color: gainLoss >=
+                                                                          0
+                                                                      ? Color(
+                                                                          0xFF09a99d)
+                                                                      : Color(
+                                                                          0xFFD32F2F),
                                                                   fontSize: 14,
-                                                                  fontWeight: FontWeight.w600,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
                                                                 ),
                                                               ),
                                                             ],
@@ -1182,16 +1273,14 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                                                       .w400),
                                                     ),
                                                     Text(
-                                                      '${((double.tryParse(
-                                                          calculateGainLoss(validSchemes[index]['current_val'],
-                                                              validSchemes[index]['invested_val'])
-                                                      ) ?? 0.0) /
-                                                          (double.tryParse(validSchemes[index]['current_val']?.toString() ?? '0') ?? 1.0)
-                                                          * 100).toStringAsFixed(2)}%', // 🔥 Dynamic Absolute Return
-                                                      style: GoogleFonts.poppins(
-                                                        color: Color(0xFF0f625c),
+                                                      '${((double.tryParse(calculateGainLoss(validSchemes[index]['current_val'], validSchemes[index]['invested_val'])) ?? 0.0) / (double.tryParse(validSchemes[index]['current_val']?.toString() ?? '0') ?? 1.0) * 100).toStringAsFixed(2)}%', // 🔥 Dynamic Absolute Return
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                        color:
+                                                            Color(0xFF0f625c),
                                                         fontSize: 15,
-                                                        fontWeight: FontWeight.w600,
+                                                        fontWeight:
+                                                            FontWeight.w600,
                                                       ),
                                                     ),
                                                   ],
@@ -1248,134 +1337,9 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
               ),
             ),
           ),
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.only(top: 10, bottom: 10, left: 25, right: 25),
-            color: Colors.white,
-            child: Wrap(
-              spacing: 15,
-              runSpacing: 15,
-              children: [
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 60,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/ftr_hmm.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Home',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 60,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/ftr_prtflo.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Portfolio',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 50,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/ftr_invst.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Invest',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 50,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/rptt.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Report',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 60,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/stng.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Settings',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
+      bottomNavigationBar: CustomBottomNavBar(selectedIndex: 0),
     );
   }
 
@@ -1394,7 +1358,9 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
 
     return difference.toStringAsFixed(2); // Format to 2 decimal places
   }
-  Widget buildLegendItem(String title, String percentage, Color color, String amount) {
+
+  Widget buildLegendItem(
+      String title, String percentage, Color color, String amount) {
     return Row(
       children: [
         Container(
@@ -1436,7 +1402,9 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
       ],
     );
   }
-  PieChartSectionData createPieSection(double value, Color color, String title) {
+
+  PieChartSectionData createPieSection(
+      double value, Color color, String title) {
     return PieChartSectionData(
       color: color,
       value: value,
@@ -1448,10 +1416,11 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
         color: Colors.transparent,
       ),
       radius: 50,
-      borderSide: BorderSide( // 👈 Add a border (stroke) to each section
+      borderSide: BorderSide(
+        // 👈 Add a border (stroke) to each section
         color: Colors.white, // Adjust the border color
         width: 0, // Adjust the border thickness
-      ),// Adjust pie slice size
+      ), // Adjust pie slice size
     );
   }
 }

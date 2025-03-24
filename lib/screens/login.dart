@@ -5,8 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 // Make sure to import this for JSON handling
 import 'forgot_password.dart';
-import 'signupPds.dart';
-import 'terms_condition.dart';
+import '../extras/signupPds.dart';
+import '../extras/terms_condition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboard_after_login.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';

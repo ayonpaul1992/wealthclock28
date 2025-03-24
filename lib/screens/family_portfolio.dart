@@ -1,22 +1,21 @@
+// ignore_for_file: camel_case_types
+
 import 'dart:convert';
-import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'family_scheme_details.dart';
-import 'individual_portfolio.dart';
+import 'package:wealthclock28/components/custom_bottom_nav_bar.dart';
+import '../extras/family_scheme_details.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dashboard_after_login.dart';
 
 class familyPortfolioPage extends StatefulWidget {
-
   final String memberName; // Store the memberName
 
   const familyPortfolioPage({super.key, required this.memberName});
-  
+
   @override
   State<familyPortfolioPage> createState() => _familyPortfolioPageState();
 }
@@ -65,7 +64,8 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
 
     if (authToken == null || authToken.isEmpty) {
       setState(() {
-        userName = userCurrentValue = userTotalGain = cumulativeXirrValue = absoluteReturnValue = "Auth token not found!";
+        userName = userCurrentValue = userTotalGain =
+            cumulativeXirrValue = absoluteReturnValue = "Auth token not found!";
         schemeName = schemeCurrentValue =
             schemeInvestedValue = schemeFolioNumber = "Auth token not found!";
       });
@@ -88,15 +88,17 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
 
         if (data is Map<String, dynamic>) {
           schemesArr = List<Map<String, dynamic>>.from(data["allMember"] ?? []);
-          final fetchedName = data["allMember"][0]["member_name"] ?? "No Name Found";
+          final fetchedName =
+              data["allMember"][0]["member_name"] ?? "No Name Found";
           final List<dynamic>? schemesList = data["allMember"];
           final fetchedSchemeName =
-          (schemesList != null && schemesList.isNotEmpty)
-              ? schemesList[0]["member_name"] ?? "No Name Found"
-              : "No Name Found";
+              (schemesList != null && schemesList.isNotEmpty)
+                  ? schemesList[0]["member_name"] ?? "No Name Found"
+                  : "No Name Found";
           final fetchedPan = data["allMember"][0]['member_pan'];
           final cumulativeXirr = data["allMember"][0]["xirr"];
-          final absoluteReturn = (data["familyAbsReturn"] ?? 0.0).toStringAsFixed(2);
+          final absoluteReturn =
+              (data["familyAbsReturn"] ?? 0.0).toStringAsFixed(2);
           final currentValue = (data["familyCrntAmt"] ?? 0).toDouble();
           final totalGain = (data["familyTotalGain"] ?? 0).toDouble();
           // ✅ Extract `equityPercentage` & `equityAmount`
@@ -140,37 +142,37 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
             absoluteReturnValue = absoluteReturn;
             schemeName = fetchedSchemeName;
             userCurrentValue = NumberFormat.currency(
-                locale: 'en_IN',
-                symbol: '', // No currency symbol
-                decimalDigits: 2)
+                    locale: 'en_IN',
+                    symbol: '', // No currency symbol
+                    decimalDigits: 2)
                 .format(currentValue)
                 .trim();
             schemes = schemesArr;
 
             userTotalGain = NumberFormat.currency(
-                locale: 'en_IN',
-                symbol: '', // No currency symbol
-                decimalDigits: 2)
+                    locale: 'en_IN',
+                    symbol: '', // No currency symbol
+                    decimalDigits: 2)
                 .format(totalGain);
             // ✅ Format & Assign `equityPercentage` & `equityAmount`
             equityPercentage = equityPercent.toStringAsFixed(2);
             equityAmount = NumberFormat.currency(
-                locale: 'en_IN', symbol: '₹', decimalDigits: 2)
+                    locale: 'en_IN', symbol: '₹', decimalDigits: 2)
                 .format(equityValue);
             // ✅ Format & Assign `debtPercentage` & `debtAmount`
             debtPercentage = debtPercent.toStringAsFixed(2);
             debtAmount = NumberFormat.currency(
-                locale: 'en_IN', symbol: '₹', decimalDigits: 2)
+                    locale: 'en_IN', symbol: '₹', decimalDigits: 2)
                 .format(debtValue);
             // ✅ Format & Assign `otherPercentage` & `otherAmount`
             otherPercentage = otherPercent.toStringAsFixed(2);
             otherAmount = NumberFormat.currency(
-                locale: 'en_IN', symbol: '₹', decimalDigits: 2)
+                    locale: 'en_IN', symbol: '₹', decimalDigits: 2)
                 .format(otherValue);
             // ✅ Format & Assign `hybridPercentage` & `hybridAmount`
             hybridPercentage = hybridPercent.toStringAsFixed(2);
             hybridAmount = NumberFormat.currency(
-                locale: 'en_IN', symbol: '₹', decimalDigits: 2)
+                    locale: 'en_IN', symbol: '₹', decimalDigits: 2)
                 .format(hybridValue);
           });
         } else {
@@ -195,7 +197,8 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
             ? json.decode(response.body)["message"] ?? "Bad Request"
             : "Error ${response.statusCode}: Something went wrong!";
         setState(() {
-          userName = userCurrentValue = userTotalGain = cumulativeXirrValue = absoluteReturnValue = errorMessage;
+          userName = userCurrentValue = userTotalGain =
+              cumulativeXirrValue = absoluteReturnValue = errorMessage;
           schemeName = errorMessage;
           equityPercentage = "0.00";
           equityAmount = "0.00";
@@ -225,7 +228,6 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
         hybridPercentage = "0.00";
         hybridAmount = "0.00";
       });
-
     }
   }
 
@@ -236,7 +238,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
     const String apiUrl =
         'https://wealthclockadvisors.com/api/client/logout'; // Replace with your actual API URL
     final String? authToken =
-    prefs.getString('auth_token'); // Dynamically get the auth token
+        prefs.getString('auth_token'); // Dynamically get the auth token
 
     // Check if the auth token is null
     if (authToken == null) {
@@ -244,7 +246,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content:
-            Text('Unable to retrieve session data. Please log in again.')),
+                Text('Unable to retrieve session data. Please log in again.')),
       );
       return;
     }
@@ -297,6 +299,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -311,12 +314,13 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
           },
         ),
         title: InkWell(
-          onTap: (){
+          onTap: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        dashboardAfterLogin(userId: '',)));
+                    builder: (context) => dashboardAfterLogin(
+                          userId: '',
+                        )));
           },
           child: Image.asset(
             'assets/images/dshb_logo.png',
@@ -328,11 +332,11 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
               // Add your functionality here
             },
             style: TextButton.styleFrom(
-              minimumSize: Size(20,
-                  20), // Adjust clickable area to match image size
+              minimumSize:
+                  Size(20, 20), // Adjust clickable area to match image size
               padding: EdgeInsets.zero, // Remove padding
-              tapTargetSize: MaterialTapTargetSize
-                  .shrinkWrap, // Shrink touch area
+              tapTargetSize:
+                  MaterialTapTargetSize.shrinkWrap, // Shrink touch area
             ),
             child: Image.asset(
               'assets/images/bell-svgrepo-com.png',
@@ -340,7 +344,6 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
               width: 20, // Adjust the width as needed
             ),
           ),
-
           const SizedBox(width: 10),
           TextButton(
             onPressed: () {
@@ -359,7 +362,9 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
               width: 20,
             ),
           ),
-          SizedBox(width: 20,),
+          SizedBox(
+            width: 20,
+          ),
         ],
       ),
       drawer: Drawer(
@@ -425,13 +430,13 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                     backgroundColor: activeTile == 'Home'
                         ? Color(0xFFfee0be)
                         : Colors
-                        .transparent, // Change background color based on active state
+                            .transparent, // Change background color based on active state
                     elevation: activeTile == 'Home'
                         ? 5
                         : 0, // Optional: Adjust elevation
                     shape: RoundedRectangleBorder(
                       borderRadius:
-                      BorderRadius.zero, // Set border radius to zero
+                          BorderRadius.zero, // Set border radius to zero
                     ),
                   ),
                   onPressed: () {
@@ -472,13 +477,13 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                     backgroundColor: activeTile == 'My Orders'
                         ? Color(0xFFfee0be)
                         : Colors
-                        .transparent, // Change background color based on active state
+                            .transparent, // Change background color based on active state
                     elevation: activeTile == 'My Orders'
                         ? 5
                         : 0, // Optional: Adjust elevation
                     shape: RoundedRectangleBorder(
                       borderRadius:
-                      BorderRadius.zero, // Set border radius to zero
+                          BorderRadius.zero, // Set border radius to zero
                     ),
                   ),
                   onPressed: () {
@@ -519,13 +524,13 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                     backgroundColor: activeTile == 'My Profile'
                         ? Color(0xFFfee0be)
                         : Colors
-                        .transparent, // Change background color based on active state
+                            .transparent, // Change background color based on active state
                     elevation: activeTile == 'My Profile'
                         ? 5
                         : 0, // Optional: Adjust elevation
                     shape: RoundedRectangleBorder(
                       borderRadius:
-                      BorderRadius.zero, // Set border radius to zero
+                          BorderRadius.zero, // Set border radius to zero
                     ),
                   ),
                   onPressed: () {
@@ -566,13 +571,13 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                     backgroundColor: activeTile == 'Change Password'
                         ? Color(0xFFfee0be)
                         : Colors
-                        .transparent, // Change background color based on active state
+                            .transparent, // Change background color based on active state
                     elevation: activeTile == 'Change Password'
                         ? 5
                         : 0, // Optional: Adjust elevation
                     shape: RoundedRectangleBorder(
                       borderRadius:
-                      BorderRadius.zero, // Set border radius to zero
+                          BorderRadius.zero, // Set border radius to zero
                     ),
                   ),
                   onPressed: () {
@@ -613,19 +618,19 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                     backgroundColor: activeTile == 'Request a Service'
                         ? Color(0xFFfee0be)
                         : Colors
-                        .transparent, // Change background color based on active state
+                            .transparent, // Change background color based on active state
                     elevation: activeTile == 'Request a Service'
                         ? 5
                         : 0, // Optional: Adjust elevation
                     shape: RoundedRectangleBorder(
                       borderRadius:
-                      BorderRadius.zero, // Set border radius to zero
+                          BorderRadius.zero, // Set border radius to zero
                     ),
                   ),
                   onPressed: () {
                     setState(() {
                       activeTile =
-                      'Request a Service'; // Set this tile as active
+                          'Request a Service'; // Set this tile as active
                     });
                     Navigator.pop(context); // Close the drawer
                   },
@@ -657,13 +662,13 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                     backgroundColor: activeTile == 'Contact Us'
                         ? Color(0xFFfee0be)
                         : Colors
-                        .transparent, // Change background color based on active state
+                            .transparent, // Change background color based on active state
                     elevation: activeTile == 'Contact Us'
                         ? 5
                         : 0, // Optional: Adjust elevation
                     shape: RoundedRectangleBorder(
                       borderRadius:
-                      BorderRadius.zero, // Set border radius to zero
+                          BorderRadius.zero, // Set border radius to zero
                     ),
                   ),
                   onPressed: () {
@@ -730,7 +735,6 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
         children: [
           // Header Row with Logo and Text
 
-
           // Main Content Area with Gradient Background
           Expanded(
             child: Container(
@@ -753,7 +757,9 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                   children: [
                     const SizedBox(height: 20),
                     Text(
-                      widget.memberName.isNotEmpty ? widget.memberName : "No Name Found", // Ensure non-null value
+                      widget.memberName.isNotEmpty
+                          ? widget.memberName
+                          : "No Name Found", // Ensure non-null value
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -901,15 +907,29 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                   // Left Section: Labels and Percentages
                                   Container(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        buildLegendItem("Equity", equityPercentage, Color(0xFF2cbefc), equityAmount),
+                                        buildLegendItem(
+                                            "Equity",
+                                            equityPercentage,
+                                            Color(0xFF2cbefc),
+                                            equityAmount),
                                         SizedBox(height: 10),
-                                        buildLegendItem("Hybrid", hybridPercentage, Color(0xFFf79e3b), hybridAmount),
+                                        buildLegendItem(
+                                            "Hybrid",
+                                            hybridPercentage,
+                                            Color(0xFFf79e3b),
+                                            hybridAmount),
                                         SizedBox(height: 10),
-                                        buildLegendItem("Debt", debtPercentage, Color(0xFFa6a8a7), debtAmount),
+                                        buildLegendItem("Debt", debtPercentage,
+                                            Color(0xFFa6a8a7), debtAmount),
                                         SizedBox(height: 10),
-                                        buildLegendItem("Other", otherPercentage, Color(0xFFdac45e), otherAmount),
+                                        buildLegendItem(
+                                            "Other",
+                                            otherPercentage,
+                                            Color(0xFFdac45e),
+                                            otherAmount),
                                       ],
                                     ),
                                   ),
@@ -918,18 +938,39 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                   // Right Section: Pie Chart
                                   SizedBox(
                                     height: 140, // Adjust as needed
-                                    width: 140,  // Adjust as needed
+                                    width: 140, // Adjust as needed
                                     child: PieChart(
                                       PieChartData(
                                         sections: [
-                                          createPieSection(double.tryParse(equityPercentage) ?? 0, Color(0xFF2cbefc), "Equity"),
-                                          createPieSection(double.tryParse(hybridPercentage) ?? 0, Color(0xFFf79e3b), "Hybrid"),
-                                          createPieSection(double.tryParse(debtPercentage) ?? 0, Color(0xFFa6a8a7), "Debt"),
-                                          createPieSection(double.tryParse(otherPercentage) ?? 0, Color(0xFFdac45e), "Other"),
+                                          createPieSection(
+                                              double.tryParse(
+                                                      equityPercentage) ??
+                                                  0,
+                                              Color(0xFF2cbefc),
+                                              "Equity"),
+                                          createPieSection(
+                                              double.tryParse(
+                                                      hybridPercentage) ??
+                                                  0,
+                                              Color(0xFFf79e3b),
+                                              "Hybrid"),
+                                          createPieSection(
+                                              double.tryParse(debtPercentage) ??
+                                                  0,
+                                              Color(0xFFa6a8a7),
+                                              "Debt"),
+                                          createPieSection(
+                                              double.tryParse(
+                                                      otherPercentage) ??
+                                                  0,
+                                              Color(0xFFdac45e),
+                                              "Other"),
                                         ],
-                                        borderData: FlBorderData(show: false), // Hide border
+                                        borderData: FlBorderData(
+                                            show: false), // Hide border
                                         sectionsSpace: 0,
-                                        centerSpaceRadius: 20, // Creates a donut effect
+                                        centerSpaceRadius:
+                                            20, // Creates a donut effect
                                       ),
                                     ),
                                   ),
@@ -966,278 +1007,329 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                     ),
 
                     Container(
-
                       child: schemes.isNotEmpty
                           ? ListView.builder(
-                        shrinkWrap: true,
-                        physics: BouncingScrollPhysics(),
-                        itemCount: schemes
-                            .where((scheme) =>
-                        (scheme['current_val'] ?? 0) != 0 ||
-                            (scheme['Invested_val'] ?? 0) != 0)
-                            .length, // Count only schemes that have non-zero values
-                        itemBuilder: (context, index) {
-                          var validSchemes = schemes
-                              .where((scheme) =>
-                          (scheme['current_val'] ?? 0) != 0 ||
-                              (scheme['Invested_val'] ?? 0) != 0)
-                              .toList();
+                              shrinkWrap: true,
+                              physics: BouncingScrollPhysics(),
+                              itemCount: schemes
+                                  .where((scheme) =>
+                                      (scheme['current_val'] ?? 0) != 0 ||
+                                      (scheme['Invested_val'] ?? 0) != 0)
+                                  .length, // Count only schemes that have non-zero values
+                              itemBuilder: (context, index) {
+                                var validSchemes = schemes
+                                    .where((scheme) =>
+                                        (scheme['current_val'] ?? 0) != 0 ||
+                                        (scheme['Invested_val'] ?? 0) != 0)
+                                    .toList();
 
-                          return Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical:
-                                8), // Adds spacing between items
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                elevation: 3,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                backgroundColor: Colors.white,
-                                padding: EdgeInsets
-                                    .zero, // Ensure no unwanted padding
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          familySchemeDetails(scheme: validSchemes[index])),
-                                );
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(15),
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.white,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            validSchemes[index]
-                                            ['member_name']
-                                                ?.toString() ??
-                                                'N/A', // Dynamically display scheme name
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical:
+                                          8), // Adds spacing between items
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 3,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      backgroundColor: Colors.white,
+                                      padding: EdgeInsets
+                                          .zero, // Ensure no unwanted padding
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                familySchemeDetails(
+                                                    scheme:
+                                                        validSchemes[index])),
+                                      );
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(15),
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.white,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  validSchemes[index]
+                                                              ['member_name']
+                                                          ?.toString() ??
+                                                      'N/A', // Dynamically display scheme name
+                                                  style: GoogleFonts.poppins(
+                                                    color: Color(0xFF0f625c),
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ),
+                                              Icon(
+                                                Icons.arrow_forward_ios,
+                                                color: Color(0xFF0d958b),
+                                                size: 18,
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 10),
+                                          Text(
+                                            NumberFormat.currency(
+                                              locale:
+                                                  'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
+                                              symbol:
+                                                  '₹ ', // Change to '$', '€', etc., as needed
+                                              decimalDigits:
+                                                  2, // Ensures two decimal places
+                                            ).format(double.tryParse(
+                                                    validSchemes[index]
+                                                                ['current_val']
+                                                            ?.toString()
+                                                            .replaceAll(
+                                                                ',', '') ??
+                                                        '0') ??
+                                                0.00),
                                             style: GoogleFonts.poppins(
                                               color: Color(0xFF0f625c),
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w500,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
                                             ),
                                           ),
-                                        ),
-                                        Icon(
-                                          Icons.arrow_forward_ios,
-                                          color: Color(0xFF0d958b),
-                                          size: 18,
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 10),
-                                    Text(
-                                      NumberFormat.currency(
-                                        locale: 'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
-                                        symbol: '₹ ', // Change to '$', '€', etc., as needed
-                                        decimalDigits: 2, // Ensures two decimal places
-                                      ).format(double.tryParse(validSchemes[index]['current_val']?.toString().replaceAll(',', '') ?? '0') ?? 0.00),
-                                      style: GoogleFonts.poppins(
-                                        color: Color(0xFF0f625c),
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
+                                          SizedBox(height: 10),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Column(
+                                                children: [
+                                                  Text(
+                                                    'Cost Amount',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF8c8c8c),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    NumberFormat.currency(
+                                                      locale:
+                                                          'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
+                                                      symbol:
+                                                          '₹ ', // Change this as needed
+                                                      decimalDigits:
+                                                          2, // Ensures two decimal places
+                                                    ).format(double.tryParse(
+                                                            validSchemes[index][
+                                                                        'Invested_val']
+                                                                    ?.toString()
+                                                                    .replaceAll(
+                                                                        ',',
+                                                                        '') ??
+                                                                '0') ??
+                                                        0.00),
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF303131),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Column(
+                                                children: [
+                                                  Text(
+                                                    'Folio No.',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF8c8c8c),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    'XX${maskFolioNumber(validSchemes[index]['folio_number']?.toString() ?? 'N/A')}', // Dynamic folio number
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF303131),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Column(
+                                                children: [
+                                                  Text(
+                                                    'Gain/Loss',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF8c8c8c),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      // Parse gain/loss value from string to double
+                                                      Builder(
+                                                        builder: (context) {
+                                                          double gainLoss = double.tryParse(calculateGainLoss(
+                                                                  validSchemes[
+                                                                          index]
+                                                                      [
+                                                                      'current_val'],
+                                                                  validSchemes[
+                                                                          index]
+                                                                      [
+                                                                      'Invested_val'])) ??
+                                                              0.0; // Default to 0.0 if parsing fails
+
+                                                          return Row(
+                                                            children: [
+                                                              Icon(
+                                                                gainLoss >= 0
+                                                                    ? Icons
+                                                                        .arrow_upward
+                                                                    : Icons
+                                                                        .arrow_downward,
+                                                                color: gainLoss >=
+                                                                        0
+                                                                    ? Color(
+                                                                        0xFF09a99d)
+                                                                    : Color(
+                                                                        0xFFD32F2F),
+                                                                size: 15,
+                                                              ),
+                                                              Text(
+                                                                NumberFormat
+                                                                    .currency(
+                                                                  locale:
+                                                                      'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
+                                                                  symbol:
+                                                                      '₹ ', // Change symbol as needed
+                                                                  decimalDigits:
+                                                                      2, // Ensures two decimal places
+                                                                ).format(
+                                                                    gainLoss),
+                                                                style:
+                                                                    GoogleFonts
+                                                                        .poppins(
+                                                                  color: gainLoss >=
+                                                                          0
+                                                                      ? Color(
+                                                                          0xFF09a99d)
+                                                                      : Color(
+                                                                          0xFFD32F2F),
+                                                                  fontSize: 14,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                                top: 18, bottom: 18),
+                                            width: double.infinity,
+                                            color: Color(0xFFd7d7d7),
+                                            height: 1,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                child: Row(
+                                                  children: [
+                                                    Text(
+                                                      'Abs. Ret.: ',
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                              color: Color(
+                                                                  0xFF0f625c),
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400),
+                                                    ),
+                                                    Text(
+                                                      ' ${validSchemes[index]['abs_return']?.toString() ?? '0'}%', // Dynamic XIRR
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                              color: Color(
+                                                                  0xFF0f625c),
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              SizedBox(width: 15),
+                                              Container(
+                                                child: Row(
+                                                  children: [
+                                                    Text(
+                                                      'XIRR:',
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                              color: Color(
+                                                                  0xFF0f625c),
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400),
+                                                    ),
+                                                    Text(
+                                                      ' ${validSchemes[index]['xirr']?.toString() ?? '0'}%', // Dynamic XIRR
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                              color: Color(
+                                                                  0xFF0f625c),
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    SizedBox(height: 10),
-                                    Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Text(
-                                              'Cost Amount',
-                                              style: GoogleFonts.poppins(
-                                                color: Color(0xFF8c8c8c),
-                                                fontSize: 14,
-                                                fontWeight:
-                                                FontWeight.w500,
-                                              ),
-                                            ),
-                                            Text(
-                                              NumberFormat.currency(
-                                                locale: 'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
-                                                symbol: '₹ ', // Change this as needed
-                                                decimalDigits: 2, // Ensures two decimal places
-                                              ).format(double.tryParse(validSchemes[index]['Invested_val']?.toString().replaceAll(',', '') ?? '0') ?? 0.00),
-                                              style: GoogleFonts.poppins(
-                                                color: Color(0xFF303131),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Column(
-                                          children: [
-                                            Text(
-                                              'Folio No.',
-                                              style: GoogleFonts.poppins(
-                                                color: Color(0xFF8c8c8c),
-                                                fontSize: 14,
-                                                fontWeight:
-                                                FontWeight.w500,
-                                              ),
-                                            ),
-                                            Text(
-                                              'XX${maskFolioNumber(validSchemes[index]['folio_number']?.toString() ?? 'N/A')}', // Dynamic folio number
-                                              style: GoogleFonts.poppins(
-                                                color: Color(0xFF303131),
-                                                fontSize: 14,
-                                                fontWeight:
-                                                FontWeight.w600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Column(
-                                          children: [
-                                            Text(
-                                              'Gain/Loss',
-                                              style: GoogleFonts.poppins(
-                                                color: Color(0xFF8c8c8c),
-                                                fontSize: 14,
-                                                fontWeight:
-                                                FontWeight.w500,
-                                              ),
-                                            ),
-                                            Row(
-                                              children: [
-                                                // Parse gain/loss value from string to double
-                                                Builder(
-                                                  builder: (context) {
-                                                    double gainLoss = double.tryParse(
-                                                        calculateGainLoss(
-                                                            validSchemes[index]['current_val'],
-                                                            validSchemes[index]['Invested_val'])
-                                                    ) ?? 0.0; // Default to 0.0 if parsing fails
-
-                                                    return Row(
-                                                      children: [
-                                                        Icon(
-                                                          gainLoss >= 0 ? Icons.arrow_upward : Icons.arrow_downward,
-                                                          color: gainLoss >= 0 ? Color(0xFF09a99d) : Color(0xFFD32F2F),
-                                                          size: 15,
-                                                        ),
-                                                        Text(
-                                                          NumberFormat.currency(
-                                                            locale: 'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
-                                                            symbol: '₹ ', // Change symbol as needed
-                                                            decimalDigits: 2, // Ensures two decimal places
-                                                          ).format(gainLoss),
-                                                          style: GoogleFonts.poppins(
-                                                            color: gainLoss >= 0 ? Color(0xFF09a99d) : Color(0xFFD32F2F),
-                                                            fontSize: 14,
-                                                            fontWeight: FontWeight.w600,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    Container(
-                                      margin: EdgeInsets.only(
-                                          top: 18, bottom: 18),
-                                      width: double.infinity,
-                                      color: Color(0xFFd7d7d7),
-                                      height: 1,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                'Abs. Ret.: ',
-                                                style:
-                                                GoogleFonts.poppins(
-                                                    color: Color(
-                                                        0xFF0f625c),
-                                                    fontSize: 15,
-                                                    fontWeight:
-                                                    FontWeight
-                                                        .w400),
-                                              ),
-                                              Text(
-                                                ' ${validSchemes[index]['abs_return']?.toString() ?? '0'}%', // Dynamic XIRR
-                                                style:
-                                                GoogleFonts.poppins(
-                                                    color: Color(
-                                                        0xFF0f625c),
-                                                    fontSize: 15,
-                                                    fontWeight:
-                                                    FontWeight
-                                                        .w600),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(width: 15),
-                                        Container(
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                'XIRR:',
-                                                style:
-                                                GoogleFonts.poppins(
-                                                    color: Color(
-                                                        0xFF0f625c),
-                                                    fontSize: 15,
-                                                    fontWeight:
-                                                    FontWeight
-                                                        .w400),
-                                              ),
-                                              Text(
-                                                ' ${validSchemes[index]['xirr']?.toString() ?? '0'}%', // Dynamic XIRR
-                                                style:
-                                                GoogleFonts.poppins(
-                                                    color: Color(
-                                                        0xFF0f625c),
-                                                    fontSize: 15,
-                                                    fontWeight:
-                                                    FontWeight
-                                                        .w600),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                );
+                              },
+                            )
+                          : Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFF0f625c),
                               ),
                             ),
-                          );
-                        },
-                      )
-                          : Center(
-                        child: CircularProgressIndicator(
-                          color: Color(0xFF0f625c),
-                        ),
-                      ),
                     ),
 
                     // Add more widgets here
@@ -1246,136 +1338,12 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
               ),
             ),
           ),
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.only(top: 10, bottom: 10, left: 25, right: 25),
-            color: Colors.white,
-            child: Wrap(
-              spacing: 15,
-              runSpacing: 15,
-              children: [
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 60,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/ftr_hmm.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Home',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 60,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/ftr_prtflo.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Portfolio',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 50,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/ftr_invst.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Invest',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 50,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/rptt.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Report',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: SizedBox(
-                    width: 60,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/stng.png',
-                          // Adjust as needed
-                          fit: BoxFit.contain, // Adjust as needed
-                        ),
-                        Text(
-                          'Settings',
-                          style: GoogleFonts.poppins(
-                            color: Color(0xFF648683),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
+      bottomNavigationBar: CustomBottomNavBar(selectedIndex: 0),
     );
   }
+
   String maskFolioNumber(String folioNumber) {
     if (folioNumber.length > 4) {
       return '' * (folioNumber.length - 4) +
@@ -1391,7 +1359,9 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
 
     return difference.toStringAsFixed(2); // Format to 2 decimal places
   }
-  Widget buildLegendItem(String title, String percentage, Color color, String amount) {
+
+  Widget buildLegendItem(
+      String title, String percentage, Color color, String amount) {
     return Row(
       children: [
         Container(
@@ -1433,7 +1403,9 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
       ],
     );
   }
-  PieChartSectionData createPieSection(double value, Color color, String title) {
+
+  PieChartSectionData createPieSection(
+      double value, Color color, String title) {
     return PieChartSectionData(
       color: color,
       value: value,
@@ -1445,10 +1417,11 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
         color: Colors.transparent,
       ),
       radius: 50,
-      borderSide: BorderSide( // 👈 Add a border (stroke) to each section
+      borderSide: BorderSide(
+        // 👈 Add a border (stroke) to each section
         color: Colors.white, // Adjust the border color
         width: 0, // Adjust the border thickness
-      ),// Adjust pie slice size
+      ), // Adjust pie slice size
     );
   }
 }
