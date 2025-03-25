@@ -1,63 +1,68 @@
-// ignore_for_file: file_names
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../screens/login.dart';
-import 'signupAds.dart';
+import 'signupPds.dart';
 
-class SignupPdsPage extends StatefulWidget {
-  const SignupPdsPage({super.key});
+class SignupAdsPage extends StatefulWidget {
+  const SignupAdsPage({super.key});
 
   @override
-  State<SignupPdsPage> createState() => _SignupPdsPageState();
+  State<StatefulWidget> createState() => _SignupAdsPageState();
 }
 
-class _SignupPdsPageState extends State<SignupPdsPage> {
-  final firstNameText = TextEditingController();
-  final lastNameText = TextEditingController();
-  final TextEditingController holdingNtrText = TextEditingController();
-  final TextEditingController occupationText =
-      TextEditingController(); // Added for occupation
-  final TextEditingController dobController = TextEditingController();
-  bool isDropdownOpen = false;
-  bool isOcptnDropdownOpen = false;
-  OverlayEntry? dropdownOverlay;
-  OverlayEntry? occupationOverlay;
-  final LayerLink _layerLink = LayerLink();
-  final LayerLink _layerOcptnLink = LayerLink(); // Fixed incorrect class
-  List<String> dropdownItems = ["Option 1", "Option 2", "Option 3"];
-  List<String> occupationItems = [
-    "Business",
-    "Service",
-    "Self Employed",
-    "Student"
-  ];
-  String selectedItem = "Select";
-  String selectedOccupation = "Select";
+class _SignupAdsPageState extends State<SignupAdsPage> {
+  final ifscCodeText = TextEditingController();
+  final micrCodeText = TextEditingController();
+  final acNoText = TextEditingController();
+  final branchNameText = TextEditingController();
+  final nomineeNameText = TextEditingController();
+  final nomineePanText = TextEditingController();
+  final TextEditingController acTypeText = TextEditingController();
+  final TextEditingController relationshipText = TextEditingController();
+  final TextEditingController nomineeDobController = TextEditingController();
+  TextEditingController nomineeShareText = TextEditingController(text: "100");
+  bool isAcTypeDropdownOpen = false;
+  bool isRelationshipDropdownOpen = false;
+  OverlayEntry? actypeOverlay;
+  OverlayEntry? relationshipOverlay;
 
-  void toggleDropdown() {
-    if (isDropdownOpen) {
-      closeDropdown();
+   // Fixed incorrect class
+  final LayerLink _layerAcTypeLink = LayerLink(); // Fixed incorrect class
+  final LayerLink _layerRelationshipLink = LayerLink(); // Fixed incorrect class
+
+  List<String> acTypeItems = ["Savings", "Current"];
+  List<String> relationshipItems = ["Relation 1", "Relation 2"];
+
+
+  String selectedAcType = "Select";
+  String selectedRelationship = "Select";
+
+
+
+  void toggleAcTypeDropdown() {
+    if (isAcTypeDropdownOpen) {
+      closeAcTypeDropdown();
     } else {
-      openDropdown();
+      openAcTypeDropdown();
+    }
+  }
+  void toggleRelationshipDropdown() {
+    if (isRelationshipDropdownOpen) {
+      closeRelationshipDropdown();
+    } else {
+      openRelationshipDropdown();
     }
   }
 
-  void toggleOcptnDropdown() {
-    if (isOcptnDropdownOpen) {
-      closeOcptnDropdown();
-    } else {
-      openOcptnDropdown();
-    }
-  }
-
-  void openDropdown() {
+  void openAcTypeDropdown() {
     final overlay = Overlay.of(context);
-    dropdownOverlay = OverlayEntry(
+    actypeOverlay = OverlayEntry(
       builder: (context) => Positioned(
         width: 171, // Same width as text field
         child: CompositedTransformFollower(
-          link: _layerLink,
+          link: _layerAcTypeLink,
           offset: Offset(0, 45), // Adjust dropdown position
           child: Material(
             elevation: 4,
@@ -65,7 +70,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
             color: Colors.white,
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: dropdownItems.map((item) {
+              children: acTypeItems.map((item) {
                 return ListTile(
                   title: Text(
                     item,
@@ -76,9 +81,9 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                   ),
                   onTap: () {
                     setState(() {
-                      selectedItem = item;
-                      holdingNtrText.text = item;
-                      closeDropdown();
+                      selectedAcType = item;
+                      acTypeText.text = item;
+                      closeAcTypeDropdown();
                     });
                   },
                 );
@@ -89,29 +94,26 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
       ),
     );
 
-    overlay.insert(dropdownOverlay!);
+    overlay.insert(actypeOverlay!);
     setState(() {
-      isDropdownOpen = true;
+      isAcTypeDropdownOpen = true;
     });
   }
-
-  void openOcptnDropdown() {
-    closeDropdown(); // Close the other dropdown if open
+  void openRelationshipDropdown() {
     final overlay = Overlay.of(context);
-
-    occupationOverlay = OverlayEntry(
+    relationshipOverlay = OverlayEntry(
       builder: (context) => Positioned(
-        width: 171,
+        width: 171, // Same width as text field
         child: CompositedTransformFollower(
-          link: _layerOcptnLink,
-          offset: const Offset(0, 45),
+          link: _layerRelationshipLink,
+          offset: Offset(0, 45), // Adjust dropdown position
           child: Material(
             elevation: 4,
             borderRadius: BorderRadius.circular(8),
             color: Colors.white,
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: occupationItems.map((item) {
+              children: relationshipItems.map((item) {
                 return ListTile(
                   title: Text(
                     item,
@@ -122,9 +124,9 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                   ),
                   onTap: () {
                     setState(() {
-                      selectedOccupation = item;
-                      occupationText.text = item;
-                      closeOcptnDropdown();
+                      selectedRelationship = item;
+                      relationshipText.text = item;
+                      closeAcTypeDropdown();
                     });
                   },
                 );
@@ -135,35 +137,37 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
       ),
     );
 
-    overlay.insert(occupationOverlay!);
+    overlay.insert(relationshipOverlay!);
     setState(() {
-      isOcptnDropdownOpen = true;
+      isRelationshipDropdownOpen = true;
     });
   }
 
-  void closeDropdown() {
-    dropdownOverlay?.remove();
-    dropdownOverlay = null;
+  void closeAcTypeDropdown() {
+    actypeOverlay?.remove();
+    actypeOverlay = null;
     setState(() {
-      isDropdownOpen = false;
+      isAcTypeDropdownOpen = false;
     });
   }
-
-  void closeOcptnDropdown() {
-    occupationOverlay?.remove();
-    occupationOverlay = null;
+  void closeRelationshipDropdown() {
+    relationshipOverlay?.remove();
+    relationshipOverlay = null;
     setState(() {
-      isOcptnDropdownOpen = false;
+      isRelationshipDropdownOpen = false;
     });
   }
 
   final panNoText = TextEditingController();
+  final bankNameText = TextEditingController();
+  // final passText = TextEditingController();
+  // final repassText = TextEditingController();
   final othersController = TextEditingController();
   final pdsAddressController = TextEditingController();
   bool isLoading = false;
   final bool _isPanVisible = false; // For showing a loading spinner
-  // Function to show the error or success messages
-  Future<void> _selectDate() async {
+
+  Future<void> _nomineeselectDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime(2000, 1, 1), // Default date
@@ -173,20 +177,15 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
 
     if (picked != null) {
       setState(() {
-        dobController.text = "${picked.day}/${picked.month}/${picked.year}";
+        nomineeDobController.text = "${picked.day}/${picked.month}/${picked.year}";
       });
     }
   }
 
-  // check button gender purpose start
-  List<String> options = ['Male', 'Female'];
-  String selectedOption = "Male";
-  // check button gender purpose end
-
-  // check button Marital Status purpose start
-  List<String> mrtOptions = ['Single', 'Married', 'Others'];
-  String mrtSelectedOption = "Single";
-  // check button Marital Status purpose end
+  // check button nominee applicable purpose start
+  List<String> nmAplyoptions = ['YES', 'NO'];
+  String nmAplyselectedOption = "YES";
+  // check button nominee applicable purpose end
 
   void _showMessage(String message) {
     ScaffoldMessenger.of(context)
@@ -220,16 +219,8 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                   height: 120,
                 ),
               ),
-              const SizedBox(height: 30),
-              Text(
-                'Register your account'.toUpperCase(),
-                style: GoogleFonts.poppins(
-                  color: const Color(0xFF0f625c),
-                  fontSize: 19,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
+              const SizedBox(height: 10),
+
               Padding(
                 padding: EdgeInsets.only(top: 10, bottom: 10),
                 child: SingleChildScrollView(
@@ -246,7 +237,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         width: 10,
                       ),
                       Text(
-                        'Personal Details',
+                        'Bank Details',
                         style: GoogleFonts.poppins(
                           color: const Color(0xFF3F4B4B),
                           fontSize: 16,
@@ -278,7 +269,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             left: 10,
                           ),
                           child: Text(
-                            'First Name',
+                            'Account No',
                             style: GoogleFonts.poppins(
                               color: Color(0xFF6E7B7A),
                               fontSize: 15,
@@ -302,9 +293,9 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             ],
                           ),
                           child: SizedBox(
-                            width: 171,
+                            width: double.infinity,
                             child: TextField(
-                              controller: firstNameText,
+                              controller: acNoText,
                               decoration: _inputDecoration(''),
                               style: const TextStyle(
                                 color: Color(0xFF648683),
@@ -323,7 +314,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             left: 10,
                           ),
                           child: Text(
-                            'Last Name',
+                            'IFSC Code',
                             style: GoogleFonts.poppins(
                               color: Color(0xFF6E7B7A),
                               fontSize: 15,
@@ -349,7 +340,52 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                           child: SizedBox(
                             width: 171,
                             child: TextField(
-                              controller: lastNameText,
+                              controller: ifscCodeText,
+                              decoration: _inputDecoration(''),
+                              style: const TextStyle(
+                                color: Color(0xFF648683),
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(
+                            left: 10,
+                          ),
+                          child: Text(
+                            'MICR Code',
+                            style: GoogleFonts.poppins(
+                              color: Color(0xFF6E7B7A),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                blurRadius: 15, // Blur effect
+                                spreadRadius: 0, // Spread effect
+                                offset: Offset(0,3), // Position of shadow
+                              ),
+                            ],
+                          ),
+                          child: SizedBox(
+                            width: 171,
+                            child: TextField(
+                              controller: micrCodeText,
                               decoration: _inputDecoration(''),
                               style: const TextStyle(
                                 color: Color(0xFF648683),
@@ -368,84 +404,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             left: 10,
                           ),
                           child: Text(
-                            'Holding Nature',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF6E7B7A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        CompositedTransformTarget(
-                          link: _layerLink,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white, // Background color
-                              borderRadius: BorderRadius.circular(50), // Match border radius
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1), // Shadow color
-                                  blurRadius: 15, // Blur effect
-                                  spreadRadius: 0, // Spread effect
-                                  offset: Offset(0,3), // Position of shadow
-                                ),
-                              ],
-                            ),
-                            child: SizedBox(
-                              width: 171,
-                              child: GestureDetector(
-                                onTap: toggleDropdown,
-                                child: AbsorbPointer(
-                                  child: TextField(
-                                    controller: holdingNtrText,
-                                    decoration: InputDecoration(
-                                      hintText: 'Select',
-                                      hintStyle: GoogleFonts.poppins(
-                                        color: Color(0xFF648683),
-                                        fontSize: 15,
-                                      ),
-                                      contentPadding:
-                                      const EdgeInsets.only(top: 8, bottom: 8, left: 15, right: 15),
-                                      suffixIcon: Icon(
-                                        isDropdownOpen
-                                            ? Icons.keyboard_arrow_up
-                                            : Icons.keyboard_arrow_down,
-                                        color: Color(0xFF648683),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(50),
-                                        borderSide: BorderSide(color: Color(0xFF0f625c), width: 1),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(50),
-                                        borderSide: BorderSide(color: Color(0xFF0f625c), width: 1),
-                                      ),
-                                    ),
-                                    style: const TextStyle(
-                                      color: Color(0xFF648683),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
-                          child: Text(
-                            'PAN No.',
+                            'Bank Name',
                             style: GoogleFonts.poppins(
                               color: Color(0xFF6E7B7A),
                               fontSize: 15,
@@ -471,7 +430,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                           child: SizedBox(
                             width: 171,
                             child: TextField(
-                              controller: panNoText,
+                              controller: bankNameText,
                               decoration: _inputDecoration(''),
                               style: const TextStyle(
                                 color: Color(0xFF648683),
@@ -511,7 +470,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             left: 10,
                           ),
                           child: Text(
-                            'Occupation',
+                            'Account Type',
                             style: GoogleFonts.poppins(
                               color: Color(0xFF6E7B7A),
                               fontSize: 15,
@@ -523,7 +482,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                           height: 10,
                         ),
                         CompositedTransformTarget(
-                          link: _layerOcptnLink,
+                          link: _layerAcTypeLink,
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.white, // Background color
@@ -540,10 +499,240 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             child: SizedBox(
                               width: 171,
                               child: GestureDetector(
-                                onTap: toggleOcptnDropdown,
+                                onTap: toggleAcTypeDropdown,
                                 child: AbsorbPointer(
                                   child: TextField(
-                                    controller: occupationText,
+                                    controller: acTypeText,
+                                    decoration: InputDecoration(
+                                      hintText: 'Select',
+                                      hintStyle: GoogleFonts.poppins(
+                                        color: Color(0xFF648683),
+                                        fontSize: 15,
+                                      ),
+                                      contentPadding:
+                                      const EdgeInsets.only(top: 8, bottom: 8, left: 15, right: 15),
+                                      suffixIcon: Icon(
+                                        isAcTypeDropdownOpen
+                                            ? Icons.keyboard_arrow_up
+                                            : Icons.keyboard_arrow_down,
+                                        color: Color(0xFF648683),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(50),
+                                        borderSide: BorderSide(color: Color(0xFF0f625c), width: 1),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(50),
+                                        borderSide: BorderSide(color: Color(0xFF0f625c), width: 1),
+                                      ),
+                                    ),
+                                    style: const TextStyle(
+                                      color: Color(0xFF648683),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(
+                            left: 10,
+                          ),
+                          child: Text(
+                            'Branch Name',
+                            style: GoogleFonts.poppins(
+                              color: Color(0xFF6E7B7A),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                blurRadius: 15, // Blur effect
+                                spreadRadius: 0, // Spread effect
+                                offset: Offset(0,3), // Position of shadow
+                              ),
+                            ],
+                          ),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: TextField(
+                              controller: branchNameText,
+                              decoration: _inputDecoration(''),
+                              style: const TextStyle(
+                                color: Color(0xFF648683),
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 10),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 90,
+                                height: 1,
+                                color: const Color(0xFFc7d2d0),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                'Nominee Details',
+                                style: GoogleFonts.poppins(
+                                  color: const Color(0xFF3F4B4B),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Container(
+                                width: 90,
+                                height: 1,
+                                color: const Color(0xFFc7d2d0),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(
+                                left: 10,
+                              ),),
+                            Text(
+                              'Nominee Applicable',
+                              style: GoogleFonts.poppins(
+                                color: Color(0xFF6E7B7A),
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            Wrap(
+                              spacing: 10, // Horizontal space between checkboxes
+                              runSpacing: 10, // Vertical space if wrapped
+                              children: nmAplyoptions
+                                  .map((option) => nmAplyStateBoxOption(option))
+                                  .toList(),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(
+                            left: 10,
+                          ),
+                          child: Text(
+                            'Nominee Name',
+                            style: GoogleFonts.poppins(
+                              color: Color(0xFF6E7B7A),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                blurRadius: 15, // Blur effect
+                                spreadRadius: 0, // Spread effect
+                                offset: Offset(0,3), // Position of shadow
+                              ),
+                            ],
+                          ),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: TextField(
+                              controller: nomineeNameText,
+                              decoration: _inputDecoration(''),
+                              style: const TextStyle(
+                                color: Color(0xFF648683),
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(
+                            left: 10,
+                          ),
+                          child: Text(
+                            'Relationship',
+                            style: GoogleFonts.poppins(
+                              color: Color(0xFF6E7B7A),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        CompositedTransformTarget(
+                          link: _layerRelationshipLink,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white, // Background color
+                              borderRadius: BorderRadius.circular(50), // Match border radius
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1), // Shadow color
+                                  blurRadius: 15, // Blur effect
+                                  spreadRadius: 0, // Spread effect
+                                  offset: Offset(0,3), // Position of shadow
+                                ),
+                              ],
+                            ),
+                            child: SizedBox(
+                              width: 171,
+                              child: GestureDetector(
+                                onTap: toggleRelationshipDropdown,
+                                child: AbsorbPointer(
+                                  child: TextField(
+                                    controller: relationshipText,
                                     decoration: InputDecoration(
                                       hintText: 'Select',
                                       hintStyle: GoogleFonts.poppins(
@@ -553,7 +742,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                       contentPadding: const EdgeInsets.only(
                                           top: 8, bottom: 8, left: 15, right: 15),
                                       suffixIcon: Icon(
-                                        isOcptnDropdownOpen
+                                        isRelationshipDropdownOpen
                                             ? Icons.keyboard_arrow_up
                                             : Icons.keyboard_arrow_down,
                                         color: Color(0xFF648683),
@@ -590,7 +779,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             left: 10,
                           ),
                           child: Text(
-                            'DOB',
+                            'Nominee DOB',
                             style: GoogleFonts.poppins(
                               color: Color(0xFF6E7B7A),
                               fontSize: 15,
@@ -602,29 +791,29 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                           height: 10,
                         ),
                         Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white, // Background color
-                            borderRadius: BorderRadius.circular(50), // Match border radius
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
-                                blurRadius: 15, // Blur effect
-                                spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
-                              ),
-                            ],
-                          ),
+                            decoration: BoxDecoration(
+                              color: Colors.white, // Background color
+                              borderRadius: BorderRadius.circular(50), // Match border radius
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1), // Shadow color
+                                  blurRadius: 15, // Blur effect
+                                  spreadRadius: 0, // Spread effect
+                                  offset: Offset(0,3), // Position of shadow
+                                ),
+                              ],
+                            ),
                             child: SizedBox(
                               width: 171,
                               child: GestureDetector(
-                                onTap: _selectDate, // Opens the calendar when tapped anywhere
+                                onTap: _nomineeselectDate, // Opens the calendar when tapped anywhere
                                 child: Container(
                                   padding: EdgeInsets.symmetric(horizontal: 15, vertical: 11), // Adjust padding
                                   decoration: BoxDecoration(
                                     color: Colors.white, // Background color
                                     borderRadius: BorderRadius.circular(50), // Rounded corners
                                     border: Border.all(
-                                      color: dobController.text.isEmpty ? Color(0xFFfff) : Color(0xFF0f625c), // Focused or enabled border
+                                      color: nomineeDobController.text.isEmpty ? Color(0xFFfff) : Color(0xFF0f625c), // Focused or enabled border
                                       width: 1,
                                     ), // Custom border
                                     boxShadow: [
@@ -641,7 +830,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          dobController.text.isNotEmpty ? dobController.text : "Select Date",
+                                          nomineeDobController.text.isNotEmpty ? nomineeDobController.text : "Select Date",
                                           style: const TextStyle(
                                             color: Color(0xFF648683),
                                             fontSize: 15,
@@ -663,56 +852,6 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         ),
                       ],
                     ),
-                    Wrap(
-                      spacing: 10, // Horizontal space between checkboxes
-                      runSpacing: 10, // Vertical space if wrapped
-                      children: options
-                          .map((option) => checkboxOption(option))
-                          .toList(),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Wrap(
-                          spacing: 10, // Horizontal space between checkboxes
-                          runSpacing: 10, // Vertical space if wrapped
-                          children: mrtOptions
-                              .map((option) => maritalStateBoxOption(option))
-                              .toList(),
-                        ),
-
-                        // Show TextField only if "Others" is selected
-                        if (mrtSelectedOption == "Others") ...[
-                          const SizedBox(
-                              height: 10), // Spacing before TextField
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white, // Background color
-                              borderRadius: BorderRadius.circular(50), // Match border radius
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1), // Shadow color
-                                  blurRadius: 15, // Blur effect
-                                  spreadRadius: 0, // Spread effect
-                                  offset: Offset(0,3), // Position of shadow
-                                ),
-                              ],
-                            ),
-                            child: SizedBox(
-                              width: double.infinity, // Adjust width as needed
-                              child: TextField(
-                                controller: othersController,
-                                decoration: _inputDecoration('Type here'),
-                                style: const TextStyle(
-                                  color: Color(0xFF648683),
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ]
-                      ],
-                    ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -721,7 +860,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             left: 10,
                           ),
                           child: Text(
-                            'Address',
+                            'Nominee PAN No.',
                             style: GoogleFonts.poppins(
                               color: Color(0xFF6E7B7A),
                               fontSize: 15,
@@ -734,8 +873,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         ),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.white, // Background color
-                            borderRadius: BorderRadius.circular(50), // Match border radius
+
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.1), // Shadow color
@@ -748,29 +886,55 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                           child: SizedBox(
                             width: double.infinity,
                             child: TextField(
-                              controller: pdsAddressController,
-                              maxLines: 4,
-                              decoration: _inputDecoration('').copyWith(
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 10,
-                                    horizontal: 12), // Padding inside the box
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide:
-                                      BorderSide(color: Colors.white, width: 1),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide:
-                                      BorderSide(color: Colors.white, width: 1),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      10), // Same border radius when focused
-                                  borderSide: BorderSide(
-                                      color: Color(0xFF0f625c), width: 1),
-                                ),
+                              controller: nomineePanText,
+                              decoration: _inputDecoration(''),
+                              style: const TextStyle(
+                                color: Color(0xFF648683),
+                                fontSize: 15,
                               ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(
+                            left: 10,
+                          ),
+                          child: Text(
+                            'Nominee Share %',
+                            style: GoogleFonts.poppins(
+                              color: Color(0xFF6E7B7A),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                blurRadius: 15, // Blur effect
+                                spreadRadius: 0, // Spread effect
+                                offset: Offset(0,3), // Position of shadow
+                              ),
+                            ],
+                          ),
+                          child: SizedBox(
+                            width: 171,
+                            child: TextField(
+                              controller: nomineeShareText,
+                              keyboardType: TextInputType.number, // ✅ Allows only numbers
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                              decoration: _inputDecoration(''),
                               style: const TextStyle(
                                 color: Color(0xFF648683),
                                 fontSize: 15,
@@ -780,26 +944,52 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         ),
                       ],
                     ),
+                    Column(
+                      children: [
+                        SizedBox(height: 30,),
+                        Container(
+                          width: 171,
+                          child: TextButton(onPressed: () {
+                              Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => SignupAdsPage()), // ✅ Corrected builder
+                              );}, child: Text('+ Add New Nominee',style: GoogleFonts.poppins(
+                            color: Color(0xFF0F625C),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),)),
+                        ),
+                      ],
+                    )
                   ],
                 ),
               ),
               const SizedBox(height: 14),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SignupAdsPage()), // ✅ Corrected builder
+                    PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 500), // ✅ Adjust duration
+                      pageBuilder: (context, animation, secondaryAnimation) => SignupPdsPage(),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(-1.0, 0.0); // ✅ Start position (left)
+                        const end = Offset.zero; // ✅ End position (normal)
+                        const curve = Curves.easeInOut;
+
+                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
                   );
-                  String ufName = firstNameText.text.trim();
-                  String ulName = lastNameText.text.trim();
-                  String uHdNtr = holdingNtrText.text.trim();
-                  String uOcptn = occupationText.text.trim();
-                  String uPdsDob = dobController.text.trim();
-                  String uPdsOthrContrl = othersController.text.trim();
-                  String uPdsAddrsContrl = pdsAddressController.text.trim();
-                  String uPanNo = panNoText.text.trim();
-                  print(
-                      "First Name: $ufName,Last Name: $ulName,Pan No.: $uPanNo,Holding nature: $uHdNtr,Occupation: $uOcptn,DOB: $uPdsDob,Others Controller: $uPdsOthrContrl,Address Controller: $uPdsAddrsContrl");
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFfdd1a0),
@@ -807,16 +997,57 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                     borderRadius: BorderRadius.circular(50),
                   ),
                   padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
+                  const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
                 ),
                 child: Text(
-                  'Next'.toUpperCase(),
+                  'Back'.toUpperCase(),
                   style: GoogleFonts.poppins(
                     color: const Color(0xFF222222),
                     fontSize: 17,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+              ),
+              SizedBox(width: 10,),
+              ElevatedButton(
+                onPressed: () {
+                  String uifscCode = ifscCodeText.text.trim();
+                  String umicrCode = micrCodeText.text.trim();
+                  String uacNoText = acNoText.text.trim();
+                  String ubranchNameText = branchNameText.text.trim();
+                  String unomineeNameText = nomineeNameText.text.trim();
+                  String unomineePan = nomineePanText.text.trim();
+                  String unomineeShare = nomineeShareText.text.trim();
+                  String ubankName = bankNameText.text.trim();
+
+                  String uactype = acTypeText.text.trim();
+
+                  String uAdsNomDob = nomineeDobController.text.trim();
+
+
+                  // String urepass = repassText.text.trim();
+                  // String uPass = passText.text.trim();
+                  print(
+                      "Ifsc code: $uifscCode,Micr code: $umicrCode,Account No.: $uacNoText,Branch Name: $ubranchNameText,Nominee Name: $unomineeNameText,Nominee Pan No.: $unomineePan,Nominee Share: $unomineeShare,Bank Name: $ubankName,Account type: $uactype,Nominee DOB: $uAdsNomDob");
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFfdd1a0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
+                ),
+                child: Text(
+                  'Save'.toUpperCase(),
+                  style: GoogleFonts.poppins(
+                    color: const Color(0xFF222222),
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+                ],
               ),
               Padding(
                 padding: const EdgeInsets.only(),
@@ -840,7 +1071,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             decoration: BoxDecoration(
                               color: Colors.white, // Optional background color
                               borderRadius:
-                                  BorderRadius.circular(100), // Rounded corners
+                              BorderRadius.circular(100), // Rounded corners
                             ),
                             child: Center(
                               child: Text(
@@ -880,7 +1111,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  const LoginPage()));
+                                              const LoginPage()));
                                     },
                                     child: Text(
                                       'Sign In',
@@ -910,7 +1141,6 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
       ),
     );
   }
-
   InputDecoration _inputDecoration(String hintText) {
     return InputDecoration(
       filled: true,
@@ -938,12 +1168,12 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
     );
   }
 
-  Widget checkboxOption(String option) {
+  Widget nmAplyStateBoxOption(String option) {
     return Row(
       mainAxisSize: MainAxisSize.min, // Keeps row content compact
       children: [
         Checkbox(
-          value: selectedOption == option, // Only one can be active
+          value: nmAplyselectedOption == option, // Only one can be active
           activeColor: const Color(0xFF0DA99E), // Active checkbox color
           fillColor: MaterialStateProperty.resolveWith<Color>((states) {
             if (states.contains(MaterialState.selected)) {
@@ -952,7 +1182,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
             return Colors.white; // Background when unchecked
           }),
           side: BorderSide(
-            color: selectedOption == option
+            color: nmAplyselectedOption == option
                 ? const Color(0xFF0DA99E) // Green border when selected
                 : const Color(0xFF0DA99E), // Grey border when not selected
             width: 1, // Border thickness
@@ -963,7 +1193,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
           onChanged: (bool? value) {
             setState(() {
               if (value == true) {
-                selectedOption = option; // Only one option stays selected
+                nmAplyselectedOption = option; // Only one option stays selected
               }
             });
           },
@@ -971,52 +1201,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
         Text(
           option,
           style: GoogleFonts.poppins(
-            color: selectedOption == option
-                ? const Color(0xFF0f625c)
-                : const Color(0xFF3F4B4B),
-            fontWeight: FontWeight.w500,
-            fontSize: 15,
-          ),
-        ),
-        // Space between checkboxes
-      ],
-    );
-  }
-
-  Widget maritalStateBoxOption(String option) {
-    return Row(
-      mainAxisSize: MainAxisSize.min, // Keeps row content compact
-      children: [
-        Checkbox(
-          value: mrtSelectedOption == option, // Only one can be active
-          activeColor: const Color(0xFF0DA99E), // Active checkbox color
-          fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.selected)) {
-              return const Color(0xFF0DA99E); // Background when checked
-            }
-            return Colors.white; // Background when unchecked
-          }),
-          side: BorderSide(
-            color: mrtSelectedOption == option
-                ? const Color(0xFF0DA99E) // Green border when selected
-                : const Color(0xFF0DA99E), // Grey border when not selected
-            width: 1, // Border thickness
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4), // Rounded corners
-          ),
-          onChanged: (bool? value) {
-            setState(() {
-              if (value == true) {
-                mrtSelectedOption = option; // Only one option stays selected
-              }
-            });
-          },
-        ),
-        Text(
-          option,
-          style: GoogleFonts.poppins(
-            color: mrtSelectedOption == option
+            color: nmAplyselectedOption == option
                 ? const Color(0xFF0f625c)
                 : const Color(0xFF3F4B4B),
             fontWeight: FontWeight.w500,
