@@ -9,7 +9,9 @@ void main() async {
       .ensureInitialized(); // Ensures async operations work before runApp
   String? userId = await getUserId(); // Retrieve stored userId
 
-  runApp(MyApp(userId: userId));
+  runApp(
+    MyApp(userId: userId),
+  );
 }
 
 Future<String?> getUserId() async {
@@ -29,7 +31,12 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.poppinsTextTheme(),
       ),
       onUnknownRoute: (settings) {
-        return MaterialPageRoute(builder: (context) => const LoginPage());
+        return MaterialPageRoute(
+          builder: (context) => userId == null
+              ? const LoginPage()
+              : dashboardAfterLogin(userId: userId!),
+        );
+        // return null;
       },
       home: userId == null
           ? const LoginPage()
