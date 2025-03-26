@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:wealthclock28/components/custom_app_bar.dart';
 import 'package:wealthclock28/components/custom_drawer.dart';
 import '../components/custom_bottom_nav_bar.dart';
-import 'dashboard_after_login.dart';
 import 'each_scheme_details.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;

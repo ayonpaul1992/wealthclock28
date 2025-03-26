@@ -1009,5 +1009,4 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
       ), // Adjust pie slice size
     );
   }
-  
 }

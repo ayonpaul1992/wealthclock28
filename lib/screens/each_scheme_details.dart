@@ -10,7 +10,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wealthclock28/components/custom_app_bar.dart';
 import 'package:wealthclock28/components/custom_bottom_nav_bar.dart';
 import 'package:wealthclock28/components/custom_drawer.dart';
-import 'dashboard_after_login.dart';
 
 class eachSchemeDetails extends StatefulWidget {
   final Map<String, dynamic> scheme; // ✅ Define scheme as a property
