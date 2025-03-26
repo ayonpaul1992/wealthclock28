@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../screens/login.dart';
 import 'signupAds.dart';
+import 'package:intl/intl.dart';
 
 class SignupPdsPage extends StatefulWidget {
   const SignupPdsPage({super.key});
@@ -161,21 +162,94 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
   final othersController = TextEditingController();
   final pdsAddressController = TextEditingController();
   bool isLoading = false;
+  DateTime selectedDate = DateTime(2000, 12, 31);
   final bool _isPanVisible = false; // For showing a loading spinner
   // Function to show the error or success messages
   Future<void> _selectDate() async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime(2000, 1, 1), // Default date
-      firstDate: DateTime(1900, 1, 1), // Minimum date
-      lastDate: DateTime.now(), // Maximum date (cannot select future dates)
-    );
+    DateTime? pickedDate = await showMonthYearPicker(context);
+    if (pickedDate != null) {
+      DateTime lastAllowedDate = DateTime(pickedDate.year, 12, 31); // Allow all months in the year
 
-    if (picked != null) {
-      setState(() {
-        dobController.text = "${picked.day}/${picked.month}/${picked.year}";
-      });
+      DateTime? finalPicked = await showDatePicker(
+        context: context,
+        initialDate: pickedDate,
+        firstDate: DateTime(1900),
+        lastDate: lastAllowedDate.isAfter(DateTime.now()) ? DateTime.now() : lastAllowedDate, // Prevent future dates beyond today
+      );
+
+      if (finalPicked != null) {
+        setState(() {
+          selectedDate = finalPicked;
+          dobController.text = DateFormat("dd/MM/yyyy").format(finalPicked);
+        });
+      }
     }
+  }
+
+  Future<DateTime?> showMonthYearPicker(BuildContext context) async {
+    DateTime tempSelected = selectedDate;
+    return await showModalBottomSheet<DateTime>(
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.all(20),
+          height: 350,
+          child: Column(
+            children: [
+              Text(
+                "Select Month & Year",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Divider(),
+              // Expanded(
+              //   child: ListWheelScrollView.useDelegate(
+              //     itemExtent: 50,
+              //     physics: FixedExtentScrollPhysics(),
+              //     childDelegate: ListWheelChildBuilderDelegate(
+              //       builder: (context, index) {
+              //         final year = 1900 + index;
+              //         return GestureDetector(
+              //           onTap: () => setState(() => tempSelected = DateTime(year, tempSelected.month, 1)),
+              //           child: Text(
+              //             "$year",
+              //             style: TextStyle(fontSize: 16, color: year == tempSelected.year ? Colors.blue : Colors.black),
+              //           ),
+              //         );
+              //       },
+              //       childCount: DateTime.now().year - 1900 + 1,
+              //     ),
+              //   ),
+              // ),
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    childAspectRatio: 2,
+                  ),
+                  itemCount: 12,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context, DateTime(tempSelected.year, index + 1, 1));
+                      },
+                      child: Card(
+                        color: (index + 1) == tempSelected.month ? Colors.blue.shade100 : Colors.white,
+                        child: Center(
+                          child: Text(
+                            DateFormat.MMMM().format(DateTime(2000, index + 1, 1)),
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   // check button gender purpose start
@@ -617,48 +691,28 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             child: SizedBox(
                               width: 171,
                               child: GestureDetector(
-                                onTap: _selectDate, // Opens the calendar when tapped anywhere
+                                onTap: _selectDate,
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 11), // Adjust padding
+                                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 11),
                                   decoration: BoxDecoration(
-                                    color: Colors.white, // Background color
-                                    borderRadius: BorderRadius.circular(50), // Rounded corners
-                                    border: Border.all(
-                                      color: dobController.text.isEmpty ? Color(0xFFfff) : Color(0xFF0f625c), // Focused or enabled border
-                                      width: 1,
-                                    ), // Custom border
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1), // Shadow effect
-                                        blurRadius: 5,
-                                        spreadRadius: 1,
-                                        offset: Offset(0, 2),
-                                      ),
-                                    ],
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(50),
+                                    border: Border.all(color: Color(0xFF0f625c), width: 1),
+                                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 5)],
                                   ),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Expanded(
-                                        child: Text(
-                                          dobController.text.isNotEmpty ? dobController.text : "Select Date",
-                                          style: const TextStyle(
-                                            color: Color(0xFF648683),
-                                            fontSize: 15,
-                                          ),
-                                        ),
+                                      Text(
+                                        dobController.text.isNotEmpty ? dobController.text : "Select Date",
+                                        style: TextStyle(color: Color(0xFF648683), fontSize: 15),
                                       ),
-                                      const Icon(
-                                        Icons.calendar_month_outlined,
-                                        color: Color(0xFF648683),
-                                      ),
+                                      Icon(Icons.calendar_month_outlined, color: Color(0xFF648683)),
                                     ],
                                   ),
                                 ),
                               ),
                             )
-
-
 
                         ),
                       ],
@@ -788,8 +842,26 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SignupAdsPage()), // ✅ Corrected builder
+                    PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 500), // ✅ Adjust duration
+                      pageBuilder: (context, animation, secondaryAnimation) => SignupAdsPage(),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(1.0, 0.0); // ✅ Start position (right)
+                        const end = Offset.zero; // ✅ End position (normal)
+                        const curve = Curves.easeInOut;
+
+                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
                   );
+
+                  // Capture user input and print
                   String ufName = firstNameText.text.trim();
                   String ulName = lastNameText.text.trim();
                   String uHdNtr = holdingNtrText.text.trim();
@@ -798,16 +870,15 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                   String uPdsOthrContrl = othersController.text.trim();
                   String uPdsAddrsContrl = pdsAddressController.text.trim();
                   String uPanNo = panNoText.text.trim();
-                  print(
-                      "First Name: $ufName,Last Name: $ulName,Pan No.: $uPanNo,Holding nature: $uHdNtr,Occupation: $uOcptn,DOB: $uPdsDob,Others Controller: $uPdsOthrContrl,Address Controller: $uPdsAddrsContrl");
+
+                  print("First Name: $ufName, Last Name: $ulName, Pan No.: $uPanNo, Holding nature: $uHdNtr, Occupation: $uOcptn, DOB: $uPdsDob, Others Controller: $uPdsOthrContrl, Address Controller: $uPdsAddrsContrl");
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFfdd1a0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
                 ),
                 child: Text(
                   'Next'.toUpperCase(),
@@ -873,14 +944,29 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                   ),
                                   InkWell(
                                     onTap: () {
-                                      // Handle the link click here
-                                      print('Sign up clicked');
-                                      // Navigate to the Terms and Conditions page if needed
+                                      print('Sign In clicked');
+
+                                      // Navigate with slide transition
                                       Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const LoginPage()));
+                                        context,
+                                        PageRouteBuilder(
+                                          transitionDuration: Duration(milliseconds: 500), // ✅ Smooth transition
+                                          pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
+                                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                            const begin = Offset(-1.0, 0.0); // ✅ Slide from right
+                                            const end = Offset.zero; // ✅ End position (normal)
+                                            const curve = Curves.easeInOut;
+
+                                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                                            var offsetAnimation = animation.drive(tween);
+
+                                            return SlideTransition(
+                                              position: offsetAnimation,
+                                              child: child,
+                                            );
+                                          },
+                                        ),
+                                      );
                                     },
                                     child: Text(
                                       'Sign In',
@@ -891,6 +977,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                       ),
                                     ),
                                   ),
+
                                 ],
                               ),
                             ),

@@ -1104,14 +1104,29 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                   ),
                                   InkWell(
                                     onTap: () {
-                                      // Handle the link click here
-                                      print('Sign up clicked');
-                                      // Navigate to the Terms and Conditions page if needed
+                                      print('Sign In clicked');
+
+                                      // Navigate with slide transition
                                       Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                              const LoginPage()));
+                                        context,
+                                        PageRouteBuilder(
+                                          transitionDuration: Duration(milliseconds: 500), // ✅ Smooth transition
+                                          pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
+                                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                            const begin = Offset(-1.0, 0.0); // ✅ Slide from right
+                                            const end = Offset.zero; // ✅ End position (normal)
+                                            const curve = Curves.easeInOut;
+
+                                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                                            var offsetAnimation = animation.drive(tween);
+
+                                            return SlideTransition(
+                                              position: offsetAnimation,
+                                              child: child,
+                                            );
+                                          },
+                                        ),
+                                      );
                                     },
                                     child: Text(
                                       'Sign In',
