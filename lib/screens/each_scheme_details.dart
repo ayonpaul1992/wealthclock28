@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'each_fund_investment_detils.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wealthclock28/components/custom_app_bar.dart';
@@ -108,13 +107,12 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
       } catch (e) {
         return "Invalid Date"; // Handle parsing errors
       }
-      return "Invalid Date";
     }).join(", ");
     schemeTransactionDataTottal = transactionDataBox
         .map((item) =>
             item.toString()) // Convert each transaction object to a string
         .join(", ");
-    print("Updated schemeTransactionDataTdAmnt: $schemeTransactionDataTdAmnt");
+    // print("Updated schemeTransactionDataTdAmnt: $schemeTransactionDataTdAmnt");
 
     // added on end 20.03.2025
     fetchUserData();
@@ -264,8 +262,8 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
         });
       }
     } catch (e, stackTrace) {
-      print('Error: $e');
-      print('StackTrace: $stackTrace');
+      // print('Error: $e');
+      // print('StackTrace: $stackTrace');
       setState(() {
         userName = "Error fetching data!";
         schemeName = "Error fetching data!";
@@ -326,22 +324,22 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
         },
       );
 
-      print("Response Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}"); // ✅ Print full response
-      print("Requesting API with: folio_number=$folioNumber, inf_no=$infNo");
+      // print("Response Status Code: ${response.statusCode}");
+      // print("Response Body: ${response.body}"); // ✅ Print full response
+      // print("Requesting API with: folio_number=$folioNumber, inf_no=$infNo");
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body.trim());
 
         if (data is Map<String, dynamic>) {
-          print("Parsed Data: $data"); // ✅ Check parsed data
+          // print("Parsed Data: $data"); // ✅ Check parsed data
 
           if (data.containsKey('transaction_data') &&
               data["transaction_data"] is List &&
               data["transaction_data"].isNotEmpty) {
             List<Map<String, dynamic>> transactions =
                 List<Map<String, dynamic>>.from(data["transaction_data"]);
-            print(transactions);
+            // print(transactions);
             if (transactions.isNotEmpty) {
               String latestBalancedUnits = transactions[0]["balancedUnits"];
 
@@ -351,9 +349,9 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                 isLoading = false;
               });
 
-              print("✅ Updated Balanced Units: $latestBalancedUnits");
+              // print("✅ Updated Balanced Units: $latestBalancedUnits");
             } else {
-              print("⚠️ No transactions found!");
+              // print("⚠️ No transactions found!");
               setState(() {
                 hasTransactions = false;
                 widget.scheme['balancedUnits'] = "0.00";
@@ -431,12 +429,12 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                   .join("\n");
             });
 
-            print(
-                "Updated schemeTransactionDataTdAmnt: $schemeTransactionDataTdAmnt");
-            print(
-                "Updated schemeTransactionDataTottal: $schemeTransactionDataTottal");
+            // print(
+            //     "Updated schemeTransactionDataTdAmnt: $schemeTransactionDataTdAmnt");
+            // print(
+            //     "Updated schemeTransactionDataTottal: $schemeTransactionDataTottal");
           } else {
-            print("⚠️ No transaction_data found or list is empty");
+            // print("⚠️ No transaction_data found or list is empty");
             setState(() {
               isLoading = false;
               hasTransactions = false;
@@ -450,7 +448,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
             });
           }
         } else {
-          print("❌ API response is not a valid JSON object");
+          // print("❌ API response is not a valid JSON object");
           setState(() {
             isLoading = false;
             hasTransactions = false;
@@ -464,7 +462,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
           });
         }
       } else {
-        print("❌ API Error: ${response.statusCode}, Body: ${response.body}");
+        // print("❌ API Error: ${response.statusCode}, Body: ${response.body}");
         setState(() {
           isLoading = false;
           hasTransactions = false;
@@ -484,7 +482,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
         });
       }
     } catch (e) {
-      print("❌ Exception: $e");
+      // print("❌ Exception: $e");
       setState(() {
         isLoading = false;
         hasTransactions = false;
