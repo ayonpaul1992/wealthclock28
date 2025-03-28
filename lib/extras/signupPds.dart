@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../screens/login.dart';
 import 'signupAds.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class SignupPdsPage extends StatefulWidget {
   const SignupPdsPage({super.key});
@@ -19,7 +20,8 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
   final TextEditingController holdingNtrText = TextEditingController();
   final TextEditingController occupationText =
       TextEditingController(); // Added for occupation
-  final TextEditingController dobController = TextEditingController();
+
+  final TextEditingController _dateController = TextEditingController();
   bool isDropdownOpen = false;
   bool isOcptnDropdownOpen = false;
   OverlayEntry? dropdownOverlay;
@@ -53,6 +55,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
   }
 
   void openDropdown() {
+    closeDropdown();
     final overlay = Overlay.of(context);
     dropdownOverlay = OverlayEntry(
       builder: (context) => Positioned(
@@ -97,7 +100,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
   }
 
   void openOcptnDropdown() {
-    closeDropdown(); // Close the other dropdown if open
+    closeOcptnDropdown(); // Close the other dropdown if open
     final overlay = Overlay.of(context);
 
     occupationOverlay = OverlayEntry(
@@ -162,95 +165,11 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
   final othersController = TextEditingController();
   final pdsAddressController = TextEditingController();
   bool isLoading = false;
-  DateTime selectedDate = DateTime(2000, 12, 31);
+
+  DateTime? _selectedDate;
   final bool _isPanVisible = false; // For showing a loading spinner
   // Function to show the error or success messages
-  Future<void> _selectDate() async {
-    DateTime? pickedDate = await showMonthYearPicker(context);
-    if (pickedDate != null) {
-      DateTime lastAllowedDate = DateTime(pickedDate.year, 12, 31); // Allow all months in the year
 
-      DateTime? finalPicked = await showDatePicker(
-        context: context,
-        initialDate: pickedDate,
-        firstDate: DateTime(1900),
-        lastDate: lastAllowedDate.isAfter(DateTime.now()) ? DateTime.now() : lastAllowedDate, // Prevent future dates beyond today
-      );
-
-      if (finalPicked != null) {
-        setState(() {
-          selectedDate = finalPicked;
-          dobController.text = DateFormat("dd/MM/yyyy").format(finalPicked);
-        });
-      }
-    }
-  }
-
-  Future<DateTime?> showMonthYearPicker(BuildContext context) async {
-    DateTime tempSelected = selectedDate;
-    return await showModalBottomSheet<DateTime>(
-      context: context,
-      builder: (context) {
-        return Container(
-          padding: EdgeInsets.all(20),
-          height: 350,
-          child: Column(
-            children: [
-              Text(
-                "Select Month & Year",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              Divider(),
-              // Expanded(
-              //   child: ListWheelScrollView.useDelegate(
-              //     itemExtent: 50,
-              //     physics: FixedExtentScrollPhysics(),
-              //     childDelegate: ListWheelChildBuilderDelegate(
-              //       builder: (context, index) {
-              //         final year = 1900 + index;
-              //         return GestureDetector(
-              //           onTap: () => setState(() => tempSelected = DateTime(year, tempSelected.month, 1)),
-              //           child: Text(
-              //             "$year",
-              //             style: TextStyle(fontSize: 16, color: year == tempSelected.year ? Colors.blue : Colors.black),
-              //           ),
-              //         );
-              //       },
-              //       childCount: DateTime.now().year - 1900 + 1,
-              //     ),
-              //   ),
-              // ),
-              Expanded(
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    childAspectRatio: 2,
-                  ),
-                  itemCount: 12,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context, DateTime(tempSelected.year, index + 1, 1));
-                      },
-                      child: Card(
-                        color: (index + 1) == tempSelected.month ? Colors.blue.shade100 : Colors.white,
-                        child: Center(
-                          child: Text(
-                            DateFormat.MMMM().format(DateTime(2000, index + 1, 1)),
-                            style: TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   // check button gender purpose start
   List<String> options = ['Male', 'Female'];
@@ -265,6 +184,76 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
   void _showMessage(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void _showDatePicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext builder) {
+        return Container(
+          height: 400,
+          padding: EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: Colors.white, // Background color
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)), // Rounded top corners
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2), // Shadow color
+                blurRadius: 10, // Blur effect
+                spreadRadius: 2, // Spread effect
+                offset: Offset(0, -2), // Shadow position
+              ),
+            ],
+          ), // Set background color to green
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SfDateRangePicker(
+                selectionMode: DateRangePickerSelectionMode.single,
+                backgroundColor: Colors.white, // Set DatePicker background color
+                selectionColor: Colors.cyan.shade900, // Active date selection color
+                todayHighlightColor: Colors.cyan.shade900, // Focused color (today's date highlight)
+                startRangeSelectionColor: Colors.white, // Start range selection color
+                endRangeSelectionColor: Colors.white, // End range selection color
+                rangeSelectionColor: Colors.white, // Range selection overlay
+                headerStyle: DateRangePickerHeaderStyle(
+                  backgroundColor: Colors.transparent, // Transparent header background
+                  textStyle: GoogleFonts.poppins(color: Color(0xFF3F4B4B), fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                  setState(() {
+                    _selectedDate = args.value; // Store selected date
+                  });
+                },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Close modal
+                    },
+                    child: Text("Cancel", style: GoogleFonts.poppins(color: Colors.red, fontSize: 16)),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      if (_selectedDate != null) {
+                        setState(() {
+                          _dateController.text =
+                          "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}";
+                        });
+                      }
+                      Navigator.pop(context); // Close modal
+                    },
+                    child: Text("OK", style: GoogleFonts.poppins(color: Color(0xFF0DA99E), fontSize: 16)),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -344,6 +333,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                   spacing: 10, // Space between text fields
                   runSpacing: 15,
                   children: [
+
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -382,7 +372,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                               decoration: _inputDecoration(''),
                               style: const TextStyle(
                                 color: Color(0xFF648683),
-                                fontSize: 15,
+                                fontSize: 14,
                               ),
                             ),
                           ),
@@ -427,7 +417,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                               decoration: _inputDecoration(''),
                               style: const TextStyle(
                                 color: Color(0xFF648683),
-                                fontSize: 15,
+                                fontSize: 14,
                               ),
                             ),
                           ),
@@ -453,36 +443,47 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         SizedBox(
                           height: 10,
                         ),
-                        CompositedTransformTarget(
-                          link: _layerLink,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white, // Background color
-                              borderRadius: BorderRadius.circular(50), // Match border radius
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1), // Shadow color
-                                  blurRadius: 15, // Blur effect
-                                  spreadRadius: 0, // Spread effect
-                                  offset: Offset(0,3), // Position of shadow
-                                ),
-                              ],
+                        Stack(
+                          children: [
+                            GestureDetector(
+                              behavior: HitTestBehavior.translucent, // ✅ Detects taps outside
+                              onTap: () {
+                                if (isDropdownOpen) {
+                                  closeDropdown(); // ✅ Close dropdown when clicking outside
+                                }
+                                FocusManager.instance.primaryFocus?.unfocus(); // Remove focus
+                              },
+                              child: Container(width: 171,), // Empty container to detect taps outside
                             ),
-                            child: SizedBox(
-                              width: 171,
-                              child: GestureDetector(
-                                onTap: toggleDropdown,
-                                child: AbsorbPointer(
+                            CompositedTransformTarget(
+                              link: _layerLink,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(50),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 15,
+                                      spreadRadius: 0,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: SizedBox(
+                                  width: 171,
                                   child: TextField(
                                     controller: holdingNtrText,
+                                    readOnly: true, // ✅ Allows focus but prevents keyboard popup
+                                    onTap: toggleDropdown, // ✅ Opens dropdown on tap
                                     decoration: InputDecoration(
                                       hintText: 'Select',
                                       hintStyle: GoogleFonts.poppins(
                                         color: Color(0xFF648683),
-                                        fontSize: 15,
+                                        fontSize: 14,
                                       ),
-                                      contentPadding:
-                                      const EdgeInsets.only(top: 8, bottom: 8, left: 15, right: 15),
+                                      contentPadding: const EdgeInsets.only(
+                                          top: 8, bottom: 8, left: 15, right: 15),
                                       suffixIcon: Icon(
                                         isDropdownOpen
                                             ? Icons.keyboard_arrow_up
@@ -491,23 +492,25 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(50),
-                                        borderSide: BorderSide(color: Color(0xFF0f625c), width: 1),
+                                        borderSide: BorderSide(
+                                            color: Colors.white, width: 1),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(50),
-                                        borderSide: BorderSide(color: Color(0xFF0f625c), width: 1),
+                                        borderSide: BorderSide(
+                                            color: Color(0xFF0f625c), width: 1),
                                       ),
                                     ),
                                     style: const TextStyle(
                                       color: Color(0xFF648683),
-                                      fontSize: 15,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
+                          ],
                         )
                       ],
                     ),
@@ -549,7 +552,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                               decoration: _inputDecoration(''),
                               style: const TextStyle(
                                 color: Color(0xFF648683),
-                                fontSize: 15,
+                                fontSize: 14,
                               ),
                             ),
                             // child: TextField(
@@ -596,33 +599,44 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         SizedBox(
                           height: 10,
                         ),
-                        CompositedTransformTarget(
-                          link: _layerOcptnLink,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white, // Background color
-                              borderRadius: BorderRadius.circular(50), // Match border radius
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1), // Shadow color
-                                  blurRadius: 15, // Blur effect
-                                  spreadRadius: 0, // Spread effect
-                                  offset: Offset(0,3), // Position of shadow
-                                ),
-                              ],
+                        Stack(
+                          children: [
+                            GestureDetector(
+                              behavior: HitTestBehavior.translucent, // ✅ Detects taps outside
+                              onTap: () {
+                                if (isOcptnDropdownOpen) {
+                                  closeOcptnDropdown(); // ✅ Close dropdown when clicking outside
+                                }
+                                FocusManager.instance.primaryFocus?.unfocus(); // Remove focus
+                              },
+                              child: Container(width: 171,), // Empty container to detect taps outside
                             ),
-                            child: SizedBox(
-                              width: 171,
-                              child: GestureDetector(
-                                onTap: toggleOcptnDropdown,
-                                child: AbsorbPointer(
+                            CompositedTransformTarget(
+                              link: _layerOcptnLink,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(50),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 15,
+                                      spreadRadius: 0,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: SizedBox(
+                                  width: 171,
                                   child: TextField(
                                     controller: occupationText,
+                                    readOnly: true, // ✅ Allows focus but prevents keyboard popup
+                                    onTap: toggleOcptnDropdown, // ✅ Opens dropdown on tap
                                     decoration: InputDecoration(
                                       hintText: 'Select',
                                       hintStyle: GoogleFonts.poppins(
                                         color: Color(0xFF648683),
-                                        fontSize: 15,
+                                        fontSize: 14,
                                       ),
                                       contentPadding: const EdgeInsets.only(
                                           top: 8, bottom: 8, left: 15, right: 15),
@@ -635,7 +649,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(50),
                                         borderSide: BorderSide(
-                                            color: Color(0xFF0f625c), width: 1),
+                                            color: Colors.white, width: 1),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(50),
@@ -645,14 +659,14 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                     ),
                                     style: const TextStyle(
                                       color: Color(0xFF648683),
-                                      fontSize: 15,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
+                          ],
                         )
                       ],
                     ),
@@ -676,6 +690,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                           height: 10,
                         ),
                         Container(
+                          width: 171,
                           decoration: BoxDecoration(
                             color: Colors.white, // Background color
                             borderRadius: BorderRadius.circular(50), // Match border radius
@@ -688,32 +703,33 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                               ),
                             ],
                           ),
-                            child: SizedBox(
-                              width: 171,
-                              child: GestureDetector(
-                                onTap: _selectDate,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 11),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(50),
-                                    border: Border.all(color: Color(0xFF0f625c), width: 1),
-                                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 5)],
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        dobController.text.isNotEmpty ? dobController.text : "Select Date",
-                                        style: TextStyle(color: Color(0xFF648683), fontSize: 15),
-                                      ),
-                                      Icon(Icons.calendar_month_outlined, color: Color(0xFF648683)),
-                                    ],
-                                  ),
+                          child: SizedBox(
+                            width: 171,
+                            child: GestureDetector(
+                              onTap: ()=> _showDatePicker(context),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12.8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(50),
+                                  border: isLoading
+                                      ? Border.all(color: Color(0xFF0f625c), width: 1) // Show border when focused
+                                      : Border.all(color: Colors.transparent, width: 1), // Hide border when not focused
+                                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 5)],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      _dateController.text.isNotEmpty ? _dateController.text : "Select Date",
+                                      style: TextStyle(color: Color(0xFF648683), fontSize: 14),
+                                    ),
+                                    Icon(Icons.calendar_month_outlined, color: Color(0xFF648683),size: 20,),
+                                  ],
                                 ),
                               ),
-                            )
-
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -827,7 +843,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                               ),
                               style: const TextStyle(
                                 color: Color(0xFF648683),
-                                fontSize: 15,
+                                fontSize: 14,
                               ),
                             ),
                           ),
@@ -866,7 +882,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                   String ulName = lastNameText.text.trim();
                   String uHdNtr = holdingNtrText.text.trim();
                   String uOcptn = occupationText.text.trim();
-                  String uPdsDob = dobController.text.trim();
+                  String uPdsDob = _dateController.text.trim();
                   String uPdsOthrContrl = othersController.text.trim();
                   String uPdsAddrsContrl = pdsAddressController.text.trim();
                   String uPanNo = panNoText.text.trim();
@@ -1020,7 +1036,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
       hintText: hintText,
       hintStyle: GoogleFonts.poppins(
         color: const Color(0xFF648683),
-        fontSize: 15,
+        fontSize: 14,
       ),
     );
   }
