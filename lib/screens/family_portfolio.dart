@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:wealthclock28/components/custom_app_bar.dart';
 import 'package:wealthclock28/components/custom_bottom_nav_bar.dart';
 import 'package:wealthclock28/components/custom_drawer.dart';
+import 'package:wealthclock28/components/legend_item.dart';
+import 'package:wealthclock28/components/pie_chart_section.dart';
 import '../extras/family_scheme_details.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -85,7 +87,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body.trim());
 
-        print(data['holdings']);
+        //print(data['holdings']);
 
         if (data is Map<String, dynamic>) {
           schemesArr = List<Map<String, dynamic>>.from(data["allMember"] ?? []);
@@ -211,9 +213,9 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
           hybridAmount = "0.00";
         });
       }
-    } catch (e, stackTrace) {
-      print('Error: $e');
-      print('StackTrace: $stackTrace');
+    } catch (e) {
+      //print('Error: $e');
+      //print('StackTrace: $stackTrace');
       setState(() {
         userName = "Error fetching data!";
         cumulativeXirrValue = "0.00";
@@ -241,7 +243,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
         userName: userName,
         activeTile: '',
         onTileTap: (selectedTile) {
-          // print("Navigating to $selectedTile");
+          // //print("Navigating to $selectedTile");
           // Handle navigation logic
         },
       ),
@@ -295,28 +297,26 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Portfolio Value',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      color: Color(0xFF648683),
-                                    ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Portfolio Value',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xFF648683),
                                   ),
-                                  Text(
-                                    '₹ $userCurrentValue',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 19,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF0f625c),
-                                    ),
+                                ),
+                                Text(
+                                  '₹ $userCurrentValue',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF0f625c),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                             SizedBox(width: 23),
                             Container(
@@ -355,46 +355,42 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
-                          child: Row(
-                            children: [
-                              Text(
-                                'Abs. Ret.: ',
-                                style: GoogleFonts.poppins(
-                                    color: Color(0xFF0f625c),
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                              Text(
-                                '$absoluteReturnValue%',
-                                style: GoogleFonts.poppins(
-                                    color: Color(0xFF0f625c),
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ],
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              'Abs. Ret.: ',
+                              style: GoogleFonts.poppins(
+                                  color: Color(0xFF0f625c),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            Text(
+                              '$absoluteReturnValue%',
+                              style: GoogleFonts.poppins(
+                                  color: Color(0xFF0f625c),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ],
                         ),
                         SizedBox(width: 15),
-                        Container(
-                          child: Row(
-                            children: [
-                              Text(
-                                'Avg. Xirr: ',
-                                style: GoogleFonts.poppins(
-                                    color: Color(0xFF0f625c),
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                              Text(
-                                '$cumulativeXirrValue%',
-                                style: GoogleFonts.poppins(
-                                    color: Color(0xFF0f625c),
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ],
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              'Avg. Xirr: ',
+                              style: GoogleFonts.poppins(
+                                  color: Color(0xFF0f625c),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            Text(
+                              '$cumulativeXirrValue%',
+                              style: GoogleFonts.poppins(
+                                  color: Color(0xFF0f625c),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -419,33 +415,38 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                               child: Row(
                                 children: [
                                   // Left Section: Labels and Percentages
-                                  Container(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        buildLegendItem(
-                                            "Equity",
-                                            equityPercentage,
-                                            Color(0xFF2cbefc),
-                                            equityAmount),
-                                        SizedBox(height: 10),
-                                        buildLegendItem(
-                                            "Hybrid",
-                                            hybridPercentage,
-                                            Color(0xFFf79e3b),
-                                            hybridAmount),
-                                        SizedBox(height: 10),
-                                        buildLegendItem("Debt", debtPercentage,
-                                            Color(0xFFa6a8a7), debtAmount),
-                                        SizedBox(height: 10),
-                                        buildLegendItem(
-                                            "Other",
-                                            otherPercentage,
-                                            Color(0xFFdac45e),
-                                            otherAmount),
-                                      ],
-                                    ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      LegendItem(
+                                        title: "Equity",
+                                        percentage: equityPercentage,
+                                        color: Color(0xFF2cbefc),
+                                        amount: equityAmount,
+                                      ),
+                                      SizedBox(height: 10),
+                                      LegendItem(
+                                        title: "Hybrid",
+                                        percentage: hybridPercentage,
+                                        color: Color(0xFFf79e3b),
+                                        amount: hybridAmount,
+                                      ),
+                                      SizedBox(height: 10),
+                                      LegendItem(
+                                        title: "Debt",
+                                        percentage: debtPercentage,
+                                        color: Color(0xFFa6a8a7),
+                                        amount: debtAmount,
+                                      ),
+                                      SizedBox(height: 10),
+                                      LegendItem(
+                                        title: "Other",
+                                        percentage: otherPercentage,
+                                        color: Color(0xFFdac45e),
+                                        amount: otherAmount,
+                                      ),
+                                    ],
                                   ),
                                   SizedBox(width: 20),
 
@@ -456,30 +457,36 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                     child: PieChart(
                                       PieChartData(
                                         sections: [
-                                          createPieSection(
-                                              double.tryParse(
-                                                      equityPercentage) ??
-                                                  0,
-                                              Color(0xFF2cbefc),
-                                              "Equity"),
-                                          createPieSection(
-                                              double.tryParse(
-                                                      hybridPercentage) ??
-                                                  0,
-                                              Color(0xFFf79e3b),
-                                              "Hybrid"),
-                                          createPieSection(
-                                              double.tryParse(debtPercentage) ??
-                                                  0,
-                                              Color(0xFFa6a8a7),
-                                              "Debt"),
-                                          createPieSection(
-                                              double.tryParse(
-                                                      otherPercentage) ??
-                                                  0,
-                                              Color(0xFFdac45e),
-                                              "Other"),
+                                          PieChartSection.create(
+                                            value: double.tryParse(
+                                                    equityPercentage) ??
+                                                0,
+                                            color: const Color(0xFF2cbefc),
+                                            title: "Equity",
+                                          ),
+                                          PieChartSection.create(
+                                            value: double.tryParse(
+                                                    hybridPercentage) ??
+                                                0,
+                                            color: const Color(0xFFf79e3b),
+                                            title: "Hybrid",
+                                          ),
+                                          PieChartSection.create(
+                                            value: double.tryParse(
+                                                    debtPercentage) ??
+                                                0,
+                                            color: const Color(0xFFa6a8a7),
+                                            title: "Debt",
+                                          ),
+                                          PieChartSection.create(
+                                            value: double.tryParse(
+                                                    otherPercentage) ??
+                                                0,
+                                            color: const Color(0xFFdac45e),
+                                            title: "Other",
+                                          ),
                                         ],
+
                                         borderData: FlBorderData(
                                             show: false), // Hide border
                                         sectionsSpace: 0,
@@ -555,10 +562,10 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                familySchemeDetails(
-                                                    scheme:
-                                                        validSchemes[index])),
+                                          builder: (context) =>
+                                              familySchemeDetails(
+                                                  scheme: validSchemes[index]),
+                                        ),
                                       );
                                     },
                                     child: Container(
@@ -764,7 +771,9 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                           ),
                                           Container(
                                             margin: EdgeInsets.only(
-                                                top: 18, bottom: 18),
+                                              top: 18,
+                                              bottom: 18,
+                                            ),
                                             width: double.infinity,
                                             color: Color(0xFFd7d7d7),
                                             height: 1,
@@ -773,62 +782,50 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              Container(
-                                                child: Row(
-                                                  children: [
-                                                    Text(
-                                                      'Abs. Ret.: ',
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                              color: Color(
-                                                                  0xFF0f625c),
-                                                              fontSize: 15,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400),
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    'Abs. Ret.: ',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF0f625c),
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w400,
                                                     ),
-                                                    Text(
-                                                      ' ${validSchemes[index]['abs_return']?.toString() ?? '0'}%', // Dynamic XIRR
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                              color: Color(
-                                                                  0xFF0f625c),
-                                                              fontSize: 15,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600),
+                                                  ),
+                                                  Text(
+                                                    ' ${validSchemes[index]['abs_return']?.toString() ?? '0'}%', // Dynamic XIRR
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF0f625c),
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                     ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                ],
                                               ),
                                               SizedBox(width: 15),
-                                              Container(
-                                                child: Row(
-                                                  children: [
-                                                    Text(
-                                                      'XIRR:',
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                              color: Color(
-                                                                  0xFF0f625c),
-                                                              fontSize: 15,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400),
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    'XIRR:',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF0f625c),
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w400,
                                                     ),
-                                                    Text(
-                                                      ' ${validSchemes[index]['xirr']?.toString() ?? '0'}%', // Dynamic XIRR
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                              color: Color(
-                                                                  0xFF0f625c),
-                                                              fontSize: 15,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600),
+                                                  ),
+                                                  Text(
+                                                    ' ${validSchemes[index]['xirr']?.toString() ?? '0'}%', // Dynamic XIRR
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF0f625c),
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                     ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
@@ -845,7 +842,6 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                               ),
                             ),
                     ),
-
                     // Add more widgets here
                   ],
                 ),
@@ -872,70 +868,5 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
     double difference = current - invested; // Calculate gain/loss
 
     return difference.toStringAsFixed(2); // Format to 2 decimal places
-  }
-
-  Widget buildLegendItem(
-      String title, String percentage, Color color, String amount) {
-    return Row(
-      children: [
-        Container(
-          color: color,
-          width: 4,
-          height: 30,
-        ),
-        SizedBox(width: 10),
-        SizedBox(
-          width: 60,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: GoogleFonts.poppins(
-                    color: Color(0xFF303131),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500),
-              ),
-              Text(
-                '$percentage%',
-                style: GoogleFonts.poppins(
-                    color: Color(0xFF8c8c8c),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(width: 3),
-        Text(
-          amount,
-          style: GoogleFonts.poppins(
-              color: Color(0xFF0f625c),
-              fontSize: 14,
-              fontWeight: FontWeight.w500),
-        ),
-      ],
-    );
-  }
-
-  PieChartSectionData createPieSection(
-      double value, Color color, String title) {
-    return PieChartSectionData(
-      color: color,
-      value: value,
-      title: value > 0 ? '$value%' : '',
-      // Hide if 0
-      titleStyle: GoogleFonts.poppins(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        color: Colors.transparent,
-      ),
-      radius: 50,
-      borderSide: BorderSide(
-        // 👈 Add a border (stroke) to each section
-        color: Colors.white, // Adjust the border color
-        width: 0, // Adjust the border thickness
-      ), // Adjust pie slice size
-    );
   }
 }

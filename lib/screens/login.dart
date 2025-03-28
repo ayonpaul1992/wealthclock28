@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (uEmail.isEmpty || uPass.isEmpty) {
       _showMessage("Please enter email and password");
-      print("Login failed: Email or Password is empty");
+      //print("Login failed: Email or Password is empty");
       return;
     }
 
@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
           ? 'https://wealthclockadvisors.com/api/client/login'
           : 'https://wealthclockadvisors.com/api/client/login-with-pan';
 
-      print("Attempting to login with email: $uEmail");
+      //print("Attempting to login with email: $uEmail");
 
       final response = await http.post(
         Uri.parse(apiUrl),
@@ -85,8 +85,8 @@ class _LoginPageState extends State<LoginPage> {
         isLoading = false;
       });
 
-      print("Response status code: ${response.statusCode}");
-      print("Response body: ${response.body}");
+      //print("Response status code: ${response.statusCode}");
+      //print("Response body: ${response.body}");
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
@@ -114,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           );
         } else {
-          print("Unexpected response structure.");
+          //print("Unexpected response structure.");
           _showMessage("Unexpected response from server.");
         }
       } else {
@@ -123,14 +123,14 @@ class _LoginPageState extends State<LoginPage> {
         String errorMessage =
             errorResponse['message'] ?? "Login failed. Please try again.";
 
-        print("Login error: $errorMessage");
+        //print("Login error: $errorMessage");
         _showMessage(errorMessage);
       }
     } catch (e) {
       setState(() {
         isLoading = false;
       });
-      print("Exception caught: $e");
+      //print("Exception caught: $e");
       _showMessage("Error: Unable to connect to the server.");
     }
   }
@@ -221,7 +221,8 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 child: isLoading
                     ? const CircularProgressIndicator(
-                        color: Colors.white) // Show loading spinner
+                        color: Colors.white,
+                      ) // Show loading spinner
                     : Text(
                         'SIGN IN',
                         style: GoogleFonts.poppins(
@@ -232,13 +233,18 @@ class _LoginPageState extends State<LoginPage> {
                       ),
               ),
               Container(
-                margin: const EdgeInsets.only(top: 10, bottom: 3),
+                margin: const EdgeInsets.only(
+                  top: 10,
+                  bottom: 3,
+                ),
                 child: TextButton(
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const forgotPasswordPage()));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const forgotPasswordPage(),
+                      ),
+                    );
                   },
                   child: Text(
                     'Forgot Password?',
