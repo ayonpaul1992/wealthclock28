@@ -20,7 +20,7 @@ class CustomBottomNavBar extends StatelessWidget {
         'label': 'Invest',
         'route': '/invest'
       },
-      {'icon': 'assets/images/rptt.png', 'label': 'Report', 'route': '/report'},
+      {'icon': 'assets/images/rptt.png', 'label': 'Family', 'route': '/report'},
       {
         'icon': 'assets/images/stng.png',
         'label': 'Settings',
