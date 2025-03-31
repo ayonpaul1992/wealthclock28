@@ -223,7 +223,6 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
         showLeading: false,
       ),
       drawer: CustomDrawer(
-        userName: userName,
         activeTile: 'Home',
         onTileTap: (selectedTile) {
           //print("Navigating to $selectedTile");
@@ -521,10 +520,13 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                         // Navigator.push(context, MaterialPageRoute(builder: (context) => const SignupPage()));
                         // Define the action for the button here
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const individualPortfolioPage()));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const individualPortfolioPage(
+                              memberPan: '',
+                            ),
+                          ),
+                        );
                       },
                       child: Container(
                         width: double.infinity,

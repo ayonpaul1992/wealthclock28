@@ -9,7 +9,7 @@ import 'package:wealthclock28/components/custom_bottom_nav_bar.dart';
 import 'package:wealthclock28/components/custom_drawer.dart';
 import 'package:wealthclock28/components/legend_item.dart';
 import 'package:wealthclock28/components/pie_chart_section.dart';
-import '../extras/family_scheme_details.dart';
+import 'package:wealthclock28/screens/individual_portfolio.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -240,7 +240,6 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
       key: _scaffoldKey,
       appBar: CustomAppBar(scaffoldKey: _scaffoldKey, userId: ''),
       drawer: CustomDrawer(
-        userName: userName,
         activeTile: '',
         onTileTap: (selectedTile) {
           // //print("Navigating to $selectedTile");
@@ -563,8 +562,15 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              familySchemeDetails(
-                                                  scheme: validSchemes[index]),
+                                              individualPortfolioPage(
+                                            memberPan: validSchemes[index]
+                                                    ['member_pan'] ??
+                                                validSchemes[index]
+                                                    ['member_code'],
+                                          ),
+                                          //     familySchemeDetails(
+                                          //   scheme: validSchemes[index],
+                                          // ),
                                         ),
                                       );
                                     },
@@ -680,7 +686,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                                     ),
                                                   ),
                                                   Text(
-                                                    'XX${maskFolioNumber(validSchemes[index]['folio_number']?.toString() ?? 'N/A')}', // Dynamic folio number
+                                                    'N/A', // Dynamic folio number
                                                     style: GoogleFonts.poppins(
                                                       color: Color(0xFF303131),
                                                       fontSize: 14,

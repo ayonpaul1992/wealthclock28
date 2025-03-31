@@ -15,7 +15,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class individualPortfolioPage extends StatefulWidget {
-  const individualPortfolioPage({super.key});
+  final String memberPan;
+  const individualPortfolioPage({super.key, required this.memberPan});
 
   @override
   State<individualPortfolioPage> createState() =>
@@ -52,18 +53,20 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
 
   String currentDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
+  String panId = '';
   @override
   void initState() {
     super.initState();
 
-    fetchUserData();
+    panId = widget.memberPan;
+    fetchUserData(panId);
   }
 
-  Future<void> fetchUserData() async {
+  Future<void> fetchUserData(String panId) async {
     final prefs = await SharedPreferences.getInstance();
     final String? authToken = prefs.getString('auth_token');
-    const String apiUrl =
-        'https://wealthclockadvisors.com/api/client/dashboard';
+    final String apiUrl =
+        'https://wealthclockadvisors.com/api/client/dashboard?pan=$panId';
 
     if (authToken == null || authToken.isEmpty) {
       setState(() {
@@ -97,7 +100,7 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
               (schemesList != null && schemesList.isNotEmpty)
                   ? schemesList[0]["scheme_name"] ?? "No Name Found"
                   : "No Name Found";
-          final fetchedPan = data["pan"];
+          final fetchedPan = data["pan"] ?? data["client_code"];
           final cumulativeXirr = (data["cumulativeXirr"] ?? 0).toString();
           final absoluteReturn = (data["absoluteReturn"] ?? 0).toString();
           final currentValue = (data["total_current_val"] ?? 0).toDouble();
@@ -238,7 +241,6 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
       key: _scaffoldKey,
       appBar: CustomAppBar(scaffoldKey: _scaffoldKey, userId: ''),
       drawer: CustomDrawer(
-        userName: userName,
         activeTile: '',
         onTileTap: (selectedTile) {
           // //print("Navigating to $selectedTile");
@@ -556,10 +558,12 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                eachSchemeDetails(
-                                                    scheme:
-                                                        validSchemes[index])),
+                                          builder: (context) =>
+                                              eachSchemeDetails(
+                                            scheme: validSchemes[index],
+                                            investorName: userName,
+                                          ),
+                                        ),
                                       );
                                     },
                                     child: Container(

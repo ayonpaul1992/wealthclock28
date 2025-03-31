@@ -13,8 +13,13 @@ import 'package:wealthclock28/components/custom_drawer.dart';
 class eachSchemeDetails extends StatefulWidget {
   final Map<String, dynamic> scheme; // ✅ Define scheme as a property
 
-  const eachSchemeDetails(
-      {super.key, required this.scheme}); // ✅ Store it in the class
+  final String investorName;
+
+  const eachSchemeDetails({
+    super.key,
+    required this.scheme,
+    required this.investorName,
+  }); // ✅ Store it in the class
 
   @override
   State<eachSchemeDetails> createState() => _eachSchemeDetailsState();
@@ -73,13 +78,14 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
     super.initState();
     // added on start 20.03.2025
 
-    userName = widget.scheme["user_name"] ?? "No Name Found";
+    userName = widget.investorName;
     schemeName = widget.scheme["scheme_name"] ?? "No Scheme Name";
     schemeCurrentValue = widget.scheme["current_val"].toString();
     schemeInvestedValue = widget.scheme["invested_val"].toString();
     schemeFolioNumber = widget.scheme["folio_number"].toString();
     schemeCategory = widget.scheme["scheme_category"] ?? "N/A";
     schemeSubCategory = widget.scheme["scheme_subcategory"] ?? "N/A";
+
     fetchInvestmentBreakup(
       schemeFolioNumber,
       widget.scheme["inf_no"] ?? "", // Ensure this is correct
@@ -112,7 +118,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
         .map((item) =>
             item.toString()) // Convert each transaction object to a string
         .join(", ");
-    // print("Updated schemeTransactionDataTdAmnt: $schemeTransactionDataTdAmnt");
+    // //print("Updated schemeTransactionDataTdAmnt: $schemeTransactionDataTdAmnt");
 
     // added on end 20.03.2025
     fetchUserData();
@@ -146,11 +152,10 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body.trim());
 
-        print(data['holdings']);
+        //print(data['holdings']);
 
         if (data is Map<String, dynamic>) {
           schemesArr = List<Map<String, dynamic>>.from(data["schemes"] ?? []);
-          final fetchedName = data["user_name"] ?? "No Name Found";
           final List<dynamic>? schemesList = data["schemes"];
           final fetchedSchemeName =
               (schemesList != null && schemesList.isNotEmpty)
@@ -193,7 +198,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
           }
 
           setState(() {
-            userName = fetchedName;
+            // userName = fetchedName;
             schemeName = fetchedSchemeName;
             userCurrentValue = NumberFormat.currency(
                     locale: 'en_IN',
@@ -262,8 +267,8 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
         });
       }
     } catch (e, stackTrace) {
-      // print('Error: $e');
-      // print('StackTrace: $stackTrace');
+      // //print('Error: $e');
+      // //print('StackTrace: $stackTrace');
       setState(() {
         userName = "Error fetching data!";
         schemeName = "Error fetching data!";
@@ -324,22 +329,22 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
         },
       );
 
-      // print("Response Status Code: ${response.statusCode}");
-      // print("Response Body: ${response.body}"); // ✅ Print full response
-      // print("Requesting API with: folio_number=$folioNumber, inf_no=$infNo");
+      // //print("Response Status Code: ${response.statusCode}");
+      // //print("Response Body: ${response.body}"); // ✅ //print full response
+      // //print("Requesting API with: folio_number=$folioNumber, inf_no=$infNo");
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body.trim());
 
         if (data is Map<String, dynamic>) {
-          // print("Parsed Data: $data"); // ✅ Check parsed data
+          // //print("Parsed Data: $data"); // ✅ Check parsed data
 
           if (data.containsKey('transaction_data') &&
               data["transaction_data"] is List &&
               data["transaction_data"].isNotEmpty) {
             List<Map<String, dynamic>> transactions =
                 List<Map<String, dynamic>>.from(data["transaction_data"]);
-            // print(transactions);
+            // //print(transactions);
             if (transactions.isNotEmpty) {
               String latestBalancedUnits = transactions[0]["balancedUnits"];
 
@@ -349,9 +354,9 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                 isLoading = false;
               });
 
-              // print("✅ Updated Balanced Units: $latestBalancedUnits");
+              // //print("✅ Updated Balanced Units: $latestBalancedUnits");
             } else {
-              // print("⚠️ No transactions found!");
+              // //print("⚠️ No transactions found!");
               setState(() {
                 hasTransactions = false;
                 widget.scheme['balancedUnits'] = "0.00";
@@ -429,12 +434,12 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                   .join("\n");
             });
 
-            // print(
+            // //print(
             //     "Updated schemeTransactionDataTdAmnt: $schemeTransactionDataTdAmnt");
-            // print(
+            // //print(
             //     "Updated schemeTransactionDataTottal: $schemeTransactionDataTottal");
           } else {
-            // print("⚠️ No transaction_data found or list is empty");
+            // //print("⚠️ No transaction_data found or list is empty");
             setState(() {
               isLoading = false;
               hasTransactions = false;
@@ -448,7 +453,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
             });
           }
         } else {
-          // print("❌ API response is not a valid JSON object");
+          // //print("❌ API response is not a valid JSON object");
           setState(() {
             isLoading = false;
             hasTransactions = false;
@@ -462,7 +467,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
           });
         }
       } else {
-        // print("❌ API Error: ${response.statusCode}, Body: ${response.body}");
+        // //print("❌ API Error: ${response.statusCode}, Body: ${response.body}");
         setState(() {
           isLoading = false;
           hasTransactions = false;
@@ -482,7 +487,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
         });
       }
     } catch (e) {
-      // print("❌ Exception: $e");
+      // //print("❌ Exception: $e");
       setState(() {
         isLoading = false;
         hasTransactions = false;
@@ -503,10 +508,9 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
       key: _scaffoldKey,
       appBar: CustomAppBar(scaffoldKey: _scaffoldKey, userId: ''),
       drawer: CustomDrawer(
-        userName: userName,
         activeTile: '',
         onTileTap: (selectedTile) {
-          // print("Navigating to $selectedTile");
+          // //print("Navigating to $selectedTile");
           // Handle navigation logic
         },
       ),
@@ -555,17 +559,14 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                               ),
                             ),
                             SizedBox(height: 10),
-                            Container(
-                              child: Text(
-                                widget.scheme['scheme_name']?.toString() ??
-                                    'N/A',
-                                textAlign: TextAlign
-                                    .center, // Apply text alignment here
-                                style: GoogleFonts.poppins(
-                                  color: Color(0xFF0f625c),
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                            Text(
+                              widget.scheme['scheme_name']?.toString() ?? 'N/A',
+                              textAlign:
+                                  TextAlign.center, // Apply text alignment here
+                              style: GoogleFonts.poppins(
+                                color: Color(0xFF0f625c),
+                                fontSize: 17,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                             SizedBox(height: 10),
@@ -589,8 +590,10 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                 50), // Rounded corners
                                             boxShadow: [
                                               BoxShadow(
+                                                // ignore: deprecated_member_use
                                                 color: Colors.black.withOpacity(
-                                                    0.2), // Shadow color with opacity
+                                                  0.2,
+                                                ), // Shadow color with opacity
                                                 spreadRadius:
                                                     2, // How much the shadow spreads
                                                 blurRadius:
@@ -655,60 +658,6 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                         ),
                                     ],
                                   ),
-                                  // Container(
-                                  //   margin: EdgeInsets.only(left: 0),
-                                  //   child: Column(
-                                  //     children: [
-                                  //       Text(
-                                  //         'Gain/Loss',
-                                  //         style: GoogleFonts.poppins(
-                                  //           color: Color(0xFF8c8c8c),
-                                  //           fontSize: 14,
-                                  //           fontWeight: FontWeight.w500,
-                                  //         ),
-                                  //       ),
-                                  //       SingleChildScrollView(
-                                  //         scrollDirection: Axis.horizontal,
-                                  //         child: Builder(
-                                  //           builder: (context) {
-                                  //             // Convert gain/loss value from String to double
-                                  //             double gainLoss = double.tryParse(
-                                  //                     calculateGainLoss(
-                                  //                         widget.scheme[
-                                  //                             'current_val'],
-                                  //                         widget.scheme[
-                                  //                             'invested_val'])) ??
-                                  //                 0.0;
-                                  //
-                                  //             return Row(
-                                  //               children: [
-                                  //                 Icon(
-                                  //                   gainLoss >= 0
-                                  //                       ? Icons.arrow_upward
-                                  //                       : Icons.arrow_downward,
-                                  //                   color: gainLoss >= 0
-                                  //                       ? Color(0xFF09a99d)
-                                  //                       : Color(0xFFD32F2F),
-                                  //                   size: 15,
-                                  //                 ),
-                                  //                 Text(
-                                  //                   '₹ ${gainLoss.toStringAsFixed(2)}', // Format to 2 decimal places
-                                  //                   style: GoogleFonts.poppins(
-                                  //                     color: gainLoss >= 0
-                                  //                         ? Color(0xFF09a99d)
-                                  //                         : Color(0xFFD32F2F),
-                                  //                     fontSize: 14,
-                                  //                     fontWeight: FontWeight.w600,
-                                  //                   ),
-                                  //                 ),
-                                  //               ],
-                                  //             );
-                                  //           },
-                                  //         ),
-                                  //       ),
-                                  //     ],
-                                  //   ),
-                                  // ),
                                 ],
                               ),
                             ),
@@ -978,53 +927,6 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                     ),
                     // each fund investment details start
 
-                    // each fund investment details start 20.03.2025
-
-                    // click here for more details button start 20.03.2025
-                    // Container(
-                    //   margin: EdgeInsets.only(top: 15),
-                    //   child: ElevatedButton(
-                    //     style: ElevatedButton.styleFrom(
-                    //       // Adjust elevation as needed
-                    //       shape: RoundedRectangleBorder(
-                    //         borderRadius: BorderRadius.circular(
-                    //             50), // Match container's border radius
-                    //       ),
-                    //       backgroundColor: Colors.white,
-                    //       // Match container's color
-                    //     ),
-                    //     onPressed: () {
-                    //       var validSchemes = schemes
-                    //           .where((scheme) =>
-                    //               (scheme['current_val'] ?? 0) != 0 ||
-                    //               (scheme['invested_val'] ?? 0) != 0)
-                    //           .toList();
-                    //
-                    //       if (validSchemes.isNotEmpty) {
-                    //         Navigator.push(
-                    //           context,
-                    //           MaterialPageRoute(
-                    //             builder: (context) =>
-                    //                 eachFundInvstDtls(scheme: widget.scheme),
-                    //           ),
-                    //         );
-                    //       } else {
-                    //         ScaffoldMessenger.of(context).showSnackBar(
-                    //           SnackBar(
-                    //               content: Text("No valid schemes available")),
-                    //         );
-                    //       }
-                    //     },
-                    //     child: Text(
-                    //       'Click Here For More Details',
-                    //       style: GoogleFonts.poppins(
-                    //           color: Color(0xFF09a99d),
-                    //           fontWeight: FontWeight.w500,
-                    //           fontSize: 14),
-                    //     ),
-                    //   ),
-                    // ),
-                    // click here for more details button end 20.03.2025
                     Container(
                         margin: EdgeInsets.only(top: 20),
                         decoration: BoxDecoration(
@@ -1299,13 +1201,15 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                           children: [
                                                             Text(
                                                               'Amount',
-                                                              style: GoogleFonts.poppins(
-                                                                  color: Color(
-                                                                      0xFF0f625c),
-                                                                  fontSize: 13,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500),
+                                                              style: GoogleFonts
+                                                                  .poppins(
+                                                                color: Color(
+                                                                    0xFF0f625c),
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                              ),
                                                             ),
                                                             Text(
                                                               NumberFormat.currency(
@@ -1450,1027 +1354,8 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                       ),
                                     ),
                         ),
-
-                        // dynamic work end on 20.03.2025
-
-                        // static work start on 20.03.2025
-
-                        // Container(
-                        //   margin: EdgeInsets.only(bottom: 15),
-                        //   child: Padding(
-                        //     padding: EdgeInsets.symmetric(horizontal: 0,vertical: 0),
-                        //     child: Container(
-                        //       decoration: BoxDecoration(
-                        //         color: Colors.white,
-                        //         borderRadius: BorderRadius.circular(10),
-                        //         boxShadow: [
-                        //           BoxShadow(
-                        //             color: Colors.black.withOpacity(0.2), // Shadow color with opacity
-                        //             spreadRadius: 2,
-                        //             blurRadius: 5,
-                        //             offset: Offset(0, 3), // Shadow position (x, y)
-                        //           ),
-                        //         ],
-                        //       ),
-                        //       padding: EdgeInsets.only(right: 15),
-                        //       child: SingleChildScrollView(
-                        //         scrollDirection: Axis.horizontal,
-                        //         child: Row(
-                        //           mainAxisAlignment: MainAxisAlignment.start,
-                        //           crossAxisAlignment: CrossAxisAlignment.center,
-                        //           children: [
-                        //             Column(
-                        //               crossAxisAlignment: CrossAxisAlignment.start,
-                        //               children: [
-                        //                 SizedBox(
-                        //                   height: 8,
-                        //                 ),
-                        //                 Padding(
-                        //                   padding: EdgeInsets.symmetric(horizontal: 11, vertical: 8),
-                        //                   child: Container(
-                        //                     decoration: BoxDecoration(
-                        //                       color: Color(
-                        //                           0xFFdceffc), // Background color
-                        //                       boxShadow: [
-                        //                         BoxShadow(
-                        //                           color: Colors.black.withOpacity(
-                        //                               0.2), // Shadow color with opacity
-                        //                           spreadRadius:
-                        //                           2, // How much the shadow spreads
-                        //                           blurRadius:
-                        //                           5, // How soft the shadow is
-                        //                           offset: Offset(0,
-                        //                               3), // Shadow position (x, y)
-                        //                         ),
-                        //                       ],
-                        //                       borderRadius: BorderRadius.circular(
-                        //                           20), // Optional: Add rounded corners
-                        //                     ),
-                        //                     padding: EdgeInsets.only(
-                        //                         left: 12,
-                        //                         right: 12,
-                        //                         top: 2,
-                        //                         bottom:
-                        //                         2), // Add padding for better appearance
-                        //                     child: Text(
-                        //                       'PUR'.toUpperCase(),
-                        //                       style: GoogleFonts.poppins(
-                        //                         color: Color(0xFF0f625c),
-                        //                         fontSize: 14,
-                        //                         fontWeight: FontWeight.w500,
-                        //                       ),
-                        //                     ),
-                        //                   ),
-                        //                 ),
-                        //                 SizedBox(
-                        //                   height: 15,
-                        //                 ),
-                        //                 Container(
-                        //                   margin: EdgeInsets.only(left: 20),
-                        //                   child: Icon(
-                        //                     Icons
-                        //                         .calendar_month_outlined, // Calendar Icon
-                        //                     color: Color(
-                        //                         0xFF09a99d), // Change color as needed
-                        //                     size: 20, // Adjust size as needed
-                        //                   ),
-                        //                 ),
-                        //                 SizedBox(
-                        //                   height: 9,
-                        //                 ),
-                        //                 Container(
-                        //                     margin: EdgeInsets.only(left: 20),
-                        //                     child: Text('27/05/25',
-                        //                         style: GoogleFonts.poppins(
-                        //                             color: Color(0xFF303131),
-                        //                             fontSize: 13,
-                        //                             fontWeight: FontWeight.w500))),
-                        //                 SizedBox(
-                        //                   height: 18,
-                        //                 ),
-                        //               ],
-                        //             ),
-                        //             Padding(
-                        //               padding: EdgeInsets.only(left: 10,right: 10),
-                        //               child: SizedBox(
-                        //                 height: 130, // Adjust as needed
-                        //                 child: VerticalDivider(
-                        //                   color: Color(0xFFe5e5e5),
-                        //                   thickness: 1,
-                        //                 ),
-                        //               ),
-                        //             ),
-                        //             Column(
-                        //               crossAxisAlignment: CrossAxisAlignment.start,
-                        //               children: [
-                        //                 Column(
-                        //                   crossAxisAlignment: CrossAxisAlignment.start,
-                        //                   children: [
-                        //                     Text('Amount',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                     Text('1,11,49,999.01',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                   ],
-                        //                 ),
-                        //                 SizedBox(
-                        //                   height: 15,
-                        //                 ),
-                        //                 Column(
-                        //                   crossAxisAlignment: CrossAxisAlignment.start,
-                        //                   children: [
-                        //                     Text('Units',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                     Text('1807.139',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                   ],
-                        //                 ),
-                        //                 SizedBox(
-                        //                   height: 10,
-                        //                 ),
-                        //               ],
-                        //             ),
-                        //             Padding(
-                        //               padding: EdgeInsets.only(left: 10,right: 10),
-                        //               child: SizedBox(
-                        //                 height: 130, // Adjust as needed
-                        //                 child: VerticalDivider(
-                        //                   color: Color(0xFFe5e5e5),
-                        //                   thickness: 1,
-                        //                 ),
-                        //               ),
-                        //             ),
-                        //             Column(
-                        //               crossAxisAlignment: CrossAxisAlignment.start,
-                        //               children: [
-                        //                 Column(
-                        //                   crossAxisAlignment: CrossAxisAlignment.center,
-                        //                   children: [
-                        //                     Text('Balance',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                     Text('15,11,49,999.05',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                   ],
-                        //                 ),
-                        //                 SizedBox(
-                        //                   height: 10,
-                        //                 ),
-                        //               ],
-                        //             ),
-                        //           ],
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-
-                        // static work end on 20.03.2025
-
-                        // Container(
-                        //   margin: EdgeInsets.only(bottom: 15),
-                        //   child: Padding(
-                        //     padding: EdgeInsets.symmetric(horizontal: 0,vertical: 0),
-                        //     child: Container(
-                        //       decoration: BoxDecoration(
-                        //         color: Colors.white,
-                        //         borderRadius: BorderRadius.circular(10),
-                        //         boxShadow: [
-                        //           BoxShadow(
-                        //             color: Colors.black.withOpacity(0.2), // Shadow color with opacity
-                        //             spreadRadius: 2,
-                        //             blurRadius: 5,
-                        //             offset: Offset(0, 3), // Shadow position (x, y)
-                        //           ),
-                        //         ],
-                        //       ),
-                        //       padding: EdgeInsets.only(right: 15),
-                        //       child: SingleChildScrollView(
-                        //         scrollDirection: Axis.horizontal,
-                        //         child: Row(
-                        //           mainAxisAlignment: MainAxisAlignment.start,
-                        //           crossAxisAlignment: CrossAxisAlignment.center,
-                        //           children: [
-                        //             Column(
-                        //               crossAxisAlignment: CrossAxisAlignment.start,
-                        //               children: [
-                        //                 SizedBox(
-                        //                   height: 8,
-                        //                 ),
-                        //                 Padding(
-                        //                   padding: EdgeInsets.symmetric(horizontal: 11, vertical: 8),
-                        //                   child: Container(
-                        //                     decoration: BoxDecoration(
-                        //                       color: Color(
-                        //                           0xFFdceffc), // Background color
-                        //                       boxShadow: [
-                        //                         BoxShadow(
-                        //                           color: Colors.black.withOpacity(
-                        //                               0.2), // Shadow color with opacity
-                        //                           spreadRadius:
-                        //                           2, // How much the shadow spreads
-                        //                           blurRadius:
-                        //                           5, // How soft the shadow is
-                        //                           offset: Offset(0,
-                        //                               3), // Shadow position (x, y)
-                        //                         ),
-                        //                       ],
-                        //                       borderRadius: BorderRadius.circular(
-                        //                           20), // Optional: Add rounded corners
-                        //                     ),
-                        //                     padding: EdgeInsets.only(
-                        //                         left: 12,
-                        //                         right: 12,
-                        //                         top: 2,
-                        //                         bottom:
-                        //                         2), // Add padding for better appearance
-                        //                     child: Text(
-                        //                       'PUR'.toUpperCase(),
-                        //                       style: GoogleFonts.poppins(
-                        //                         color: Color(0xFF0f625c),
-                        //                         fontSize: 14,
-                        //                         fontWeight: FontWeight.w500,
-                        //                       ),
-                        //                     ),
-                        //                   ),
-                        //                 ),
-                        //                 SizedBox(
-                        //                   height: 15,
-                        //                 ),
-                        //                 Container(
-                        //                   margin: EdgeInsets.only(left: 20),
-                        //                   child: Icon(
-                        //                     Icons
-                        //                         .calendar_month_outlined, // Calendar Icon
-                        //                     color: Color(
-                        //                         0xFF09a99d), // Change color as needed
-                        //                     size: 20, // Adjust size as needed
-                        //                   ),
-                        //                 ),
-                        //                 SizedBox(
-                        //                   height: 9,
-                        //                 ),
-                        //                 Container(
-                        //                     margin: EdgeInsets.only(left: 20),
-                        //                     child: Text('27/05/25',
-                        //                         style: GoogleFonts.poppins(
-                        //                             color: Color(0xFF303131),
-                        //                             fontSize: 13,
-                        //                             fontWeight: FontWeight.w500))),
-                        //                 SizedBox(
-                        //                   height: 18,
-                        //                 ),
-                        //               ],
-                        //             ),
-                        //             Padding(
-                        //               padding: EdgeInsets.only(left: 10,right: 10),
-                        //               child: SizedBox(
-                        //                 height: 130, // Adjust as needed
-                        //                 child: VerticalDivider(
-                        //                   color: Color(0xFFe5e5e5),
-                        //                   thickness: 1,
-                        //                 ),
-                        //               ),
-                        //             ),
-                        //             Column(
-                        //               crossAxisAlignment: CrossAxisAlignment.start,
-                        //               children: [
-                        //                 Column(
-                        //                   crossAxisAlignment: CrossAxisAlignment.start,
-                        //                   children: [
-                        //                     Text('Amount',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                     Text('1,11,49,999.01',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                   ],
-                        //                 ),
-                        //                 SizedBox(
-                        //                   height: 15,
-                        //                 ),
-                        //                 Column(
-                        //                   crossAxisAlignment: CrossAxisAlignment.start,
-                        //                   children: [
-                        //                     Text('Units',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                     Text('1807.139',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                   ],
-                        //                 ),
-                        //                 SizedBox(
-                        //                   height: 10,
-                        //                 ),
-                        //               ],
-                        //             ),
-                        //             Padding(
-                        //               padding: EdgeInsets.only(left: 10,right: 10),
-                        //               child: SizedBox(
-                        //                 height: 130, // Adjust as needed
-                        //                 child: VerticalDivider(
-                        //                   color: Color(0xFFe5e5e5),
-                        //                   thickness: 1,
-                        //                 ),
-                        //               ),
-                        //             ),
-                        //             Column(
-                        //               crossAxisAlignment: CrossAxisAlignment.start,
-                        //               children: [
-                        //                 Column(
-                        //                   crossAxisAlignment: CrossAxisAlignment.center,
-                        //                   children: [
-                        //                     Text('Balance',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                     Text('15,11,49,999.05',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                   ],
-                        //                 ),
-                        //                 SizedBox(
-                        //                   height: 10,
-                        //                 ),
-                        //               ],
-                        //             ),
-                        //           ],
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                        // Container(
-                        //   margin: EdgeInsets.only(bottom: 15),
-                        //   child: Padding(
-                        //     padding: EdgeInsets.symmetric(horizontal: 0,vertical: 0),
-                        //     child: Container(
-                        //       decoration: BoxDecoration(
-                        //         color: Colors.white,
-                        //         borderRadius: BorderRadius.circular(10),
-                        //         boxShadow: [
-                        //           BoxShadow(
-                        //             color: Colors.black.withOpacity(0.2), // Shadow color with opacity
-                        //             spreadRadius: 2,
-                        //             blurRadius: 5,
-                        //             offset: Offset(0, 3), // Shadow position (x, y)
-                        //           ),
-                        //         ],
-                        //       ),
-                        //       padding: EdgeInsets.only(right: 15),
-                        //       child: SingleChildScrollView(
-                        //         scrollDirection: Axis.horizontal,
-                        //         child: Row(
-                        //           mainAxisAlignment: MainAxisAlignment.start,
-                        //           crossAxisAlignment: CrossAxisAlignment.center,
-                        //           children: [
-                        //             Column(
-                        //               crossAxisAlignment: CrossAxisAlignment.start,
-                        //               children: [
-                        //                 SizedBox(
-                        //                   height: 8,
-                        //                 ),
-                        //                 Padding(
-                        //                   padding: EdgeInsets.symmetric(horizontal: 11, vertical: 8),
-                        //                   child: Container(
-                        //                     decoration: BoxDecoration(
-                        //                       color: Color(
-                        //                           0xFFdceffc), // Background color
-                        //                       boxShadow: [
-                        //                         BoxShadow(
-                        //                           color: Colors.black.withOpacity(
-                        //                               0.2), // Shadow color with opacity
-                        //                           spreadRadius:
-                        //                           2, // How much the shadow spreads
-                        //                           blurRadius:
-                        //                           5, // How soft the shadow is
-                        //                           offset: Offset(0,
-                        //                               3), // Shadow position (x, y)
-                        //                         ),
-                        //                       ],
-                        //                       borderRadius: BorderRadius.circular(
-                        //                           20), // Optional: Add rounded corners
-                        //                     ),
-                        //                     padding: EdgeInsets.only(
-                        //                         left: 12,
-                        //                         right: 12,
-                        //                         top: 2,
-                        //                         bottom:
-                        //                         2), // Add padding for better appearance
-                        //                     child: Text(
-                        //                       'PUR'.toUpperCase(),
-                        //                       style: GoogleFonts.poppins(
-                        //                         color: Color(0xFF0f625c),
-                        //                         fontSize: 14,
-                        //                         fontWeight: FontWeight.w500,
-                        //                       ),
-                        //                     ),
-                        //                   ),
-                        //                 ),
-                        //                 SizedBox(
-                        //                   height: 15,
-                        //                 ),
-                        //                 Container(
-                        //                   margin: EdgeInsets.only(left: 20),
-                        //                   child: Icon(
-                        //                     Icons
-                        //                         .calendar_month_outlined, // Calendar Icon
-                        //                     color: Color(
-                        //                         0xFF09a99d), // Change color as needed
-                        //                     size: 20, // Adjust size as needed
-                        //                   ),
-                        //                 ),
-                        //                 SizedBox(
-                        //                   height: 9,
-                        //                 ),
-                        //                 Container(
-                        //                     margin: EdgeInsets.only(left: 20),
-                        //                     child: Text('27/05/25',
-                        //                         style: GoogleFonts.poppins(
-                        //                             color: Color(0xFF303131),
-                        //                             fontSize: 13,
-                        //                             fontWeight: FontWeight.w500))),
-                        //                 SizedBox(
-                        //                   height: 18,
-                        //                 ),
-                        //               ],
-                        //             ),
-                        //             Padding(
-                        //               padding: EdgeInsets.only(left: 10,right: 10),
-                        //               child: SizedBox(
-                        //                 height: 130, // Adjust as needed
-                        //                 child: VerticalDivider(
-                        //                   color: Color(0xFFe5e5e5),
-                        //                   thickness: 1,
-                        //                 ),
-                        //               ),
-                        //             ),
-                        //             Column(
-                        //               crossAxisAlignment: CrossAxisAlignment.start,
-                        //               children: [
-                        //                 Column(
-                        //                   crossAxisAlignment: CrossAxisAlignment.start,
-                        //                   children: [
-                        //                     Text('Amount',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                     Text('1,11,49,999.01',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                   ],
-                        //                 ),
-                        //                 SizedBox(
-                        //                   height: 15,
-                        //                 ),
-                        //                 Column(
-                        //                   crossAxisAlignment: CrossAxisAlignment.start,
-                        //                   children: [
-                        //                     Text('Units',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                     Text('1807.139',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                   ],
-                        //                 ),
-                        //                 SizedBox(
-                        //                   height: 10,
-                        //                 ),
-                        //               ],
-                        //             ),
-                        //             Padding(
-                        //               padding: EdgeInsets.only(left: 10,right: 10),
-                        //               child: SizedBox(
-                        //                 height: 130, // Adjust as needed
-                        //                 child: VerticalDivider(
-                        //                   color: Color(0xFFe5e5e5),
-                        //                   thickness: 1,
-                        //                 ),
-                        //               ),
-                        //             ),
-                        //             Column(
-                        //               crossAxisAlignment: CrossAxisAlignment.start,
-                        //               children: [
-                        //                 Column(
-                        //                   crossAxisAlignment: CrossAxisAlignment.center,
-                        //                   children: [
-                        //                     Text('Balance',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                     Text('15,11,49,999.05',style: GoogleFonts.poppins(color: Color(0xFF303131),fontSize: 13,fontWeight: FontWeight.w500),),
-                        //                   ],
-                        //                 ),
-                        //                 SizedBox(
-                        //                   height: 10,
-                        //                 ),
-                        //               ],
-                        //             ),
-                        //           ],
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
                       ],
                     ),
-                    // Container(
-                    //   margin: EdgeInsets.only(top: 20),
-                    //   child: Row(
-                    //     spacing: 10,
-                    //     children: [
-                    //       SizedBox(
-                    //         width: 165,
-                    //         child: Column(
-                    //           children: [
-                    //             Row(
-                    //               spacing: 10,
-                    //               children: [
-                    //                 SizedBox(
-                    //                   width: 48,
-                    //                   height: 48,
-                    //                   child: Container(
-                    //                     decoration: BoxDecoration(
-                    //                       borderRadius:
-                    //                           BorderRadius.circular(8),
-                    //                       color: Color(0xFFf9eddb),
-                    //                     ),
-                    //                     child: Center(
-                    //                         child: Image.asset(
-                    //                             'assets/images/ech_dlr.png')), // Replace 'Colors.red' with your desired color
-                    //                   ),
-                    //                 ),
-                    //                 Text(
-                    //                   'Invested',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF0f625c),
-                    //                       fontSize: 16,
-                    //                       fontWeight: FontWeight.w500),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //             SizedBox(
-                    //               height: 10,
-                    //             ),
-                    //             Row(
-                    //               mainAxisAlignment:
-                    //                   MainAxisAlignment.spaceBetween,
-                    //               children: [
-                    //                 Text(
-                    //                   'Lumsum',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF8c8c8c),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //                 Text(
-                    //                   '5,00,000',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF303131),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //             Row(
-                    //               mainAxisAlignment:
-                    //                   MainAxisAlignment.spaceBetween,
-                    //               children: [
-                    //                 Text(
-                    //                   'SIP',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF8c8c8c),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //                 Text(
-                    //                   '0',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF303131),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //             Row(
-                    //               mainAxisAlignment:
-                    //                   MainAxisAlignment.spaceBetween,
-                    //               children: [
-                    //                 Text(
-                    //                   'Switch-Ins',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF8c8c8c),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //                 Text(
-                    //                   '0',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF303131),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //             Row(
-                    //               mainAxisAlignment:
-                    //                   MainAxisAlignment.spaceBetween,
-                    //               children: [
-                    //                 Text(
-                    //                   'Dividends',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF8c8c8c),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //                 Text(
-                    //                   '0',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF303131),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //             Container(
-                    //               margin: EdgeInsets.only(top: 10, bottom: 10),
-                    //               color: Color(0xFFcbd2d0),
-                    //               height: 1,
-                    //             ),
-                    //             Row(
-                    //               mainAxisAlignment: MainAxisAlignment.end,
-                    //               children: [
-                    //                 Text(
-                    //                   '5,00,000',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF303131),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //       SizedBox(
-                    //         height: 168,
-                    //         width: 1,
-                    //         child: Container(
-                    //           color: Color(
-                    //               0xFFcbd2d0), // Replace 'Colors.red' with your desired color
-                    //         ),
-                    //       ),
-                    //       SizedBox(
-                    //         width: 165,
-                    //         child: Column(
-                    //           children: [
-                    //             Row(
-                    //               spacing: 10,
-                    //               children: [
-                    //                 SizedBox(
-                    //                   width: 48,
-                    //                   height: 48,
-                    //                   child: Container(
-                    //                     decoration: BoxDecoration(
-                    //                       borderRadius:
-                    //                           BorderRadius.circular(8),
-                    //                       color: Color(0xFFb0daf4),
-                    //                     ),
-                    //                     child: Center(
-                    //                         child: Image.asset(
-                    //                             'assets/images/inv_tx.png')), // Replace 'Colors.red' with your desired color
-                    //                   ),
-                    //                 ),
-                    //                 Text(
-                    //                   'Received',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF0f625c),
-                    //                       fontSize: 16,
-                    //                       fontWeight: FontWeight.w500),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //             SizedBox(
-                    //               height: 10,
-                    //             ),
-                    //             Row(
-                    //               mainAxisAlignment:
-                    //                   MainAxisAlignment.spaceBetween,
-                    //               children: [
-                    //                 Text(
-                    //                   'Dividends',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF8c8c8c),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //                 Text(
-                    //                   '0',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF303131),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //             Row(
-                    //               mainAxisAlignment:
-                    //                   MainAxisAlignment.spaceBetween,
-                    //               children: [
-                    //                 Text(
-                    //                   'Redemptions',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF8c8c8c),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //                 Text(
-                    //                   '0',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF303131),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //             Row(
-                    //               mainAxisAlignment:
-                    //                   MainAxisAlignment.spaceBetween,
-                    //               children: [
-                    //                 Text(
-                    //                   'Switch-Outs',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF8c8c8c),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //                 Text(
-                    //                   '0',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF303131),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //             Row(
-                    //               mainAxisAlignment:
-                    //                   MainAxisAlignment.spaceBetween,
-                    //               children: [
-                    //                 Text(
-                    //                   'SWP',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF8c8c8c),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //                 Text(
-                    //                   '0',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF303131),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //             Container(
-                    //               margin: EdgeInsets.only(top: 10, bottom: 10),
-                    //               color: Color(0xFFcbd2d0),
-                    //               height: 1,
-                    //             ),
-                    //             Row(
-                    //               mainAxisAlignment: MainAxisAlignment.end,
-                    //               children: [
-                    //                 Text(
-                    //                   '0',
-                    //                   style: GoogleFonts.poppins(
-                    //                       color: Color(0xFF303131),
-                    //                       fontWeight: FontWeight.w500,
-                    //                       fontSize: 14),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    // Container(
-                    //   margin: EdgeInsets.only(top: 20),
-                    //   decoration: BoxDecoration(
-                    //     borderRadius: BorderRadius.circular(15),
-                    //     color: Colors.white,
-                    //   ),
-                    //   width: double.infinity,
-                    //   child: Padding(
-                    //     padding: EdgeInsets.all(20),
-                    //     child: SingleChildScrollView(
-                    //       scrollDirection: Axis.horizontal,
-                    //       child: Row(
-                    //         spacing: 20,
-                    //         children: [
-                    //           Column(
-                    //             children: [
-                    //               Text(
-                    //                 'Balance\nUnits',
-                    //                 style: GoogleFonts.poppins(
-                    //                     color: Color(0xFF8c8c8c),
-                    //                     fontSize: 14,
-                    //                     fontWeight: FontWeight.w500),
-                    //               ),
-                    //               SizedBox(
-                    //                 height: 5,
-                    //               ),
-                    //               Text(
-                    //                 '7,534,163',
-                    //                 style: GoogleFonts.poppins(
-                    //                     color: Color(0xFF0f625c),
-                    //                     fontSize: 14,
-                    //                     fontWeight: FontWeight.w600),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //           Column(
-                    //             children: [
-                    //               Text(
-                    //                 'Average\nNAV',
-                    //                 style: GoogleFonts.poppins(
-                    //                     color: Color(0xFF8c8c8c),
-                    //                     fontSize: 14,
-                    //                     fontWeight: FontWeight.w500),
-                    //               ),
-                    //               SizedBox(
-                    //                 height: 5,
-                    //               ),
-                    //               Text(
-                    //                 '6,63,600',
-                    //                 style: GoogleFonts.poppins(
-                    //                     color: Color(0xFF0f625c),
-                    //                     fontSize: 14,
-                    //                     fontWeight: FontWeight.w600),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //           Column(
-                    //             children: [
-                    //               Text(
-                    //                 'Cost\nAmount',
-                    //                 style: GoogleFonts.poppins(
-                    //                     color: Color(0xFF8c8c8c),
-                    //                     fontSize: 14,
-                    //                     fontWeight: FontWeight.w500),
-                    //               ),
-                    //               SizedBox(
-                    //                 height: 5,
-                    //               ),
-                    //               Text(
-                    //                 '₹ ${double.tryParse(widget.scheme['invested_val']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}',
-                    //                 style: GoogleFonts.poppins(
-                    //                     color: Color(0xFF0f625c),
-                    //                     fontSize: 14,
-                    //                     fontWeight: FontWeight.w600),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //           Column(
-                    //             children: [
-                    //               Text(
-                    //                 'Present\nValue',
-                    //                 style: GoogleFonts.poppins(
-                    //                     color: Color(0xFF8c8c8c),
-                    //                     fontSize: 14,
-                    //                     fontWeight: FontWeight.w500),
-                    //               ),
-                    //               SizedBox(
-                    //                 height: 5,
-                    //               ),
-                    //               // Text('${widget.scheme['current_val']?.toString() ?? 'N/A'}',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 14,fontWeight: FontWeight.w600),),
-                    //               Text(
-                    //                 '₹ ${double.tryParse(widget.scheme['current_val']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}',
-                    //                 style: GoogleFonts.poppins(
-                    //                     color: Color(0xFF0f625c),
-                    //                     fontSize: 14,
-                    //                     fontWeight: FontWeight.w600),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ],
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    // Container(
-                    //   margin: EdgeInsets.only(bottom: 20, top: 20),
-                    //   child: Wrap(
-                    //     spacing: 12,
-                    //     runSpacing: 28,
-                    //     children: [
-                    //       InkWell(
-                    //         onTap: () {
-                    //           // Define your action here
-                    //           print("New Fund Offer button pressed");
-                    //         },
-                    //         borderRadius: BorderRadius.circular(
-                    //             8), // Add ripple effect matching the button shape
-                    //         child: Container(
-                    //           width: 100,
-                    //           padding: const EdgeInsets.symmetric(
-                    //               vertical: 10), // Optional padding
-                    //           child: Column(
-                    //             crossAxisAlignment: CrossAxisAlignment.center,
-                    //             children: [
-                    //               Container(
-                    //                 width: 50,
-                    //                 height: 50,
-                    //                 decoration: const BoxDecoration(
-                    //                   color: Color(0xFFb2daf4),
-                    //                   borderRadius:
-                    //                       BorderRadius.all(Radius.circular(8)),
-                    //                 ),
-                    //                 child: Center(
-                    //                   child: Image.asset(
-                    //                       'assets/images/nw_fnd.png'),
-                    //                 ),
-                    //               ),
-                    //               const SizedBox(height: 10),
-                    //               Text(
-                    //                 'Realized Gain',
-                    //                 style: GoogleFonts.poppins(
-                    //                   color: const Color(0xFF0f625c),
-                    //                   fontSize: 14,
-                    //                   fontWeight: FontWeight.w400,
-                    //                 ),
-                    //                 textAlign: TextAlign.center,
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ),
-                    //       ),
-                    //       Container(
-                    //         width: 1,
-                    //         height: 100,
-                    //         color: Color(0xFFc7d1d0),
-                    //       ),
-                    //       InkWell(
-                    //         onTap: () {
-                    //           // Define your action here
-                    //           print("New Fund Offer button pressed");
-                    //         },
-                    //         borderRadius: BorderRadius.circular(8),
-                    //         child: SizedBox(
-                    //           width: 100,
-                    //           child: Column(
-                    //             crossAxisAlignment: CrossAxisAlignment.center,
-                    //             children: [
-                    //               Container(
-                    //                 width: 50,
-                    //                 height: 50,
-                    //                 decoration: BoxDecoration(
-                    //                   color: Color(0xFFefecdb),
-                    //                   borderRadius:
-                    //                       BorderRadius.all(Radius.circular(8)),
-                    //                 ),
-                    //                 child: Center(
-                    //                   child: Image.asset(
-                    //                       'assets/images/thm_invst.png'),
-                    //                 ),
-                    //               ),
-                    //               SizedBox(
-                    //                 height: 10,
-                    //               ),
-                    //               Text(
-                    //                 'Unrealized Gain',
-                    //                 style: GoogleFonts.poppins(
-                    //                   color: Color(0xFF0f625c),
-                    //                   fontSize: 14,
-                    //                   fontWeight: FontWeight.w400,
-                    //                 ),
-                    //                 textAlign: TextAlign.center,
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ),
-                    //       ),
-                    //       Container(
-                    //         width: 1,
-                    //         height: 100,
-                    //         color: Color(0xFFc7d1d0),
-                    //       ),
-                    //       InkWell(
-                    //         onTap: () {
-                    //           // Define your action here
-                    //           print("New Fund Offer button pressed");
-                    //         },
-                    //         borderRadius: BorderRadius.circular(8),
-                    //         child: SizedBox(
-                    //           width: 100,
-                    //           child: Column(
-                    //             crossAxisAlignment: CrossAxisAlignment.center,
-                    //             children: [
-                    //               Container(
-                    //                 width: 50,
-                    //                 height: 50,
-                    //                 decoration: BoxDecoration(
-                    //                   color: Color(0xFFa5d9d5),
-                    //                   borderRadius:
-                    //                       BorderRadius.all(Radius.circular(8)),
-                    //                 ),
-                    //                 child: Center(
-                    //                   child: Image.asset(
-                    //                       'assets/images/int_mtfnd.png'),
-                    //                 ),
-                    //               ),
-                    //               SizedBox(
-                    //                 height: 10,
-                    //               ),
-                    //               Text(
-                    //                 'Overall Gain',
-                    //                 style: GoogleFonts.poppins(
-                    //                   color: Color(0xFF0f625c),
-                    //                   fontSize: 14,
-                    //                   fontWeight: FontWeight.w400,
-                    //                 ),
-                    //                 textAlign: TextAlign.center,
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-
-                    // each fund investment details end 20.03.2025
 
                     SizedBox(height: 20),
                     // Add more widgets here

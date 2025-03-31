@@ -4,17 +4,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class CustomDrawer extends StatefulWidget {
-  final String userName;
   final String activeTile;
   final Function(String) onTileTap;
-  // final VoidCallback onLogout;
 
   const CustomDrawer({
     super.key,
-    required this.userName,
     required this.activeTile,
     required this.onTileTap,
-    // required this.onLogout,
   });
 
   @override
@@ -24,11 +20,25 @@ class CustomDrawer extends StatefulWidget {
 
 class _CustomDrawerState extends State<CustomDrawer> {
   String activeTile = '';
+  String loggedInUserName = '';
 
   @override
   void initState() {
     super.initState();
     activeTile = widget.activeTile;
+    _loadUserName(); // Load the user name when the widget is initialized
+  }
+
+  void _loadUserName() async {
+    String? userName = await getUserName();
+    setState(() {
+      loggedInUserName = userName ?? "Guest"; // Provide a fallback value
+    });
+  }
+
+  Future<String?> getUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_name'); // Returns userId if stored, else null
   }
 
   Future<void> _logout(BuildContext context) async {
@@ -170,7 +180,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   SizedBox(
                     width: 150,
                     child: Text(
-                      widget.userName,
+                      loggedInUserName,
                       style: GoogleFonts.poppins(
                         color: Color(0xFF0f625c),
                         fontSize: 18,

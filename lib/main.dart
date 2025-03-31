@@ -8,7 +8,6 @@ void main() async {
   WidgetsFlutterBinding
       .ensureInitialized(); // Ensures async operations work before runApp
   String? userId = await getUserId(); // Retrieve stored userId
-
   runApp(
     MyApp(userId: userId),
   );

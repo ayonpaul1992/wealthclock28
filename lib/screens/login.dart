@@ -93,12 +93,16 @@ class _LoginPageState extends State<LoginPage> {
 
         if (responseData.containsKey('token')) {
           String token = responseData['token'];
-          String userId = responseData['user_id'].toString();
+          String userId = responseData['userId'].toString();
+          String userName = responseData['userName'].toString();
+
+          print("Login successful. Token: $token, User ID: $userId");
 
           // Store user data in SharedPreferences asynchronously
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('auth_token', token);
           await prefs.setString('user_id', userId);
+          await prefs.setString('user_name', userName);
 
           await secureStorage.write(key: 'saved_email', value: uEmail);
           await secureStorage.write(key: 'saved_password', value: uPass);
