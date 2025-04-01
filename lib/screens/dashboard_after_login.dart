@@ -522,7 +522,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const individualPortfolioPage(
+                            builder: (context) => const IndividualPortfolioPage(
                               memberPan: '',
                             ),
                           ),

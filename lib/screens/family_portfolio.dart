@@ -562,7 +562,7 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              individualPortfolioPage(
+                                              IndividualPortfolioPage(
                                             memberPan: validSchemes[index]
                                                     ['member_pan'] ??
                                                 validSchemes[index]
