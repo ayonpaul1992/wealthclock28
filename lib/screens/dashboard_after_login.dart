@@ -193,7 +193,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
           hybridAmount = "0.00";
         });
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       //print('Error: $e');
       //print('StackTrace: $stackTrace');
       setState(() {

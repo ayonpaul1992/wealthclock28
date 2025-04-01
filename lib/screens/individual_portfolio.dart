@@ -214,7 +214,7 @@ class _individualPortfolioPageState extends State<individualPortfolioPage> {
           hybridAmount = "0.00";
         });
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       //print('Error: $e');
       //print('StackTrace: $stackTrace');
       setState(() {

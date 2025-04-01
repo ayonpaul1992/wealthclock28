@@ -58,16 +58,25 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
   // added on start 20.03.2025
   bool isLoading = false;
   bool hasTransactions = false; // ✅ Declare it here
+
   String schemeTransactionDataTdAmnt = "";
   List<double> tdAmounts = [];
+
+  String schemeTransactionDataNav = "";
+  List<String> tdNavs = [];
+
   String schemeTransactionDataTdUnits = "";
   List<double> tdUnits = [];
+
   String schemeTransactionDataTdDate = "";
   List<String> tdDate = [];
+
   String schemeTransactionDataTdPurred = "";
   List<String> tdPurred = [];
+
   String schemeTransactionDataBalancedUnits = "";
   List<String> transBalancedUnits = [];
+
   String schemeTransactionDataTottal = "";
   List<Map<String, dynamic>> transactionDataBox = [];
   // added on end 20.03.2025
@@ -94,12 +103,24 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
     isLoading = false;
     hasTransactions = true;
     schemeTransactionDataTdAmnt = tdAmounts
-        .map((amt) =>
-            NumberFormat.currency(locale: 'en_IN', symbol: '₹').format(amt))
+        .map(
+          (amt) =>
+              NumberFormat.currency(locale: 'en_IN', symbol: '₹').format(amt),
+        )
         .join(", ");
+
+    schemeTransactionDataNav = tdNavs
+        .map(
+          (amt) =>
+              NumberFormat.currency(locale: 'en_IN', symbol: '₹').format(amt),
+        )
+        .join(", ");
+
     schemeTransactionDataTdUnits = tdUnits
-        .map((amt) =>
-            NumberFormat.currency(locale: 'en_IN', symbol: '₹').format(amt))
+        .map(
+          (amt) =>
+              NumberFormat.currency(locale: 'en_IN', symbol: '₹').format(amt),
+        )
         .join(", ");
 
     schemeTransactionDataTdPurred = tdPurred.join(", ");
@@ -266,7 +287,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
           hybridAmount = "0.00";
         });
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       // //print('Error: $e');
       // //print('StackTrace: $stackTrace');
       setState(() {
@@ -379,6 +400,12 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                       ? item["transactionType"].toString()
                       : "0.0")
                   .toList();
+
+              tdNavs = transactions
+                  .map<String>((item) =>
+                      (item["nav"] != null) ? item["nav"].toString() : "0.0")
+                  .toList();
+
               transBalancedUnits = transactions
                   .map<String>((item) => (item["balancedUnits"] != null)
                       ? item["balancedUnits"].toString()
@@ -1189,6 +1216,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                         ),
                                                       ),
                                                     ),
+
                                                     Column(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
@@ -1272,6 +1300,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                         ),
                                                       ],
                                                     ),
+
                                                     Padding(
                                                       padding: EdgeInsets.only(
                                                           left: 10, right: 10),
@@ -1285,6 +1314,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                         ),
                                                       ),
                                                     ),
+
                                                     Column(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
@@ -1293,11 +1323,52 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                         Column(
                                                           crossAxisAlignment:
                                                               CrossAxisAlignment
-                                                                  .center,
+                                                                  .start,
                                                           children: [
-                                                            SizedBox(
-                                                              height: 54,
+                                                            Text(
+                                                              'NAV',
+                                                              style: GoogleFonts
+                                                                  .poppins(
+                                                                color: Color(
+                                                                    0xFF0f625c),
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                              ),
                                                             ),
+                                                            Text(
+                                                              NumberFormat
+                                                                  .currency(
+                                                                locale:
+                                                                    'en_IN', // Use Indian format
+                                                                symbol: '₹ ',
+                                                              ).format(
+                                                                double.tryParse(
+                                                                        tdNavs[
+                                                                            index]) ??
+                                                                    0.00, // Convert string to double, default to 0.00 if parsing fails
+                                                              ), // ✅ Using `index` to show the correct value
+                                                              style: GoogleFonts
+                                                                  .poppins(
+                                                                color: Color(
+                                                                    0xFF303131),
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          height: 15,
+                                                        ),
+                                                        Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
                                                             Text(
                                                               'Balance',
                                                               style: GoogleFonts.poppins(
@@ -1340,6 +1411,62 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                         ),
                                                       ],
                                                     ),
+
+                                                    // Column(
+                                                    //   crossAxisAlignment:
+                                                    //       CrossAxisAlignment
+                                                    //           .start,
+                                                    //   children: [
+                                                    //     Column(
+                                                    //       crossAxisAlignment:
+                                                    //           CrossAxisAlignment
+                                                    //               .center,
+                                                    //       children: [
+                                                    //         SizedBox(
+                                                    //           height: 54,
+                                                    //         ),
+                                                    //         Text(
+                                                    //           'Balance',
+                                                    //           style: GoogleFonts.poppins(
+                                                    //               color: Color(
+                                                    //                   0xFF0f625c),
+                                                    //               fontSize: 13,
+                                                    //               fontWeight:
+                                                    //                   FontWeight
+                                                    //                       .w500),
+                                                    //         ),
+                                                    //         Text(
+                                                    //           NumberFormat
+                                                    //               .currency(
+                                                    //             locale:
+                                                    //                 'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
+                                                    //             symbol:
+                                                    //                 '', // Change the symbol as needed
+                                                    //             decimalDigits:
+                                                    //                 2, // Number of decimal places
+                                                    //           ).format(double.tryParse(transBalancedUnits[
+                                                    //                       index]
+                                                    //                   .replaceAll(
+                                                    //                       ',',
+                                                    //                       '')) ??
+                                                    //               0.00),
+                                                    //           style: GoogleFonts
+                                                    //               .poppins(
+                                                    //             color: Color(
+                                                    //                 0xFF0f625c),
+                                                    //             fontSize: 14,
+                                                    //             fontWeight:
+                                                    //                 FontWeight
+                                                    //                     .w500,
+                                                    //           ),
+                                                    //         ),
+                                                    //       ],
+                                                    //     ),
+                                                    //     SizedBox(
+                                                    //       height: 10,
+                                                    //     ),
+                                                    //   ],
+                                                    // ),
                                                   ],
                                                 ),
                                               ),
