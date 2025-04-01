@@ -31,18 +31,15 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
   OverlayEntry? actypeOverlay;
   OverlayEntry? relationshipOverlay;
 
-   // Fixed incorrect class
+  // Fixed incorrect class
   final LayerLink _layerAcTypeLink = LayerLink(); // Fixed incorrect class
   final LayerLink _layerRelationshipLink = LayerLink(); // Fixed incorrect class
 
   List<String> acTypeItems = ["Savings", "Current"];
   List<String> relationshipItems = ["Relation 1", "Relation 2"];
 
-
   String selectedAcType = "Select";
   String selectedRelationship = "Select";
-
-
 
   void toggleAcTypeDropdown() {
     if (isAcTypeDropdownOpen) {
@@ -51,6 +48,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
       openAcTypeDropdown();
     }
   }
+
   void toggleRelationshipDropdown() {
     if (isRelationshipDropdownOpen) {
       closeRelationshipDropdown();
@@ -103,6 +101,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
       isAcTypeDropdownOpen = true;
     });
   }
+
   void openRelationshipDropdown() {
     closeRelationshipDropdown();
     final overlay = Overlay.of(context);
@@ -131,7 +130,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                     setState(() {
                       selectedRelationship = item;
                       relationshipText.text = item;
-                      closeAcTypeDropdown();
+                      closeRelationshipDropdown();
                     });
                   },
                 );
@@ -155,6 +154,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
       isAcTypeDropdownOpen = false;
     });
   }
+
   void closeRelationshipDropdown() {
     relationshipOverlay?.remove();
     relationshipOverlay = null;
@@ -170,6 +170,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
   final othersController = TextEditingController();
   final pdsAddressController = TextEditingController();
   bool isLoading = false;
+  bool isNomineeBox = false;
 
   DateTime? _selectedDate;
   final bool _isPanVisible = false; // For showing a loading spinner
@@ -193,7 +194,8 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
           padding: EdgeInsets.all(15),
           decoration: BoxDecoration(
             color: Colors.white, // Background color
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)), // Rounded top corners
+            borderRadius: BorderRadius.vertical(
+                top: Radius.circular(20)), // Rounded top corners
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.2), // Shadow color
@@ -208,15 +210,24 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
             children: [
               SfDateRangePicker(
                 selectionMode: DateRangePickerSelectionMode.single,
-                backgroundColor: Colors.white, // Set DatePicker background color
-                selectionColor: Colors.cyan.shade900, // Active date selection color
-                todayHighlightColor: Colors.cyan.shade900, // Focused color (today's date highlight)
-                startRangeSelectionColor: Colors.white, // Start range selection color
-                endRangeSelectionColor: Colors.white, // End range selection color
+                backgroundColor:
+                    Colors.white, // Set DatePicker background color
+                selectionColor:
+                    Colors.cyan.shade900, // Active date selection color
+                todayHighlightColor: Colors
+                    .cyan.shade900, // Focused color (today's date highlight)
+                startRangeSelectionColor:
+                    Colors.white, // Start range selection color
+                endRangeSelectionColor:
+                    Colors.white, // End range selection color
                 rangeSelectionColor: Colors.white, // Range selection overlay
                 headerStyle: DateRangePickerHeaderStyle(
-                  backgroundColor: Colors.transparent, // Transparent header background
-                  textStyle: GoogleFonts.poppins(color: Color(0xFF3F4B4B), fontSize: 18, fontWeight: FontWeight.w600),
+                  backgroundColor:
+                      Colors.transparent, // Transparent header background
+                  textStyle: GoogleFonts.poppins(
+                      color: Color(0xFF3F4B4B),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600),
                 ),
                 onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
                   setState(() {
@@ -231,19 +242,23 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                     onPressed: () {
                       Navigator.pop(context); // Close modal
                     },
-                    child: Text("Cancel", style: GoogleFonts.poppins(color: Colors.red, fontSize: 16)),
+                    child: Text("Cancel",
+                        style: GoogleFonts.poppins(
+                            color: Colors.red, fontSize: 16)),
                   ),
                   TextButton(
                     onPressed: () {
                       if (_selectedDate != null) {
                         setState(() {
                           _dateController.text =
-                          "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}";
+                              "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}";
                         });
                       }
                       Navigator.pop(context); // Close modal
                     },
-                    child: Text("OK", style: GoogleFonts.poppins(color: Color(0xFF0DA99E), fontSize: 16)),
+                    child: Text("OK",
+                        style: GoogleFonts.poppins(
+                            color: Color(0xFF0DA99E), fontSize: 16)),
                   ),
                 ],
               ),
@@ -254,6 +269,76 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
     );
   }
 
+  List<bool> showNomineeForms = [false, false];
+  int openFormCount = 0; // Track the number of open forms
+  List<Map<String, String>> savedNominees = [];
+  void toggleNomineeForm() {
+    if (openFormCount < 2) {
+      setState(() {
+        if (showNomineeForms[0] == false) {
+          showNomineeForms[0] = true;
+          openFormCount++;
+        } else if (showNomineeForms[1] == false) {
+          showNomineeForms[1] = true;
+          openFormCount++;
+        }
+      });
+    }
+  }
+
+  void deleteNomineeForm(int index) {
+    setState(() {
+      showNomineeForms[index] = false;
+      openFormCount--;
+      if (index == 0) {
+        nomineeNameText.clear();
+        nomineePanText.clear();
+        relationshipText.clear();
+        _dateController.clear();
+        nomineeShareText.clear();
+      } else if (index == 1) {
+        nomineeNameText.clear();
+        nomineePanText.clear();
+        relationshipText.clear();
+        _dateController.clear();
+        nomineeShareText.clear();
+      }
+    });
+  }
+
+  void saveNominee() {
+    setState(() {
+      savedNominees.add({
+        'name': nomineeNameText.text,
+        'pan': nomineePanText.text,
+        'relationship': relationshipText.text,
+        'dob': _dateController.text,
+        'share': nomineeShareText.text,
+      });
+
+      // Clear the fields after saving
+      nomineeNameText.clear();
+      nomineePanText.clear();
+      relationshipText.clear();
+      _dateController.clear();
+      nomineeShareText.clear();
+
+      // Close the forms
+      showNomineeForms = [false, false];
+      openFormCount = 0;
+    });
+  }
+
+  void deleteSavedNominee(int index) {
+    setState(() {
+      savedNominees.removeAt(index);
+    });
+  }
+  List<bool> isNomineeBoxList = [];
+  void initState() {
+    super.initState();
+    isNomineeBoxList = List.generate(savedNominees.length, (index) => false);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -282,7 +367,6 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                 ),
               ),
               const SizedBox(height: 10),
-
               Padding(
                 padding: EdgeInsets.only(top: 10, bottom: 10),
                 child: SingleChildScrollView(
@@ -344,13 +428,13 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                         ),
                         Container(
                           decoration: BoxDecoration(
-
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                color: Colors.black
+                                    .withOpacity(0.1), // Shadow color
                                 blurRadius: 15, // Blur effect
                                 spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
+                                offset: Offset(0, 3), // Position of shadow
                               ),
                             ],
                           ),
@@ -389,13 +473,13 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                         ),
                         Container(
                           decoration: BoxDecoration(
-
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                color: Colors.black
+                                    .withOpacity(0.1), // Shadow color
                                 blurRadius: 15, // Blur effect
                                 spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
+                                offset: Offset(0, 3), // Position of shadow
                               ),
                             ],
                           ),
@@ -434,13 +518,13 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                         ),
                         Container(
                           decoration: BoxDecoration(
-
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                color: Colors.black
+                                    .withOpacity(0.1), // Shadow color
                                 blurRadius: 15, // Blur effect
                                 spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
+                                offset: Offset(0, 3), // Position of shadow
                               ),
                             ],
                           ),
@@ -479,13 +563,13 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                         ),
                         Container(
                           decoration: BoxDecoration(
-
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                color: Colors.black
+                                    .withOpacity(0.1), // Shadow color
                                 blurRadius: 15, // Blur effect
                                 spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
+                                offset: Offset(0, 3), // Position of shadow
                               ),
                             ],
                           ),
@@ -546,14 +630,18 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                         Stack(
                           children: [
                             GestureDetector(
-                              behavior: HitTestBehavior.translucent, // ✅ Detects taps outside
+                              behavior: HitTestBehavior
+                                  .translucent, // ✅ Detects taps outside
                               onTap: () {
                                 if (isAcTypeDropdownOpen) {
                                   closeAcTypeDropdown(); // ✅ Close dropdown when clicking outside
                                 }
-                                FocusManager.instance.primaryFocus?.unfocus(); // Remove focus
+                                FocusManager.instance.primaryFocus
+                                    ?.unfocus(); // Remove focus
                               },
-                              child: Container(width: 171,), // Empty container to detect taps outside
+                              child: Container(
+                                width: 171,
+                              ), // Empty container to detect taps outside
                             ),
                             CompositedTransformTarget(
                               link: _layerAcTypeLink,
@@ -574,8 +662,10 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                   width: 171,
                                   child: TextField(
                                     controller: acTypeText,
-                                    readOnly: true, // ✅ Allows focus but prevents keyboard popup
-                                    onTap: toggleAcTypeDropdown, // ✅ Opens dropdown on tap
+                                    readOnly:
+                                        true, // ✅ Allows focus but prevents keyboard popup
+                                    onTap:
+                                        toggleAcTypeDropdown, // ✅ Opens dropdown on tap
                                     decoration: InputDecoration(
                                       hintText: 'Select',
                                       hintStyle: GoogleFonts.poppins(
@@ -583,7 +673,10 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                         fontSize: 14,
                                       ),
                                       contentPadding: const EdgeInsets.only(
-                                          top: 8, bottom: 8, left: 15, right: 15),
+                                          top: 8,
+                                          bottom: 8,
+                                          left: 15,
+                                          right: 15),
                                       suffixIcon: Icon(
                                         isAcTypeDropdownOpen
                                             ? Icons.keyboard_arrow_up
@@ -635,13 +728,13 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                         ),
                         Container(
                           decoration: BoxDecoration(
-
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                color: Colors.black
+                                    .withOpacity(0.1), // Shadow color
                                 blurRadius: 15, // Blur effect
                                 spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
+                                offset: Offset(0, 3), // Position of shadow
                               ),
                             ],
                           ),
@@ -702,7 +795,8 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                             Container(
                               margin: EdgeInsets.only(
                                 left: 10,
-                              ),),
+                              ),
+                            ),
                             Text(
                               'Nominee Applicable',
                               style: GoogleFonts.poppins(
@@ -712,7 +806,8 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                               ),
                             ),
                             Wrap(
-                              spacing: 10, // Horizontal space between checkboxes
+                              spacing:
+                                  10, // Horizontal space between checkboxes
                               runSpacing: 10, // Vertical space if wrapped
                               children: nmAplyoptions
                                   .map((option) => nmAplyStateBoxOption(option))
@@ -722,313 +817,568 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                         ),
                       ],
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
-                          child: Text(
-                            'Nominee Name',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF6E7B7A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        border: Border.all( // ✅ Correct way to use BorderSide
+                          color: Colors.grey, // Change to your desired color
+                          width: 1.0, // Adjust border thickness
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        boxShadow: [ // Optional: Add shadow
+                          BoxShadow(
+                            color: Colors.white.withOpacity(0.1),
+                            blurRadius: 5,
+                            spreadRadius: 1,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Wrap(
 
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
-                                blurRadius: 15, // Blur effect
-                                spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
-                              ),
-                            ],
-                          ),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: TextField(
-                              controller: nomineeNameText,
-                              decoration: _inputDecoration(''),
-                              style: const TextStyle(
-                                color: Color(0xFF648683),
-                                fontSize: 14,
-                              ),
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                for (int i = 0; i < savedNominees.length; i++)
+                                  Column(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 8.0,right: 0),
+                                        child: SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    (savedNominees[i]['name'] ?? "").toUpperCase(),
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF0f625c),
+                                                      fontSize: 17,
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 8),
+                                                  _buildNomineeDetail("SHARE", (savedNominees[i]['share'] ?? "") + "%"),
+                                                ],
+                                              ),
+                                              IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    isNomineeBoxList[i] = !isNomineeBoxList[i];
+                                                  });
+                                                },
+                                                icon: Icon(
+                                                  isNomineeBoxList[i]
+                                                      ? Icons.keyboard_arrow_up
+                                                      : Icons.keyboard_arrow_down,
+                                                  size: 26,
+                                                  color: Color(0xFF0f625c),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      if (isNomineeBoxList[i]) // Show details only when expanded
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              SizedBox(height: 8),
+                                              _buildNomineeDetail("PAN", savedNominees[i]['pan'] ?? ""),
+                                              SizedBox(height: 8),
+                                              _buildNomineeDetail("Relationship", savedNominees[i]['relationship'] ?? ""),
+                                              Container(
+                                                width: double.infinity,
+                                                child: SingleChildScrollView(
+                                                  scrollDirection: Axis.horizontal,
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                    _buildNomineeDetail("DOB", savedNominees[i]['dob'] ?? ""),
+                                                      IconButton(
+                                                        onPressed: () {
+                                                          deleteSavedNominee(i);
+                                                        },
+                                                        icon: Icon(Icons.delete, color: Colors.red),
+                                                        tooltip: 'Delete Nominee', // Add a tooltip
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                              ],
                             ),
-                          ),
-                        )
-                      ],
+                          ],
+                        ),
+                      ),
                     ),
                     Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
-                          child: Text(
-                            'Relationship',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF6E7B7A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Stack(
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 15,
                           children: [
-                            GestureDetector(
-                              behavior: HitTestBehavior.translucent, // ✅ Detects taps outside
-                              onTap: () {
-                                if (isRelationshipDropdownOpen) {
-                                  closeRelationshipDropdown(); // ✅ Close dropdown when clicking outside
-                                }
-                                FocusManager.instance.primaryFocus?.unfocus(); // Remove focus
-                              },
-                              child: Container(width: 171,), // Empty container to detect taps outside
-                            ),
-                            CompositedTransformTarget(
-                              link: _layerRelationshipLink,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(50),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 15,
-                                      spreadRadius: 0,
-                                      offset: Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: SizedBox(
-                                  width: 171,
-                                  child: TextField(
-                                    controller: relationshipText,
-                                    readOnly: true, // ✅ Allows focus but prevents keyboard popup
-                                    onTap: toggleRelationshipDropdown, // ✅ Opens dropdown on tap
-                                    decoration: InputDecoration(
-                                      hintText: 'Select',
-                                      hintStyle: GoogleFonts.poppins(
-                                        color: Color(0xFF648683),
-                                        fontSize: 14,
-                                      ),
-                                      contentPadding: const EdgeInsets.only(
-                                          top: 8, bottom: 8, left: 15, right: 15),
-                                      suffixIcon: Icon(
-                                        isRelationshipDropdownOpen
-                                            ? Icons.keyboard_arrow_up
-                                            : Icons.keyboard_arrow_down,
-                                        color: Color(0xFF648683),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(50),
-                                        borderSide: BorderSide(
-                                            color: Colors.white, width: 1),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(50),
-                                        borderSide: BorderSide(
-                                            color: Color(0xFF0f625c), width: 1),
-                                      ),
-                                    ),
-                                    style: const TextStyle(
-                                      color: Color(0xFF648683),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(
+                                    left: 10,
+                                  ),
+                                  child: Text(
+                                    'Nominee Name',
+                                    style: GoogleFonts.poppins(
+                                      color: Color(0xFF6E7B7A),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
                                     ),
                                   ),
                                 ),
-                              ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black
+                                            .withOpacity(0.1), // Shadow color
+                                        blurRadius: 15, // Blur effect
+                                        spreadRadius: 0, // Spread effect
+                                        offset:
+                                            Offset(0, 3), // Position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: TextField(
+                                      controller: nomineeNameText,
+                                      decoration: _inputDecoration(''),
+                                      style: const TextStyle(
+                                        color: Color(0xFF648683),
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(
+                                    left: 10,
+                                  ),
+                                  child: Text(
+                                    'Relationship',
+                                    style: GoogleFonts.poppins(
+                                      color: Color(0xFF6E7B7A),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Stack(
+                                  children: [
+                                    GestureDetector(
+                                      behavior: HitTestBehavior
+                                          .translucent, // ✅ Detects taps outside
+                                      onTap: () {
+                                        if (isRelationshipDropdownOpen) {
+                                          closeRelationshipDropdown(); // ✅ Close dropdown when clicking outside
+                                        }
+                                        FocusManager.instance.primaryFocus
+                                            ?.unfocus(); // Remove focus
+                                      },
+                                      child: Container(
+                                        width: 171,
+                                      ), // Empty container to detect taps outside
+                                    ),
+                                    CompositedTransformTarget(
+                                      link: _layerRelationshipLink,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.1),
+                                              blurRadius: 15,
+                                              spreadRadius: 0,
+                                              offset: Offset(0, 3),
+                                            ),
+                                          ],
+                                        ),
+                                        child: SizedBox(
+                                          width: 171,
+                                          child: TextField(
+                                            controller: relationshipText,
+                                            readOnly:
+                                                true, // ✅ Allows focus but prevents keyboard popup
+                                            onTap:
+                                                toggleRelationshipDropdown, // ✅ Opens dropdown on tap
+                                            decoration: InputDecoration(
+                                              hintText: 'Select',
+                                              hintStyle: GoogleFonts.poppins(
+                                                color: Color(0xFF648683),
+                                                fontSize: 14,
+                                              ),
+                                              contentPadding:
+                                                  const EdgeInsets.only(
+                                                      top: 8,
+                                                      bottom: 8,
+                                                      left: 15,
+                                                      right: 15),
+                                              suffixIcon: Icon(
+                                                isRelationshipDropdownOpen
+                                                    ? Icons.keyboard_arrow_up
+                                                    : Icons.keyboard_arrow_down,
+                                                color: Color(0xFF648683),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
+                                                borderSide: BorderSide(
+                                                    color: Colors.white,
+                                                    width: 1),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
+                                                borderSide: BorderSide(
+                                                    color: Color(0xFF0f625c),
+                                                    width: 1),
+                                              ),
+                                            ),
+                                            style: const TextStyle(
+                                              color: Color(0xFF648683),
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(
+                                    left: 10,
+                                  ),
+                                  child: Text(
+                                    'Nominee DOB',
+                                    style: GoogleFonts.poppins(
+                                      color: Color(0xFF6E7B7A),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Container(
+                                  width: 171,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white, // Background color
+                                    borderRadius: BorderRadius.circular(
+                                        50), // Match border radius
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black
+                                            .withOpacity(0.1), // Shadow color
+                                        blurRadius: 15, // Blur effect
+                                        spreadRadius: 0, // Spread effect
+                                        offset:
+                                            Offset(0, 3), // Position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: SizedBox(
+                                    width: 171,
+                                    child: GestureDetector(
+                                      onTap: () => _showDatePicker(context),
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 12.8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          border: isLoading
+                                              ? Border.all(
+                                                  color: Color(0xFF0f625c),
+                                                  width:
+                                                      1) // Show border when focused
+                                              : Border.all(
+                                                  color: Colors.transparent,
+                                                  width:
+                                                      1), // Hide border when not focused
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color: Colors.black
+                                                    .withOpacity(0.1),
+                                                blurRadius: 5)
+                                          ],
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              _dateController.text.isNotEmpty
+                                                  ? _dateController.text
+                                                  : "Select Date",
+                                              style: TextStyle(
+                                                  color: Color(0xFF648683),
+                                                  fontSize: 14),
+                                            ),
+                                            Icon(
+                                              Icons.calendar_month_outlined,
+                                              color: Color(0xFF648683),
+                                              size: 20,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(
+                                    left: 10,
+                                  ),
+                                  child: Text(
+                                    'Nominee PAN No.',
+                                    style: GoogleFonts.poppins(
+                                      color: Color(0xFF6E7B7A),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black
+                                            .withOpacity(0.1), // Shadow color
+                                        blurRadius: 15, // Blur effect
+                                        spreadRadius: 0, // Spread effect
+                                        offset:
+                                            Offset(0, 3), // Position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: TextField(
+                                      controller: nomineePanText,
+                                      decoration: _inputDecoration(''),
+                                      style: const TextStyle(
+                                        color: Color(0xFF648683),
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(
+                                    left: 10,
+                                  ),
+                                  child: Text(
+                                    'Nominee Share %',
+                                    style: GoogleFonts.poppins(
+                                      color: Color(0xFF6E7B7A),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black
+                                            .withOpacity(0.1), // Shadow color
+                                        blurRadius: 15, // Blur effect
+                                        spreadRadius: 0, // Spread effect
+                                        offset:
+                                            Offset(0, 3), // Position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: SizedBox(
+                                    width: 171,
+                                    child: TextField(
+                                      controller: nomineeShareText,
+                                      keyboardType: TextInputType
+                                          .number, // ✅ Allows only numbers
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly
+                                      ],
+                                      decoration: _inputDecoration(''),
+                                      style: const TextStyle(
+                                        color: Color(0xFF648683),
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
-                          child: Text(
-                            'Nominee DOB',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF6E7B7A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          width: 171,
-                          decoration: BoxDecoration(
-                            color: Colors.white, // Background color
-                            borderRadius: BorderRadius.circular(50), // Match border radius
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
-                                blurRadius: 15, // Blur effect
-                                spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
-                              ),
-                            ],
-                          ),
-                          child: SizedBox(
-                            width: 171,
-                            child: GestureDetector(
-                              onTap: ()=> _showDatePicker(context),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12.8),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(50),
-                                  border: isLoading
-                                      ? Border.all(color: Color(0xFF0f625c), width: 1) // Show border when focused
-                                      : Border.all(color: Colors.transparent, width: 1), // Hide border when not focused
-                                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 5)],
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      _dateController.text.isNotEmpty ? _dateController.text : "Select Date",
-                                      style: TextStyle(color: Color(0xFF648683), fontSize: 14),
-                                    ),
-                                    Icon(Icons.calendar_month_outlined, color: Color(0xFF648683),size: 20,),
-                                  ],
+                    Container(
+                      width: double.infinity,
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        children: [
+                          Column(
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  saveNominee();
+                                },
+                                child: Text(
+                                  '+ Add New Nominee',
+                                  style: GoogleFonts.poppins(
+                                    color: Color(0xFF0F625C),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
-                          child: Text(
-                            'Nominee PAN No.',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF6E7B7A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
-                                blurRadius: 15, // Blur effect
-                                spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
-                              ),
+                              for (int i = 0; i < 2; i++)
+                                if (showNomineeForms[i])
+                                  Column(
+                                    children: [
+                                      Wrap(
+                                        spacing: 10,
+                                        runSpacing: 15,
+                                        children: [
+                                          buildInputField(
+                                              "Nominee Name", nomineeNameText),
+                                          // ... (Your other input fields)
+                                          TextButton(
+                                            onPressed: () {
+                                              deleteNomineeForm(i);
+                                            },
+                                            child: Text("Delete Nominee Form"),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                             ],
                           ),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: TextField(
-                              controller: nomineePanText,
-                              decoration: _inputDecoration(''),
-                              style: const TextStyle(
-                                color: Color(0xFF648683),
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
+                          // Column(
+                          //   children: [
+                          //     // Show saved nominees in boxes
+                          //     for (int i = 0; i < savedNominees.length; i++)
+                          //       Container(
+                          //         margin: EdgeInsets.all(8.0),
+                          //         padding: EdgeInsets.all(16.0),
+                          //         decoration: BoxDecoration(
+                          //           border: Border.all(color: Colors.grey),
+                          //           borderRadius: BorderRadius.circular(8.0),
+                          //         ),
+                          //         child: Column(
+                          //           crossAxisAlignment: CrossAxisAlignment.start,
+                          //           children: [
+                          //             Text("Name: ${savedNominees[i]['name']}"),
+                          //             Text("PAN: ${savedNominees[i]['pan']}"),
+                          //             Text("Relationship: ${savedNominees[i]['relationship']}"),
+                          //             Text("DOB: ${savedNominees[i]['dob']}"),
+                          //             Text("Share: ${savedNominees[i]['share']}"),
+                          //             TextButton(
+                          //               onPressed: () {
+                          //                 deleteSavedNominee(i);
+                          //               },
+                          //               child: Text("Delete"),
+                          //             ),
+                          //           ],
+                          //         ),
+                          //       ),
+                          //   ],
+                          // ),
+                          // TextButton(
+                          //     onPressed: () {
+                          //       setState(() {
+                          //         showNomineeForm = !showNomineeForm; // Toggle form visibility
+                          //       });
+                          //     },
+                          //     child: Text(
+                          //       '+ Add New Nominee',
+                          //       style: GoogleFonts.poppins(
+                          //         color: Color(0xFF0F625C),
+                          //         fontWeight: FontWeight.w600,
+                          //         fontSize: 14,
+                          //       ),
+                          //     )),
+                          // TextButton(
+                          //     onPressed: () {
+                          //       Navigator.push(
+                          //         context,
+                          //         MaterialPageRoute(
+                          //             builder: (context) =>
+                          //                 SignupAdsPage()), // ✅ Corrected builder
+                          //       );
+                          //     },
+                          //     child: Text(
+                          //       'Delete Nominee',
+                          //       style: GoogleFonts.poppins(
+                          //         color: Colors.red,
+                          //         fontWeight: FontWeight.w600,
+                          //         fontSize: 14,
+                          //       ),
+                          //     )),
+                        ],
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
-                          child: Text(
-                            'Nominee Share %',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF6E7B7A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
-                                blurRadius: 15, // Blur effect
-                                spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
-                              ),
-                            ],
-                          ),
-                          child: SizedBox(
-                            width: 171,
-                            child: TextField(
-                              controller: nomineeShareText,
-                              keyboardType: TextInputType.number, // ✅ Allows only numbers
-                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                              decoration: _inputDecoration(''),
-                              style: const TextStyle(
-                                color: Color(0xFF648683),
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        SizedBox(height: 30,),
-                        Container(
-                          width: 171,
-                          child: TextButton(onPressed: () {
-                              Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => SignupAdsPage()), // ✅ Corrected builder
-                              );}, child: Text('+ Add New Nominee',style: GoogleFonts.poppins(
-                            color: Color(0xFF0F625C),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),)),
-                        ),
-                      ],
-                    )
                   ],
                 ),
               ),
@@ -1036,85 +1386,92 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 500), // ✅ Adjust duration
-                      pageBuilder: (context, animation, secondaryAnimation) => SignupPdsPage(),
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                        const begin = Offset(-1.0, 0.0); // ✅ Start position (left)
-                        const end = Offset.zero; // ✅ End position (normal)
-                        const curve = Curves.easeInOut;
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration:
+                              Duration(milliseconds: 500), // ✅ Adjust duration
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  SignupPdsPage(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            const begin =
+                                Offset(-1.0, 0.0); // ✅ Start position (left)
+                            const end = Offset.zero; // ✅ End position (normal)
+                            const curve = Curves.easeInOut;
 
-                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                        var offsetAnimation = animation.drive(tween);
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
+                            var offsetAnimation = animation.drive(tween);
 
-                        return SlideTransition(
-                          position: offsetAnimation,
-                          child: child,
-                        );
-                      },
+                            return SlideTransition(
+                              position: offsetAnimation,
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFfdd1a0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 35),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFfdd1a0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+                    child: Text(
+                      'Back'.toUpperCase(),
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xFF222222),
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
-                ),
-                child: Text(
-                  'Back'.toUpperCase(),
-                  style: GoogleFonts.poppins(
-                    color: const Color(0xFF222222),
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
+                  SizedBox(
+                    width: 10,
                   ),
-                ),
-              ),
-              SizedBox(width: 10,),
-              ElevatedButton(
-                onPressed: () {
-                  String uifscCode = ifscCodeText.text.trim();
-                  String umicrCode = micrCodeText.text.trim();
-                  String uacNoText = acNoText.text.trim();
-                  String ubranchNameText = branchNameText.text.trim();
-                  String unomineeNameText = nomineeNameText.text.trim();
-                  String unomineePan = nomineePanText.text.trim();
-                  String unomineeShare = nomineeShareText.text.trim();
-                  String ubankName = bankNameText.text.trim();
+                  ElevatedButton(
+                    onPressed: () {
+                      String uifscCode = ifscCodeText.text.trim();
+                      String umicrCode = micrCodeText.text.trim();
+                      String uacNoText = acNoText.text.trim();
+                      String ubranchNameText = branchNameText.text.trim();
+                      String unomineeNameText = nomineeNameText.text.trim();
+                      String unomineePan = nomineePanText.text.trim();
+                      String unomineeShare = nomineeShareText.text.trim();
+                      String ubankName = bankNameText.text.trim();
 
-                  String uactype = acTypeText.text.trim();
+                      String uactype = acTypeText.text.trim();
 
-                  String uAdsNomDob = _dateController.text.trim();
+                      String uAdsNomDob = _dateController.text.trim();
 
-
-                  // String urepass = repassText.text.trim();
-                  // String uPass = passText.text.trim();
-                  print(
-                      "Ifsc code: $uifscCode,Micr code: $umicrCode,Account No.: $uacNoText,Branch Name: $ubranchNameText,Nominee Name: $unomineeNameText,Nominee Pan No.: $unomineePan,Nominee Share: $unomineeShare,Bank Name: $ubankName,Account type: $uactype,Nominee DOB: $uAdsNomDob");
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFfdd1a0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+                      // String urepass = repassText.text.trim();
+                      // String uPass = passText.text.trim();
+                      print(
+                          "Ifsc code: $uifscCode,Micr code: $umicrCode,Account No.: $uacNoText,Branch Name: $ubranchNameText,Nominee Name: $unomineeNameText,Nominee Pan No.: $unomineePan,Nominee Share: $unomineeShare,Bank Name: $ubankName,Account type: $uactype,Nominee DOB: $uAdsNomDob");
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFfdd1a0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 35),
+                    ),
+                    child: Text(
+                      'Save'.toUpperCase(),
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xFF222222),
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
-                ),
-                child: Text(
-                  'Save'.toUpperCase(),
-                  style: GoogleFonts.poppins(
-                    color: const Color(0xFF222222),
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
                 ],
               ),
               Padding(
@@ -1139,7 +1496,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                             decoration: BoxDecoration(
                               color: Colors.white, // Optional background color
                               borderRadius:
-                              BorderRadius.circular(100), // Rounded corners
+                                  BorderRadius.circular(100), // Rounded corners
                             ),
                             child: Center(
                               child: Text(
@@ -1178,15 +1535,28 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                       Navigator.push(
                                         context,
                                         PageRouteBuilder(
-                                          transitionDuration: Duration(milliseconds: 500), // ✅ Smooth transition
-                                          pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
-                                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                            const begin = Offset(-1.0, 0.0); // ✅ Slide from right
-                                            const end = Offset.zero; // ✅ End position (normal)
+                                          transitionDuration: Duration(
+                                              milliseconds:
+                                                  500), // ✅ Smooth transition
+                                          pageBuilder: (context, animation,
+                                                  secondaryAnimation) =>
+                                              const LoginPage(),
+                                          transitionsBuilder: (context,
+                                              animation,
+                                              secondaryAnimation,
+                                              child) {
+                                            const begin = Offset(-1.0,
+                                                0.0); // ✅ Slide from right
+                                            const end = Offset
+                                                .zero; // ✅ End position (normal)
                                             const curve = Curves.easeInOut;
 
-                                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                                            var offsetAnimation = animation.drive(tween);
+                                            var tween = Tween(
+                                                    begin: begin, end: end)
+                                                .chain(
+                                                    CurveTween(curve: curve));
+                                            var offsetAnimation =
+                                                animation.drive(tween);
 
                                             return SlideTransition(
                                               position: offsetAnimation,
@@ -1224,6 +1594,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
       ),
     );
   }
+
   InputDecoration _inputDecoration(String hintText) {
     return InputDecoration(
       filled: true,
@@ -1292,6 +1663,160 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
           ),
         ),
         // Space between checkboxes
+      ],
+    );
+  }
+
+  Widget buildInputField(String label, TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          margin: EdgeInsets.only(left: 10),
+          child: Text(
+            label,
+            style: GoogleFonts.poppins(
+              color: Color(0xFF6E7B7A),
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+        SizedBox(height: 10),
+        Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 15,
+                spreadRadius: 0,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: SizedBox(
+            width: double.infinity,
+            child: TextField(
+              controller: controller,
+              decoration: _inputDecoration(''),
+              style: const TextStyle(
+                color: Color(0xFF648683),
+                fontSize: 14,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildNumericField(String label, TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          margin: EdgeInsets.only(left: 10),
+          child: Text(
+            label,
+            style: GoogleFonts.poppins(
+              color: Color(0xFF6E7B7A),
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+        SizedBox(height: 10),
+        Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 15,
+                spreadRadius: 0,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: SizedBox(
+            width: 171,
+            child: TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: _inputDecoration(''),
+              style: const TextStyle(
+                color: Color(0xFF648683),
+                fontSize: 14,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Box Decoration
+  BoxDecoration boxDecoration() {
+    return BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(50),
+      boxShadow: [
+        BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 15,
+            offset: Offset(0, 3))
+      ],
+    );
+  }
+
+  Widget buildDeleteNomineeButton(BuildContext context) {
+    return Column(
+      children: [
+        TextButton(
+          onPressed: () {
+            // Replace this with your actual delete nominee logic.
+            // For example:
+            // 1. Remove the nominee from your data list.
+            // 2. Update the UI to reflect the change.
+            // 3. If needed, navigate to another page or show a confirmation.
+            print('Delete Nominee button pressed');
+            // Example of showing a snackbar:
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Nominee deleted (example)')),
+            );
+          },
+          child: Text(
+            'Delete Nominee',
+            style: GoogleFonts.poppins(
+              color: Colors.red,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  // Helper function for nominee details
+  Widget _buildNomineeDetail(String label, String value) {
+    return Row(
+      children: [
+        Text(
+          "$label: ".toUpperCase(),
+          style: GoogleFonts.poppins(
+            color: Color(0xFF303131),
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.poppins(
+            color: Color(0xFF09a99d),
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
