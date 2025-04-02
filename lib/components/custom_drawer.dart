@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:wealthclock28/screens/dashboard_after_login.dart';
 
 class CustomDrawer extends StatefulWidget {
   final String activeTile;
@@ -116,34 +117,99 @@ class _CustomDrawerState extends State<CustomDrawer> {
     }
   }
 
+  // Widget _buildDrawerTile({
+  //   required String title,
+  //   required IconData icon,
+  // }) {
+  //   bool isActive = activeTile == title;
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //       border:
+  //           Border(bottom: BorderSide(color: Colors.grey.shade400, width: 1.0)),
+  //     ),
+  //     child: ElevatedButton(
+  //       style: ElevatedButton.styleFrom(
+  //         padding: EdgeInsets.zero,
+  //         backgroundColor: isActive ? Color(0xFFfee0be) : Colors.transparent,
+  //         elevation: isActive ? 5 : 0,
+  //         shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+  //       ),
+  //       onPressed: () {
+  //         setState(() {
+  //           activeTile = title;
+  //         });
+  //         widget.onTileTap(title);
+  //         Navigator.pop(context); // Close drawer
+  //       },
+  //       child: ListTile(
+  //         leading: Icon(
+  //           icon,
+  //           color: isActive ? Color(0xFF0f625c) : Color(0xFF303131),
+  //           size: 20,
+  //         ),
+  //         title: Text(
+  //           title,
+  //           style: TextStyle(
+  //             color: isActive ? Color(0xFF0f625c) : Color(0xFF303131),
+  //             fontSize: 15,
+  //             fontWeight: FontWeight.w600,
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+
   Widget _buildDrawerTile({
     required String title,
     required IconData icon,
+    Widget? destinationScreen,
   }) {
     bool isActive = activeTile == title;
-    return Container(
-      decoration: BoxDecoration(
-        border:
-            Border(bottom: BorderSide(color: Colors.grey.shade400, width: 1.0)),
-      ),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.zero,
-          backgroundColor: isActive ? Color(0xFFfee0be) : Colors.transparent,
-          elevation: isActive ? 5 : 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+
+    return InkWell(
+      onTap: () {
+        Navigator.pop(context); // Close drawer
+
+        if (activeTile == title) {
+          // ✅ Don't navigate if already on this screen
+          return;
+        }
+        setState(() {
+          activeTile = title;
+        });
+        widget.onTileTap(title);
+
+        if (destinationScreen != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => destinationScreen),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('$title screen is under development!')),
+          );
+        }
+
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => destinationScreen),
+        // );
+      },
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          color: isActive ? Color(0xFFfee0be) : Colors.transparent,
+          border: Border(
+            bottom: BorderSide(color: Colors.grey.shade400, width: 1.0),
+          ),
         ),
-        onPressed: () {
-          setState(() {
-            activeTile = title;
-          });
-          widget.onTileTap(title);
-          Navigator.pop(context); // Close drawer
-        },
         child: ListTile(
-          leading: Icon(icon,
-              color: isActive ? Color(0xFF0f625c) : Color(0xFF303131),
-              size: 20),
+          leading: Icon(
+            icon,
+            color: isActive ? Color(0xFF0f625c) : Color(0xFF303131),
+            size: 22, // Slightly increased for better visibility
+          ),
           title: Text(
             title,
             style: TextStyle(
@@ -209,16 +275,31 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
 
             // Drawer Items
-            _buildDrawerTile(title: 'Home', icon: Icons.home),
             _buildDrawerTile(
-                title: 'My Orders', icon: Icons.shopping_bag_outlined),
+              title: 'Home',
+              icon: Icons.home,
+              destinationScreen: const dashboardAfterLogin(userId: ''),
+            ),
             _buildDrawerTile(
-                title: 'My Profile', icon: Icons.person_outline_sharp),
+              title: 'My Orders',
+              icon: Icons.shopping_bag_outlined,
+            ),
             _buildDrawerTile(
-                title: 'Change Password', icon: Icons.lock_outline),
+              title: 'My Profile',
+              icon: Icons.person_outline_sharp,
+            ),
             _buildDrawerTile(
-                title: 'Request a Service', icon: Icons.event_note_sharp),
-            _buildDrawerTile(title: 'Contact Us', icon: Icons.email_outlined),
+              title: 'Change Password',
+              icon: Icons.lock_outline,
+            ),
+            _buildDrawerTile(
+              title: 'Request a Service',
+              icon: Icons.event_note_sharp,
+            ),
+            _buildDrawerTile(
+              title: 'Contact Us',
+              icon: Icons.email_outlined,
+            ),
 
             // Logout Button
             Container(
