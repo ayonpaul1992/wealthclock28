@@ -3,14 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'login.dart';
 import 'otp.dart';
 
-class forgotPasswordPage extends StatefulWidget {
-  const forgotPasswordPage({super.key});
+class ForgotPasswordPage extends StatefulWidget {
+  const ForgotPasswordPage({super.key});
 
   @override
-  State<forgotPasswordPage> createState() => _forgotPasswordPageState();
+  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
 }
 
-class _forgotPasswordPageState extends State<forgotPasswordPage> {
+class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final phoneText = TextEditingController();
 
   @override
@@ -68,11 +68,11 @@ class _forgotPasswordPageState extends State<forgotPasswordPage> {
               const SizedBox(height: 14),
               ElevatedButton(
                 onPressed: () {
-                  String uPhone = phoneText.text.trim();
+                  phoneText.text.trim();
 
-                  print("Phone: $uPhone");
+                  //print("Phone: $uPhone");
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const otpPage()));
+                      MaterialPageRoute(builder: (context) => const OtpPage()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFfdd1a0),
@@ -147,7 +147,7 @@ class _forgotPasswordPageState extends State<forgotPasswordPage> {
                                   InkWell(
                                     onTap: () {
                                       // Handle the link click here
-                                      print('Sign up clicked');
+                                      //print('Sign up clicked');
                                       // Navigate to the Terms and Conditions page if needed
                                       Navigator.push(
                                           context,

@@ -1048,8 +1048,8 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
         Checkbox(
           value: selectedOption == option, // Only one can be active
           activeColor: const Color(0xFF0DA99E), // Active checkbox color
-          fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.selected)) {
+          fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.selected)) {
               return const Color(0xFF0DA99E); // Background when checked
             }
             return Colors.white; // Background when unchecked
@@ -1093,8 +1093,8 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
         Checkbox(
           value: mrtSelectedOption == option, // Only one can be active
           activeColor: const Color(0xFF0DA99E), // Active checkbox color
-          fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.selected)) {
+          fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.selected)) {
               return const Color(0xFF0DA99E); // Background when checked
             }
             return Colors.white; // Background when unchecked

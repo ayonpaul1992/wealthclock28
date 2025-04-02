@@ -96,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
           String userId = responseData['userId'].toString();
           String userName = responseData['userName'].toString();
 
-          print("Login successful. Token: $token, User ID: $userId");
+          // print("Login successful. Token: $token, User ID: $userId");
 
           // Store user data in SharedPreferences asynchronously
           SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -112,6 +112,7 @@ class _LoginPageState extends State<LoginPage> {
 
           // Navigate to dashboard
           Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
             context,
             MaterialPageRoute(
               builder: (context) => dashboardAfterLogin(userId: userId),
@@ -246,7 +247,7 @@ class _LoginPageState extends State<LoginPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const forgotPasswordPage(),
+                        builder: (context) => const ForgotPasswordPage(),
                       ),
                     );
                   },
@@ -282,10 +283,11 @@ class _LoginPageState extends State<LoginPage> {
                         InkWell(
                           onTap: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const termsCondPage()));
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const TermsCondPage(),
+                              ),
+                            );
                           },
                           child: Text(
                             'Terms & Conditions',

@@ -14,16 +14,16 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class familyPortfolioPage extends StatefulWidget {
+class FamilyPortfolioPage extends StatefulWidget {
   final String memberName; // Store the memberName
 
-  const familyPortfolioPage({super.key, required this.memberName});
+  const FamilyPortfolioPage({super.key, required this.memberName});
 
   @override
-  State<familyPortfolioPage> createState() => _familyPortfolioPageState();
+  State<FamilyPortfolioPage> createState() => _FamilyPortfolioPageState();
 }
 
-class _familyPortfolioPageState extends State<familyPortfolioPage> {
+class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Map<String, dynamic>> schemes = []; // Store schemes dynamically
   List<Map<String, dynamic>> schemesArr = []; // Store schemes dynamically
@@ -324,28 +324,26 @@ class _familyPortfolioPageState extends State<familyPortfolioPage> {
                               color: Color(0xFFd5d4d0),
                             ),
                             SizedBox(width: 23),
-                            Container(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Overall Gain',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      color: Color(0xFF648683),
-                                    ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Overall Gain',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xFF648683),
                                   ),
-                                  Text(
-                                    '₹ $userTotalGain',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 19,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF0f625c),
-                                    ),
+                                ),
+                                Text(
+                                  '₹ $userTotalGain',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF0f625c),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

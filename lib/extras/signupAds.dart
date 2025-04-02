@@ -335,6 +335,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
     });
   }
   List<bool> isNomineeBoxList = [];
+  @override
   void initState() {
     super.initState();
     isNomineeBoxList = List.generate(savedNominees.length, (index) => false);
@@ -864,7 +865,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                                     ),
                                                   ),
                                                   SizedBox(height: 8),
-                                                  _buildNomineeDetail("SHARE", (savedNominees[i]['share'] ?? "") + "%"),
+                                                  _buildNomineeDetail("SHARE", "${savedNominees[i]['share'] ?? ""}%"),
                                                 ],
                                               ),
                                               IconButton(
@@ -895,7 +896,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                               _buildNomineeDetail("PAN", savedNominees[i]['pan'] ?? ""),
                                               SizedBox(height: 8),
                                               _buildNomineeDetail("Relationship", savedNominees[i]['relationship'] ?? ""),
-                                              Container(
+                                              SizedBox(
                                                 width: double.infinity,
                                                 child: SingleChildScrollView(
                                                   scrollDirection: Axis.horizontal,
@@ -1272,7 +1273,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                         ),
                       ],
                     ),
-                    Container(
+                    SizedBox(
                       width: double.infinity,
                       child: Wrap(
                         alignment: WrapAlignment.center,
@@ -1629,8 +1630,8 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
         Checkbox(
           value: nmAplyselectedOption == option, // Only one can be active
           activeColor: const Color(0xFF0DA99E), // Active checkbox color
-          fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.selected)) {
+          fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.selected)) {
               return const Color(0xFF0DA99E); // Background when checked
             }
             return Colors.white; // Background when unchecked

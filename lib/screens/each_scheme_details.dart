@@ -1,4 +1,4 @@
-// ignore_for_file: camel_case_types
+// ignore_for_file: camel_case_types, deprecated_member_use
 
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -617,7 +617,6 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                 50), // Rounded corners
                                             boxShadow: [
                                               BoxShadow(
-                                                // ignore: deprecated_member_use
                                                 color: Colors.black.withOpacity(
                                                   0.2,
                                                 ), // Shadow color with opacity
@@ -779,39 +778,37 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Container(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            'Portfolio Value',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Color(0xFF648683),
-                                            ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Portfolio Value',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xFF648683),
                                           ),
-                                          Text(
-                                            NumberFormat.currency(
-                                              locale:
-                                                  'en_IN', // Indian number format
-                                              symbol: '₹ ', // Currency symbol
-                                              decimalDigits:
-                                                  2, // Two decimal places
-                                            ).format(double.tryParse(widget
-                                                        .scheme['current_val']
-                                                        ?.toString() ??
-                                                    '') ??
-                                                0.0),
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 19,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xFF0f625c),
-                                            ),
+                                        ),
+                                        Text(
+                                          NumberFormat.currency(
+                                            locale:
+                                                'en_IN', // Indian number format
+                                            symbol: '₹ ', // Currency symbol
+                                            decimalDigits:
+                                                2, // Two decimal places
+                                          ).format(double.tryParse(widget
+                                                      .scheme['current_val']
+                                                      ?.toString() ??
+                                                  '') ??
+                                              0.0),
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 19,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xFF0f625c),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                     SizedBox(width: 23),
                                     Container(
@@ -820,57 +817,53 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                       color: Color(0xFFd5d4d0),
                                     ),
                                     SizedBox(width: 23),
-                                    Container(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            'Overall Gain',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Color(0xFF648683),
-                                            ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Overall Gain',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xFF648683),
                                           ),
-                                          Builder(
-                                            builder: (context) {
-                                              // Convert gain/loss value from String to double
-                                              double gainLoss = double.tryParse(
-                                                      calculateGainLoss(
-                                                          widget.scheme[
-                                                              'current_val'],
-                                                          widget.scheme[
-                                                              'invested_val'])) ??
-                                                  0.0;
+                                        ),
+                                        Builder(
+                                          builder: (context) {
+                                            // Convert gain/loss value from String to double
+                                            double gainLoss = double.tryParse(
+                                                    calculateGainLoss(
+                                                        widget.scheme[
+                                                            'current_val'],
+                                                        widget.scheme[
+                                                            'invested_val'])) ??
+                                                0.0;
 
-                                              // Format with comma as thousands separator
-                                              final formattedGainLoss =
-                                                  NumberFormat.currency(
-                                                locale:
-                                                    'en_IN', // Indian format
-                                                symbol: '₹ ', // Currency symbol
-                                                decimalDigits:
-                                                    2, // Keep two decimal places
-                                              ).format(gainLoss);
+                                            // Format with comma as thousands separator
+                                            final formattedGainLoss =
+                                                NumberFormat.currency(
+                                              locale: 'en_IN', // Indian format
+                                              symbol: '₹ ', // Currency symbol
+                                              decimalDigits:
+                                                  2, // Keep two decimal places
+                                            ).format(gainLoss);
 
-                                              return Row(
-                                                children: [
-                                                  Text(
-                                                    formattedGainLoss, // Apply formatted text
-                                                    style: GoogleFonts.poppins(
-                                                      color: Color(0xFF0f625c),
-                                                      fontSize: 19,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
+                                            return Row(
+                                              children: [
+                                                Text(
+                                                  formattedGainLoss, // Apply formatted text
+                                                  style: GoogleFonts.poppins(
+                                                    color: Color(0xFF0f625c),
+                                                    fontSize: 19,
+                                                    fontWeight: FontWeight.w600,
                                                   ),
-                                                ],
-                                              );
-                                            },
-                                          ),
-                                        ],
-                                      ),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
@@ -884,48 +877,44 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Container(
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        'Abs. Ret.: ',
-                                        style: GoogleFonts.poppins(
-                                            color: Color(0xFF0f625c),
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w400),
-                                      ),
-                                      Text(
-                                        "${(((double.tryParse(calculateGainLoss(widget.scheme['current_val'], widget.scheme['invested_val'])) ?? 0.0) / (double.tryParse(widget.scheme['invested_val']?.toString() ?? '0') ?? 1)) * 100) // Multiply by 100
-                                            .toStringAsFixed(2)} %", // Append percentage symbol
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Abs. Ret.: ',
+                                      style: GoogleFonts.poppins(
                                           color: Color(0xFF0f625c),
-                                        ),
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                    Text(
+                                      "${(((double.tryParse(calculateGainLoss(widget.scheme['current_val'], widget.scheme['invested_val'])) ?? 0.0) / (double.tryParse(widget.scheme['invested_val']?.toString() ?? '0') ?? 1)) * 100) // Multiply by 100
+                                          .toStringAsFixed(2)} %", // Append percentage symbol
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF0f625c),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                                 SizedBox(width: 15),
-                                Container(
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        'XIRR: ',
-                                        style: GoogleFonts.poppins(
-                                            color: Color(0xFF0f625c),
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w400),
-                                      ),
-                                      Text(
-                                        ' ${widget.scheme['xirr']?.toString() ?? '0'}%',
-                                        style: GoogleFonts.poppins(
-                                            color: Color(0xFF0f625c),
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                    ],
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'XIRR: ',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF0f625c),
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                    Text(
+                                      ' ${widget.scheme['xirr']?.toString() ?? '0'}%',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF0f625c),
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),

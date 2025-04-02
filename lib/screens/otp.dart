@@ -3,14 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'login.dart';
 import 'change_password.dart';
 
-class otpPage extends StatefulWidget {
-  const otpPage({super.key});
+class OtpPage extends StatefulWidget {
+  const OtpPage({super.key});
 
   @override
-  State<otpPage> createState() => _otpPageState();
+  State<OtpPage> createState() => _OtpPageState();
 }
 
-class _otpPageState extends State<otpPage> {
+class _OtpPageState extends State<OtpPage> {
   final otpText = TextEditingController();
 
   @override
@@ -52,28 +52,26 @@ class _otpPageState extends State<otpPage> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
-              Container(
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  children: [
-                    Text(
-                      'OTP hasbeen sent to email-id: ',
-                      style: GoogleFonts.poppins(
-                        color: const Color(0xFF0f625c),
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                      ),
+              Wrap(
+                alignment: WrapAlignment.center,
+                children: [
+                  Text(
+                    'OTP hasbeen sent to email-id: ',
+                    style: GoogleFonts.poppins(
+                      color: const Color(0xFF0f625c),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
                     ),
-                    Text(
-                      '',
-                      style: GoogleFonts.poppins(
-                        color: const Color(0xFF0f625c),
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                      ),
+                  ),
+                  Text(
+                    '',
+                    style: GoogleFonts.poppins(
+                      color: const Color(0xFF0f625c),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               const SizedBox(height: 14),
               TextField(
@@ -87,13 +85,13 @@ class _otpPageState extends State<otpPage> {
               const SizedBox(height: 14),
               ElevatedButton(
                 onPressed: () {
-                  String uOtp = otpText.text.trim();
+                  otpText.text.trim();
 
-                  print("Phone: $uOtp");
+                  //print("Phone: $uOtp");
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const changePasswordPage()));
+                          builder: (context) => const ChangePasswordPage()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFfdd1a0),
@@ -168,7 +166,7 @@ class _otpPageState extends State<otpPage> {
                                   InkWell(
                                     onTap: () {
                                       // Handle the link click here
-                                      print('Sign up clicked');
+                                      //print('Sign up clicked');
                                       // Navigate to the Terms and Conditions page if needed
                                       Navigator.push(
                                           context,

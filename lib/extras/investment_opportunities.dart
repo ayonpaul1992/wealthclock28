@@ -35,7 +35,7 @@ class InvestmentOpportunities extends StatelessWidget {
     },
   ];
 
-  InvestmentOpportunities({Key? key}) : super(key: key);
+  InvestmentOpportunities({super.key});
 
   @override
   Widget build(BuildContext context) {

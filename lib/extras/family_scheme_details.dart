@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -6,15 +8,15 @@ import 'family_fund_investment_details.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class familySchemeDetails extends StatefulWidget {
+class FamilySchemeDetails extends StatefulWidget {
   final Map<String, dynamic> scheme; // ✅ Define scheme as a property
-  const familySchemeDetails({super.key, required this.scheme});
+  const FamilySchemeDetails({super.key, required this.scheme});
 
   @override
-  State<familySchemeDetails> createState() => _familySchemeDetailsState();
+  State<FamilySchemeDetails> createState() => _FamilySchemeDetailsState();
 }
 
-class _familySchemeDetailsState extends State<familySchemeDetails>{
+class _FamilySchemeDetailsState extends State<FamilySchemeDetails> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String activeTile = 'Home';
   String userName = "Loading...";
@@ -33,7 +35,8 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
   Future<void> fetchUserName() async {
     final prefs = await SharedPreferences.getInstance();
     final String? authToken = prefs.getString('auth_token');
-    const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
+    const String apiUrl =
+        'https://wealthclockadvisors.com/api/client/dashboard';
 
     if (authToken == null || authToken.isEmpty) {
       setState(() {
@@ -43,7 +46,7 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
     }
 
     try {
-      print("Auth Token: $authToken"); // Debugging: Check if token exists
+      //print("Auth Token: $authToken"); // Debugging: Check if token exists
 
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -53,19 +56,20 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
         },
       );
 
-      print("Response Status Code: ${response.statusCode}");
-      print("Full Response: ${response.body}");
+      //print("Response Status Code: ${response.statusCode}");
+      //print("Full Response: ${response.body}");
 
       final String responseBody = response.body.trim();
 
       if (response.statusCode == 200) {
-        if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
+        if (responseBody.isNotEmpty &&
+            (responseBody.startsWith('{') || responseBody.startsWith('['))) {
           final Map<String, dynamic> data = json.decode(responseBody);
-          print("Parsed Data: $data");
+          //print("Parsed Data: $data");
 
           if (data.containsKey("clientData") && data["clientData"] is List) {
             if (data["clientData"].isEmpty) {
-              print("clientData is empty. Setting userName to blank.");
+              //print("clientData is empty. Setting userName to blank.");
               setState(() {
                 userName = ""; // If clientData is empty, show blank string
               });
@@ -75,8 +79,8 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
             String? fetchedName = data["clientData"][0]["user_name"];
             String? fetchedPan = data["clientData"][0]["pan"];
 
-            print("Fetched Name: $fetchedName");
-            print("Fetched PAN: $fetchedPan");
+            //print("Fetched Name: $fetchedName");
+            //print("Fetched PAN: $fetchedPan");
 
             setState(() {
               if (fetchedPan == null || fetchedPan.isEmpty) {
@@ -99,11 +103,13 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
         final Map<String, dynamic> data = json.decode(responseBody);
         String errorMessage = data["message"] ?? "Bad Request";
 
-        print("Received 400 Error: $errorMessage");
+        //print("Received 400 Error: $errorMessage");
 
         setState(() {
-          if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
-            print("Detected 'sorry user pan does not exist'. Setting userName to blank.");
+          if (errorMessage
+              .toLowerCase()
+              .contains("sorry user pan does not exist")) {
+            //print("Detected 'sorry user pan does not exist'. Setting userName to blank.");
             userName = ""; // If error message contains this phrase, set blank
           } else {
             userName = errorMessage;
@@ -119,16 +125,18 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
         });
       }
     } catch (e) {
-      print("Error: $e");
+      //print("Error: $e");
       setState(() {
         userName = "Error fetching data!";
       });
     }
   }
+
   Future<void> fetchUserCurrentValue() async {
     final prefs = await SharedPreferences.getInstance();
     final String? authToken = prefs.getString('auth_token');
-    const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
+    const String apiUrl =
+        'https://wealthclockadvisors.com/api/client/dashboard';
 
     if (authToken == null || authToken.isEmpty) {
       setState(() {
@@ -138,7 +146,7 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
     }
 
     try {
-      print("Auth Token: $authToken");
+      //print("Auth Token: $authToken");
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {
@@ -147,48 +155,54 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
         },
       );
 
-      print("Response Status Code: ${response.statusCode}");
-      print("Raw Response Body: '${response.body}'");
+      //print("Response Status Code: ${response.statusCode}");
+      //print("Raw Response Body: '${response.body}'");
 
       final String responseBody = response.body.trim();
 
       if (response.statusCode == 200) {
-        if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
+        if (responseBody.isNotEmpty &&
+            (responseBody.startsWith('{') || responseBody.startsWith('['))) {
           try {
             final Map<String, dynamic> data = json.decode(responseBody);
-            print("Parsed Data: $data");
+            //print("Parsed Data: $data");
 
-            if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
+            if (data.containsKey("clientData") &&
+                data["clientData"] is List &&
+                data["clientData"].isNotEmpty) {
               String? fetchedPan = data["clientData"][0]["pan"];
 
               // If PAN does not exist, return "0.00"
               if (fetchedPan == null || fetchedPan.isEmpty) {
-                print("PAN does not exist. Setting userCurrentValue to 0.00");
+                //print("PAN does not exist. Setting userCurrentValue to 0.00");
                 setState(() {
                   userCurrentValue = "0.00";
                 });
                 return;
               }
 
-              double totalGain = (data["clientData"][0]["total_current_val"] ?? 0).toDouble();
+              double totalGain =
+                  (data["clientData"][0]["total_current_val"] ?? 0).toDouble();
 
               // Ensure totalGain is not negative or NaN
               if (totalGain.isNaN || totalGain < 0) {
                 totalGain = 0;
               }
 
-              String formattedTotalGain = NumberFormat('#,##0.00').format(totalGain);
+              String formattedTotalGain =
+                  NumberFormat('#,##0.00').format(totalGain);
 
               setState(() {
                 userCurrentValue = formattedTotalGain;
               });
             } else {
               setState(() {
-                userCurrentValue = "0.00"; // If clientData is missing, return "0.00"
+                userCurrentValue =
+                    "0.00"; // If clientData is missing, return "0.00"
               });
             }
           } catch (e) {
-            print("Error decoding JSON: $e");
+            //print("Error decoding JSON: $e");
             setState(() {
               userCurrentValue = "0.00"; // Default to "0.00" on JSON error
             });
@@ -202,8 +216,10 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
         final Map<String, dynamic> data = json.decode(responseBody);
         String errorMessage = data["message"] ?? "";
 
-        if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
-          print("Detected 'sorry user pan does not exist'. Setting userCurrentValue to 0.00");
+        if (errorMessage
+            .toLowerCase()
+            .contains("sorry user pan does not exist")) {
+          //print("Detected 'sorry user pan does not exist'. Setting userCurrentValue to 0.00");
           setState(() {
             userCurrentValue = "0.00"; // If PAN is missing, return "0.00"
           });
@@ -218,20 +234,23 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
         });
       } else {
         setState(() {
-          userCurrentValue = "Error ${response.statusCode}: Something went wrong!";
+          userCurrentValue =
+              "Error ${response.statusCode}: Something went wrong!";
         });
       }
     } catch (e) {
-      print("Exception caught: $e");
+      //print("Exception caught: $e");
       setState(() {
         userCurrentValue = "0.00"; // Default to "0.00" on any exception
       });
     }
   }
+
   Future<void> fetchUserTotalGain() async {
     final prefs = await SharedPreferences.getInstance();
     final String? authToken = prefs.getString('auth_token');
-    const String apiUrl = 'https://wealthclockadvisors.com/api/client/dashboard';
+    const String apiUrl =
+        'https://wealthclockadvisors.com/api/client/dashboard';
 
     if (authToken == null || authToken.isEmpty) {
       setState(() {
@@ -241,7 +260,7 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
     }
 
     try {
-      print("Auth Token: $authToken");
+      //print("Auth Token: $authToken");
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {
@@ -250,48 +269,54 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
         },
       );
 
-      print("Response Status Code: ${response.statusCode}");
-      print("Raw Response Body: '${response.body}'");
+      //print("Response Status Code: ${response.statusCode}");
+      //print("Raw Response Body: '${response.body}'");
 
       final String responseBody = response.body.trim();
 
       if (response.statusCode == 200) {
-        if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
+        if (responseBody.isNotEmpty &&
+            (responseBody.startsWith('{') || responseBody.startsWith('['))) {
           try {
             final Map<String, dynamic> data = json.decode(responseBody);
-            print("Parsed Data: $data");
+            //print("Parsed Data: $data");
 
-            if (data.containsKey("clientData") && data["clientData"] is List && data["clientData"].isNotEmpty) {
+            if (data.containsKey("clientData") &&
+                data["clientData"] is List &&
+                data["clientData"].isNotEmpty) {
               String? fetchedPan = data["clientData"][0]["pan"];
 
               // If PAN does not exist, return "0.00"
               if (fetchedPan == null || fetchedPan.isEmpty) {
-                print("PAN does not exist. Setting userCurrentValue to 0.00");
+                //print("PAN does not exist. Setting userCurrentValue to 0.00");
                 setState(() {
                   userTotalGain = "0.00";
                 });
                 return;
               }
 
-              double totalGain = (data["clientData"][0]["totalGain"] ?? 0).toDouble();
+              double totalGain =
+                  (data["clientData"][0]["totalGain"] ?? 0).toDouble();
 
               // Ensure totalGain is not negative or NaN
               if (totalGain.isNaN || totalGain < 0) {
                 totalGain = 0;
               }
 
-              String formattedTotalGain = NumberFormat('#,##0.00').format(totalGain);
+              String formattedTotalGain =
+                  NumberFormat('#,##0.00').format(totalGain);
 
               setState(() {
                 userTotalGain = formattedTotalGain;
               });
             } else {
               setState(() {
-                userTotalGain = "0.00"; // If clientData is missing, return "0.00"
+                userTotalGain =
+                    "0.00"; // If clientData is missing, return "0.00"
               });
             }
           } catch (e) {
-            print("Error decoding JSON: $e");
+            //print("Error decoding JSON: $e");
             setState(() {
               userTotalGain = "0.00"; // Default to "0.00" on JSON error
             });
@@ -305,8 +330,10 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
         final Map<String, dynamic> data = json.decode(responseBody);
         String errorMessage = data["message"] ?? "";
 
-        if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
-          print("Detected 'sorry user pan does not exist'. Setting userCurrentValue to 0.00");
+        if (errorMessage
+            .toLowerCase()
+            .contains("sorry user pan does not exist")) {
+          //print("Detected 'sorry user pan does not exist'. Setting userCurrentValue to 0.00");
           setState(() {
             userTotalGain = "0.00"; // If PAN is missing, return "0.00"
           });
@@ -325,7 +352,7 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
         });
       }
     } catch (e) {
-      print("Exception caught: $e");
+      //print("Exception caught: $e");
       setState(() {
         userTotalGain = "0.00"; // Default to "0.00" on any exception
       });
@@ -344,7 +371,7 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
   //   }
   //
   //   try {
-  //     print("Auth Token: $authToken"); // Debugging: Check if token exists
+  //     //print("Auth Token: $authToken"); // Debugging: Check if token exists
   //
   //     final response = await http.get(
   //       Uri.parse(apiUrl),
@@ -354,19 +381,19 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
   //       },
   //     );
   //
-  //     print("Response Status Code: ${response.statusCode}");
-  //     print("Full Response: ${response.body}");
+  //     //print("Response Status Code: ${response.statusCode}");
+  //     //print("Full Response: ${response.body}");
   //
   //     final String responseBody = response.body.trim();
   //
   //     if (response.statusCode == 200) {
   //       if (responseBody.isNotEmpty && (responseBody.startsWith('{') || responseBody.startsWith('['))) {
   //         final Map<String, dynamic> data = json.decode(responseBody);
-  //         print("Parsed Data: $data");
+  //         //print("Parsed Data: $data");
   //
   //         if (data.containsKey("clientData") && data["clientData"] is List) {
   //           if (data["clientData"].isEmpty) {
-  //             print("clientData is empty. Setting userName to blank.");
+  //             //print("clientData is empty. Setting userName to blank.");
   //             setState(() {
   //               userName = ""; // If clientData is empty, show blank string
   //             });
@@ -376,8 +403,8 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
   //           String? fetchedName = data["clientData"][0]["user_name"];
   //           String? fetchedPan = data["clientData"][0]["pan"];
   //
-  //           print("Fetched Name: $fetchedName");
-  //           print("Fetched PAN: $fetchedPan");
+  //           //print("Fetched Name: $fetchedName");
+  //           //print("Fetched PAN: $fetchedPan");
   //
   //           setState(() {
   //             if (fetchedPan == null || fetchedPan.isEmpty) {
@@ -400,11 +427,11 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
   //       final Map<String, dynamic> data = json.decode(responseBody);
   //       String errorMessage = data["message"] ?? "Bad Request";
   //
-  //       print("Received 400 Error: $errorMessage");
+  //       //print("Received 400 Error: $errorMessage");
   //
   //       setState(() {
   //         if (errorMessage.toLowerCase().contains("sorry user pan does not exist")) {
-  //           print("Detected 'sorry user pan does not exist'. Setting userName to blank.");
+  //           //print("Detected 'sorry user pan does not exist'. Setting userName to blank.");
   //           userName = ""; // If error message contains this phrase, set blank
   //         } else {
   //           userName = errorMessage;
@@ -420,7 +447,7 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
   //       });
   //     }
   //   } catch (e) {
-  //     print("Error: $e");
+  //     //print("Error: $e");
   //     setState(() {
   //       userName = "Error fetching data!";
   //     });
@@ -431,22 +458,26 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
     final prefs = await SharedPreferences.getInstance();
 
     // Retrieve the dynamically stored API URL and auth token from SharedPreferences
-    const String apiUrl = 'https://wealthclockadvisors.com/api/client/logout'; // Replace with your actual API URL
-    final String? authToken = prefs.getString('auth_token'); // Dynamically get the auth token
+    const String apiUrl =
+        'https://wealthclockadvisors.com/api/client/logout'; // Replace with your actual API URL
+    final String? authToken =
+        prefs.getString('auth_token'); // Dynamically get the auth token
 
     // Check if the auth token is null
     if (authToken == null) {
-      print('Auth token not found in SharedPreferences');
+      //print('Auth token not found in SharedPreferences');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to retrieve session data. Please log in again.')),
+        const SnackBar(
+            content:
+                Text('Unable to retrieve session data. Please log in again.')),
       );
       return;
     }
 
     try {
-      print('Attempting to log out...');
-      print('API URL: $apiUrl');
-      print('Authorization Token: $authToken');
+      //print('Attempting to log out...');
+      //print('API URL: $apiUrl');
+      //print('Authorization Token: $authToken');
 
       // Sending the GET request to the logout API
       final response = await http.get(
@@ -457,8 +488,8 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
         },
       );
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      //print('Response status: ${response.statusCode}');
+      //print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         // Successfully logged out
@@ -475,22 +506,23 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Unauthorized')),
         );
-      }else {
+      } else {
         // Handle API error response
-        print('Error during logout. Status code: ${response.statusCode}');
-        print('Error body: ${response.body}');
+        //print('Error during logout. Status code: ${response.statusCode}');
+        //print('Error body: ${response.body}');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Unable to logout. Please try again.')),
         );
       }
     } catch (e) {
       // Handle network or other errors
-      print('Error during logout: $e');
+      //print('Error during logout: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: Unable to log out. $e')),
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -500,7 +532,8 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black), // Back arrow
           onPressed: () {
-            Navigator.pop(context); // You can replace this with any other back navigation
+            Navigator.pop(
+                context); // You can replace this with any other back navigation
           },
         ),
       ),
@@ -509,7 +542,6 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
           color: Color(0xFFfdd1a0),
           child: ListView(
             padding: EdgeInsets.zero,
-
             children: [
               DrawerHeader(
                 decoration: BoxDecoration(
@@ -518,7 +550,6 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-
                     ClipOval(
                       child: Image.asset(
                         'assets/images/menu_ppl.png',
@@ -527,7 +558,6 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                         height: 64,
                       ),
                     ),
-
                     SizedBox(
                       width: 150,
                       child: Text(
@@ -550,7 +580,8 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                         child: IconButton(
                           icon: Icon(Icons.clear, size: 19),
                           onPressed: () {
-                            Navigator.pop(context); // Close the drawer when the icon is pressed
+                            Navigator.pop(
+                                context); // Close the drawer when the icon is pressed
                           },
                         ),
                       ),
@@ -561,19 +592,22 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
               Container(
                 decoration: BoxDecoration(
                     border: Border(
-                        bottom: BorderSide(color: Colors.grey.shade400,width: 1.0)
-                    )
-                ),
+                        bottom: BorderSide(
+                            color: Colors.grey.shade400, width: 1.0))),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.zero, // Remove extra padding
-                    backgroundColor:
-                    activeTile == 'Home' ? Color(0xFFfee0be) : Colors.transparent, // Change background color based on active state
-                    elevation: activeTile == 'Home' ? 5 : 0, // Optional: Adjust elevation
+                    backgroundColor: activeTile == 'Home'
+                        ? Color(0xFFfee0be)
+                        : Colors
+                            .transparent, // Change background color based on active state
+                    elevation: activeTile == 'Home'
+                        ? 5
+                        : 0, // Optional: Adjust elevation
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero, // Set border radius to zero
+                      borderRadius:
+                          BorderRadius.zero, // Set border radius to zero
                     ),
-
                   ),
                   onPressed: () {
                     setState(() {
@@ -582,11 +616,19 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                     Navigator.pop(context); // Close the drawer
                   },
                   child: ListTile(
-                    leading:  Icon(Icons.home, color: activeTile == 'Home' ? Color(0xFF0f625c) : Color(0xFF303131),size: 20,),
-                    title:  Text(
+                    leading: Icon(
+                      Icons.home,
+                      color: activeTile == 'Home'
+                          ? Color(0xFF0f625c)
+                          : Color(0xFF303131),
+                      size: 20,
+                    ),
+                    title: Text(
                       'Home',
                       style: TextStyle(
-                        color: activeTile == 'Home' ? Color(0xFF0f625c) : Color(0xFF303131),
+                        color: activeTile == 'Home'
+                            ? Color(0xFF0f625c)
+                            : Color(0xFF303131),
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
@@ -594,21 +636,24 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                   ),
                 ),
               ),
-
               Container(
                 decoration: BoxDecoration(
                     border: Border(
-                        bottom: BorderSide(color: Colors.grey.shade400,width: 1.0)
-                    )
-                ),
+                        bottom: BorderSide(
+                            color: Colors.grey.shade400, width: 1.0))),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.zero, // Remove extra padding
-                    backgroundColor:
-                    activeTile == 'My Orders' ? Color(0xFFfee0be) : Colors.transparent, // Change background color based on active state
-                    elevation: activeTile == 'My Orders' ? 5 : 0, // Optional: Adjust elevation
+                    backgroundColor: activeTile == 'My Orders'
+                        ? Color(0xFFfee0be)
+                        : Colors
+                            .transparent, // Change background color based on active state
+                    elevation: activeTile == 'My Orders'
+                        ? 5
+                        : 0, // Optional: Adjust elevation
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero, // Set border radius to zero
+                      borderRadius:
+                          BorderRadius.zero, // Set border radius to zero
                     ),
                   ),
                   onPressed: () {
@@ -618,11 +663,19 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                     Navigator.pop(context); // Close the drawer
                   },
                   child: ListTile(
-                    leading:  Icon(Icons.shopping_bag_outlined, color: activeTile == 'My Orders' ? Color(0xFF0f625c) : Color(0xFF303131),size: 20,),
-                    title:  Text(
+                    leading: Icon(
+                      Icons.shopping_bag_outlined,
+                      color: activeTile == 'My Orders'
+                          ? Color(0xFF0f625c)
+                          : Color(0xFF303131),
+                      size: 20,
+                    ),
+                    title: Text(
                       'My Orders',
                       style: TextStyle(
-                        color: activeTile == 'My Orders' ? Color(0xFF0f625c) : Color(0xFF303131),
+                        color: activeTile == 'My Orders'
+                            ? Color(0xFF0f625c)
+                            : Color(0xFF303131),
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
@@ -633,17 +686,21 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
               Container(
                 decoration: BoxDecoration(
                     border: Border(
-                        bottom: BorderSide(color: Colors.grey.shade400,width: 1.0)
-                    )
-                ),
+                        bottom: BorderSide(
+                            color: Colors.grey.shade400, width: 1.0))),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.zero, // Remove extra padding
-                    backgroundColor:
-                    activeTile == 'My Profile' ? Color(0xFFfee0be) : Colors.transparent, // Change background color based on active state
-                    elevation: activeTile == 'My Profile' ? 5 : 0, // Optional: Adjust elevation
+                    backgroundColor: activeTile == 'My Profile'
+                        ? Color(0xFFfee0be)
+                        : Colors
+                            .transparent, // Change background color based on active state
+                    elevation: activeTile == 'My Profile'
+                        ? 5
+                        : 0, // Optional: Adjust elevation
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero, // Set border radius to zero
+                      borderRadius:
+                          BorderRadius.zero, // Set border radius to zero
                     ),
                   ),
                   onPressed: () {
@@ -653,11 +710,19 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                     Navigator.pop(context); // Close the drawer
                   },
                   child: ListTile(
-                    leading:  Icon(Icons.person_outline_sharp, color: activeTile == 'My Profile' ? Color(0xFF0f625c) : Color(0xFF303131),size: 20,),
-                    title:  Text(
+                    leading: Icon(
+                      Icons.person_outline_sharp,
+                      color: activeTile == 'My Profile'
+                          ? Color(0xFF0f625c)
+                          : Color(0xFF303131),
+                      size: 20,
+                    ),
+                    title: Text(
                       'My Profile',
                       style: TextStyle(
-                        color: activeTile == 'My Profile' ? Color(0xFF0f625c) : Color(0xFF303131),
+                        color: activeTile == 'My Profile'
+                            ? Color(0xFF0f625c)
+                            : Color(0xFF303131),
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
@@ -668,17 +733,21 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
               Container(
                 decoration: BoxDecoration(
                     border: Border(
-                        bottom: BorderSide(color: Colors.grey.shade400,width: 1.0)
-                    )
-                ),
+                        bottom: BorderSide(
+                            color: Colors.grey.shade400, width: 1.0))),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.zero, // Remove extra padding
-                    backgroundColor:
-                    activeTile == 'Change Password' ? Color(0xFFfee0be) : Colors.transparent, // Change background color based on active state
-                    elevation: activeTile == 'Change Password' ? 5 : 0, // Optional: Adjust elevation
+                    backgroundColor: activeTile == 'Change Password'
+                        ? Color(0xFFfee0be)
+                        : Colors
+                            .transparent, // Change background color based on active state
+                    elevation: activeTile == 'Change Password'
+                        ? 5
+                        : 0, // Optional: Adjust elevation
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero, // Set border radius to zero
+                      borderRadius:
+                          BorderRadius.zero, // Set border radius to zero
                     ),
                   ),
                   onPressed: () {
@@ -688,11 +757,19 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                     Navigator.pop(context); // Close the drawer
                   },
                   child: ListTile(
-                    leading:  Icon(Icons.lock_outline, color: activeTile == 'Change Password' ? Color(0xFF0f625c) : Color(0xFF303131),size: 20,),
-                    title:  Text(
+                    leading: Icon(
+                      Icons.lock_outline,
+                      color: activeTile == 'Change Password'
+                          ? Color(0xFF0f625c)
+                          : Color(0xFF303131),
+                      size: 20,
+                    ),
+                    title: Text(
                       'Change Password',
                       style: TextStyle(
-                        color: activeTile == 'Change Password' ? Color(0xFF0f625c) : Color(0xFF303131),
+                        color: activeTile == 'Change Password'
+                            ? Color(0xFF0f625c)
+                            : Color(0xFF303131),
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
@@ -703,31 +780,44 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
               Container(
                 decoration: BoxDecoration(
                     border: Border(
-                        bottom: BorderSide(color: Colors.grey.shade400,width: 1.0)
-                    )
-                ),
+                        bottom: BorderSide(
+                            color: Colors.grey.shade400, width: 1.0))),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.zero, // Remove extra padding
-                    backgroundColor:
-                    activeTile == 'Request a Service' ? Color(0xFFfee0be) : Colors.transparent, // Change background color based on active state
-                    elevation: activeTile == 'Request a Service' ? 5 : 0, // Optional: Adjust elevation
+                    backgroundColor: activeTile == 'Request a Service'
+                        ? Color(0xFFfee0be)
+                        : Colors
+                            .transparent, // Change background color based on active state
+                    elevation: activeTile == 'Request a Service'
+                        ? 5
+                        : 0, // Optional: Adjust elevation
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero, // Set border radius to zero
+                      borderRadius:
+                          BorderRadius.zero, // Set border radius to zero
                     ),
                   ),
                   onPressed: () {
                     setState(() {
-                      activeTile = 'Request a Service'; // Set this tile as active
+                      activeTile =
+                          'Request a Service'; // Set this tile as active
                     });
                     Navigator.pop(context); // Close the drawer
                   },
                   child: ListTile(
-                    leading:  Icon(Icons.event_note_sharp, color: activeTile == 'Request a Service' ? Color(0xFF0f625c) : Color(0xFF303131),size: 20,),
-                    title:  Text(
+                    leading: Icon(
+                      Icons.event_note_sharp,
+                      color: activeTile == 'Request a Service'
+                          ? Color(0xFF0f625c)
+                          : Color(0xFF303131),
+                      size: 20,
+                    ),
+                    title: Text(
                       'Request a Service',
                       style: TextStyle(
-                        color: activeTile == 'Request a Service' ? Color(0xFF0f625c) : Color(0xFF303131),
+                        color: activeTile == 'Request a Service'
+                            ? Color(0xFF0f625c)
+                            : Color(0xFF303131),
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
@@ -735,33 +825,43 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                   ),
                 ),
               ),
-              Container(
-
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.zero, // Remove extra padding
-                    backgroundColor:
-                    activeTile == 'Contact Us' ? Color(0xFFfee0be) : Colors.transparent, // Change background color based on active state
-                    elevation: activeTile == 'Contact Us' ? 5 : 0, // Optional: Adjust elevation
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero, // Set border radius to zero
-                    ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.zero, // Remove extra padding
+                  backgroundColor: activeTile == 'Contact Us'
+                      ? Color(0xFFfee0be)
+                      : Colors
+                          .transparent, // Change background color based on active state
+                  elevation: activeTile == 'Contact Us'
+                      ? 5
+                      : 0, // Optional: Adjust elevation
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.zero, // Set border radius to zero
                   ),
-                  onPressed: () {
-                    setState(() {
-                      activeTile = 'Contact Us'; // Set this tile as active
-                    });
-                    Navigator.pop(context); // Close the drawer
-                  },
-                  child: ListTile(
-                    leading:  Icon(Icons.email_outlined, color: activeTile == 'Contact Us' ? Color(0xFF0f625c) : Color(0xFF303131),size: 20,),
-                    title:  Text(
-                      'Contact Us',
-                      style: TextStyle(
-                        color: activeTile == 'Contact Us' ? Color(0xFF0f625c) : Color(0xFF303131),
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
+                ),
+                onPressed: () {
+                  setState(() {
+                    activeTile = 'Contact Us'; // Set this tile as active
+                  });
+                  Navigator.pop(context); // Close the drawer
+                },
+                child: ListTile(
+                  leading: Icon(
+                    Icons.email_outlined,
+                    color: activeTile == 'Contact Us'
+                        ? Color(0xFF0f625c)
+                        : Color(0xFF303131),
+                    size: 20,
+                  ),
+                  title: Text(
+                    'Contact Us',
+                    style: TextStyle(
+                      color: activeTile == 'Contact Us'
+                          ? Color(0xFF0f625c)
+                          : Color(0xFF303131),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -775,7 +875,7 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                       padding: const EdgeInsets.only(left: 20),
                       child: ElevatedButton(
                         onPressed: () {
-                          print('Logout button pressed');
+                          //print('Logout button pressed');
                           _logout(context); // Call the logout function here
                         },
                         style: ElevatedButton.styleFrom(
@@ -786,7 +886,8 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                           style: GoogleFonts.poppins(
                             fontSize: 17, // Text size
                             fontWeight: FontWeight.w600, // Text weight
-                            color: Color(0xFF222222), // Text color (set to white for contrast)
+                            color: Color(
+                                0xFF222222), // Text color (set to white for contrast)
                           ),
                         ),
                       ),
@@ -795,7 +896,6 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                 ),
               ),
             ],
-
           ),
         ),
       ),
@@ -805,14 +905,15 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
           Container(
             color: Colors.white,
             child: Padding(
-              padding: EdgeInsets.only(left: 20,right: 20,bottom: 20,top: 20),
+              padding:
+                  EdgeInsets.only(left: 20, right: 20, bottom: 20, top: 20),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between the logo and buttons
+                mainAxisAlignment: MainAxisAlignment
+                    .spaceBetween, // Space between the logo and buttons
                 children: [
                   // Logo on the left
                   Image.asset(
                     'assets/images/dshb_logo.png',
-
                   ),
 
                   // Buttons on the right
@@ -824,9 +925,11 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                           // Add your functionality here
                         },
                         style: TextButton.styleFrom(
-                          minimumSize: Size(20, 20), // Adjust clickable area to match image size
-                          padding: EdgeInsets.zero,  // Remove padding
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Shrink touch area
+                          minimumSize: Size(20,
+                              20), // Adjust clickable area to match image size
+                          padding: EdgeInsets.zero, // Remove padding
+                          tapTargetSize: MaterialTapTargetSize
+                              .shrinkWrap, // Shrink touch area
                         ),
                         child: Image.asset(
                           'assets/images/bell-svgrepo-com.png',
@@ -908,11 +1011,11 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.only(top: 0,bottom: 20,left: 15,right: 15),
+                        padding: const EdgeInsets.only(
+                            top: 0, bottom: 20, left: 15, right: 15),
                         child: Column(
                           children: [
                             const SizedBox(height: 20),
-
                             Text(
                               userName,
                               style: GoogleFonts.poppins(
@@ -922,15 +1025,14 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                               ),
                             ),
                             SizedBox(height: 10),
-                            Container(
-                              child: Text(
-                                'Bandhan Tax Advantage (ELSS)\nFund Regular Growth',
-                                textAlign: TextAlign.center, // Apply text alignment here
-                                style: GoogleFonts.poppins(
-                                  color: Color(0xFF0f625c),
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                            Text(
+                              'Bandhan Tax Advantage (ELSS)\nFund Regular Growth',
+                              textAlign:
+                                  TextAlign.center, // Apply text alignment here
+                              style: GoogleFonts.poppins(
+                                color: Color(0xFF0f625c),
+                                fontSize: 17,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                             SizedBox(height: 10),
@@ -941,56 +1043,79 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                                   children: [
                                     ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        elevation: 3, // Adjust elevation as needed
+                                        elevation:
+                                            3, // Adjust elevation as needed
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(50), // Match container's border radius
+                                          borderRadius: BorderRadius.circular(
+                                              50), // Match container's border radius
                                         ),
-                                        backgroundColor: Colors.white, // Match container's color
+                                        backgroundColor: Colors
+                                            .white, // Match container's color
                                       ),
                                       onPressed: () {
                                         // Navigator.push(context, MaterialPageRoute(builder: (context) => const SignupPage()));
                                         // Define the action for the button here
                                         // Navigator.push(context, MaterialPageRoute(builder: (context) => const familyPortfolioPage()));
                                       },
-                                      child: Text('Equity',style: GoogleFonts.poppins(
-                                        color: Color(0xFF8c8c8c),
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                      ),),
+                                      child: Text(
+                                        'Equity',
+                                        style: GoogleFonts.poppins(
+                                          color: Color(0xFF8c8c8c),
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
                                     ),
                                     SizedBox(width: 10),
                                     ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        elevation: 3, // Adjust elevation as needed
+                                        elevation:
+                                            3, // Adjust elevation as needed
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(50), // Match container's border radius
+                                          borderRadius: BorderRadius.circular(
+                                              50), // Match container's border radius
                                         ),
-                                        backgroundColor: Colors.white, // Match container's color
+                                        backgroundColor: Colors
+                                            .white, // Match container's color
                                       ),
                                       onPressed: () {
                                         // Navigator.push(context, MaterialPageRoute(builder: (context) => const SignupPage()));
                                         // Define the action for the button here
                                         // Navigator.push(context, MaterialPageRoute(builder: (context) => const familyPortfolioPage()));
                                       },
-                                      child: Text('ELSS',style: GoogleFonts.poppins(
-                                        color: Color(0xFF8c8c8c),
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                      ),),
+                                      child: Text(
+                                        'ELSS',
+                                        style: GoogleFonts.poppins(
+                                          color: Color(0xFF8c8c8c),
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),
                                 Column(
                                   children: [
-                                    Text('Gain/Loss',style: GoogleFonts.poppins(color: Color(0xFF8c8c8c),fontSize: 14,fontWeight: FontWeight.w500)),
+                                    Text('Gain/Loss',
+                                        style: GoogleFonts.poppins(
+                                            color: Color(0xFF8c8c8c),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500)),
                                     Row(
                                       children: [
-                                        Icon(Icons.arrow_upward,color: Color(0xFF09a99d),size: 15,),
-                                        Text('2,32,690',style: GoogleFonts.poppins(
+                                        Icon(
+                                          Icons.arrow_upward,
                                           color: Color(0xFF09a99d),
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                        ),),
+                                          size: 15,
+                                        ),
+                                        Text(
+                                          '2,32,690',
+                                          style: GoogleFonts.poppins(
+                                            color: Color(0xFF09a99d),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ],
@@ -1004,46 +1129,64 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Text('Folio No.',style: GoogleFonts.poppins(
-                                      color: Color(0xFF8c8c8c),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),),
-                                    Text('xxxx7/73',style: GoogleFonts.poppins(
-                                      color: Color(0xFF303131),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),),
+                                    Text(
+                                      'Folio No.',
+                                      style: GoogleFonts.poppins(
+                                        color: Color(0xFF8c8c8c),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    Text(
+                                      'xxxx7/73',
+                                      style: GoogleFonts.poppins(
+                                        color: Color(0xFF303131),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Text('Holding Pattern',style: GoogleFonts.poppins(
-                                      color: Color(0xFF8c8c8c),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),),
-                                    Text('Single',style: GoogleFonts.poppins(
-                                      color: Color(0xFF303131),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),),
+                                    Text(
+                                      'Holding Pattern',
+                                      style: GoogleFonts.poppins(
+                                        color: Color(0xFF8c8c8c),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Single',
+                                      style: GoogleFonts.poppins(
+                                        color: Color(0xFF303131),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Text('Joint Holder',style: GoogleFonts.poppins(
-                                      color: Color(0xFF8c8c8c),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),),
-                                    Text('',style: GoogleFonts.poppins(
-                                      color: Color(0xFF303131),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),),
+                                    Text(
+                                      'Joint Holder',
+                                      style: GoogleFonts.poppins(
+                                        color: Color(0xFF8c8c8c),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    Text(
+                                      '',
+                                      style: GoogleFonts.poppins(
+                                        color: Color(0xFF303131),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -1051,30 +1194,31 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Container(
-                                margin: EdgeInsets.only(top: 20,bottom: 20),
+                                margin: EdgeInsets.only(top: 20, bottom: 20),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Container(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Text('Portfolio Value',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Color(0xFF648683),
-                                            ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Portfolio Value',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xFF648683),
                                           ),
-                                          Text('₹ $userCurrentValue',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 22,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xFF0f625c),
-                                            ),
+                                        ),
+                                        Text(
+                                          '₹ $userCurrentValue',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xFF0f625c),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                     SizedBox(width: 25),
                                     Container(
@@ -1083,26 +1227,27 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                                       color: Color(0xFFd5d4d0),
                                     ),
                                     SizedBox(width: 25),
-                                    Container(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Text('Overall Gain',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Color(0xFF648683),
-                                            ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Overall Gain',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xFF648683),
                                           ),
-                                          Text('₹ $userTotalGain',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 22,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xFF0f625c),
-                                            ),
+                                        ),
+                                        Text(
+                                          '₹ $userTotalGain',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xFF0f625c),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
@@ -1113,26 +1258,45 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                               color: Color(0xFFd7d7d7),
                               height: 1,
                             ),
-
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Container(
-                                  child: Row(
-                                    children: [
-                                      Text('Abs. Ret.:',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 15,fontWeight: FontWeight.w400),),
-                                      Text(' 27.29%',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 15,fontWeight: FontWeight.w600),),
-                                    ],
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Abs. Ret.:',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF0f625c),
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                    Text(
+                                      ' 27.29%',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF0f625c),
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
                                 ),
                                 SizedBox(width: 15),
-                                Container(
-                                  child: Row(
-                                    children: [
-                                      Text('XIRR:',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 15,fontWeight: FontWeight.w400),),
-                                      Text(' 10.54%',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 15,fontWeight: FontWeight.w600),),
-                                    ],
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'XIRR:',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF0f625c),
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                    Text(
+                                      ' 10.54%',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF0f625c),
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -1156,7 +1320,6 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                               ],
                             ),
                           ],
-
                         ),
                       ),
                     ),
@@ -1169,15 +1332,24 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                             borderRadius: BorderRadius.circular(
                                 50), // Match container's border radius
                           ),
-                          backgroundColor:
-                          Colors.white,
+                          backgroundColor: Colors.white,
                           // Match container's color
                         ),
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const familyFundInvstDtls()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const FamilyFundInvstDtls()));
                           // Define the action for the button here
                         },
-                        child: Text('Click Here For More Details',style: GoogleFonts.poppins(color: Color(0xFF09a99d),fontWeight: FontWeight.w500,fontSize: 14),),
+                        child: Text(
+                          'Click Here For More Details',
+                          style: GoogleFonts.poppins(
+                              color: Color(0xFF09a99d),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14),
+                        ),
                       ),
                     ),
                     Container(
@@ -1197,61 +1369,135 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                                       height: 48,
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
                                           color: Color(0xFFf9eddb),
                                         ),
-                                        child: Center(child: Image.asset('assets/images/ech_dlr.png')),// Replace 'Colors.red' with your desired color
+                                        child: Center(
+                                            child: Image.asset(
+                                                'assets/images/ech_dlr.png')), // Replace 'Colors.red' with your desired color
                                       ),
                                     ),
-                                    Text('Invested',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 16,fontWeight: FontWeight.w500),),
+                                    Text(
+                                      'Invested',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF0f625c),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500),
+                                    ),
                                   ],
                                 ),
-                                SizedBox(height: 10,),
+                                SizedBox(
+                                  height: 10,
+                                ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Lumsum',style: GoogleFonts.poppins(color: Color(0xFF8c8c8c),fontWeight: FontWeight.w500,fontSize: 14),),
-                                    Text('5,00,000',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 14),),
+                                    Text(
+                                      'Lumsum',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF8c8c8c),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
+                                    Text(
+                                      '5,00,000',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF303131),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
                                   ],
                                 ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('SIP',style: GoogleFonts.poppins(color: Color(0xFF8c8c8c),fontWeight: FontWeight.w500,fontSize: 14),),
-                                    Text('0',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 14),),
+                                    Text(
+                                      'SIP',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF8c8c8c),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
+                                    Text(
+                                      '0',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF303131),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
                                   ],
                                 ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Switch-Ins',style: GoogleFonts.poppins(color: Color(0xFF8c8c8c),fontWeight: FontWeight.w500,fontSize: 14),),
-                                    Text('0',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 14),),
+                                    Text(
+                                      'Switch-Ins',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF8c8c8c),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
+                                    Text(
+                                      '0',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF303131),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
                                   ],
-                                ),Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Dividends',style: GoogleFonts.poppins(color: Color(0xFF8c8c8c),fontWeight: FontWeight.w500,fontSize: 14),),
-                                    Text('0',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 14),),
+                                    Text(
+                                      'Dividends',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF8c8c8c),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
+                                    Text(
+                                      '0',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF303131),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
                                   ],
                                 ),
                                 Container(
-                                  margin: EdgeInsets.only(top: 10,bottom: 10),
+                                  margin: EdgeInsets.only(top: 10, bottom: 10),
                                   color: Color(0xFFcbd2d0),
                                   height: 1,
                                 ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-
-                                    Text('5,00,000',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 14),),
+                                    Text(
+                                      '5,00,000',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF303131),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
                                   ],
                                 ),
                               ],
                             ),
                           ),
-                          SizedBox(height: 168,width: 1,child: Container(
-                            color: Color(0xFFcbd2d0), // Replace 'Colors.red' with your desired color
-                          ),),
+                          SizedBox(
+                            height: 168,
+                            width: 1,
+                            child: Container(
+                              color: Color(
+                                  0xFFcbd2d0), // Replace 'Colors.red' with your desired color
+                            ),
+                          ),
                           SizedBox(
                             width: 165,
                             child: Column(
@@ -1264,53 +1510,122 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                                       height: 48,
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
                                           color: Color(0xFFb0daf4),
                                         ),
-                                        child: Center(child: Image.asset('assets/images/inv_tx.png')),// Replace 'Colors.red' with your desired color
+                                        child: Center(
+                                            child: Image.asset(
+                                                'assets/images/inv_tx.png')), // Replace 'Colors.red' with your desired color
                                       ),
                                     ),
-                                    Text('Received',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 16,fontWeight: FontWeight.w500),),
+                                    Text(
+                                      'Received',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF0f625c),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500),
+                                    ),
                                   ],
                                 ),
-                                SizedBox(height: 10,),
+                                SizedBox(
+                                  height: 10,
+                                ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Dividends',style: GoogleFonts.poppins(color: Color(0xFF8c8c8c),fontWeight: FontWeight.w500,fontSize: 14),),
-                                    Text('0',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 14),),
+                                    Text(
+                                      'Dividends',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF8c8c8c),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
+                                    Text(
+                                      '0',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF303131),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
                                   ],
                                 ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Redemptions',style: GoogleFonts.poppins(color: Color(0xFF8c8c8c),fontWeight: FontWeight.w500,fontSize: 14),),
-                                    Text('0',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 14),),
+                                    Text(
+                                      'Redemptions',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF8c8c8c),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
+                                    Text(
+                                      '0',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF303131),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
                                   ],
                                 ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Switch-Outs',style: GoogleFonts.poppins(color: Color(0xFF8c8c8c),fontWeight: FontWeight.w500,fontSize: 14),),
-                                    Text('0',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 14),),
+                                    Text(
+                                      'Switch-Outs',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF8c8c8c),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
+                                    Text(
+                                      '0',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF303131),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
                                   ],
-                                ),Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('SWP',style: GoogleFonts.poppins(color: Color(0xFF8c8c8c),fontWeight: FontWeight.w500,fontSize: 14),),
-                                    Text('0',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 14),),
+                                    Text(
+                                      'SWP',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF8c8c8c),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
+                                    Text(
+                                      '0',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF303131),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
                                   ],
                                 ),
                                 Container(
-                                  margin: EdgeInsets.only(top: 10,bottom: 10),
+                                  margin: EdgeInsets.only(top: 10, bottom: 10),
                                   color: Color(0xFFcbd2d0),
                                   height: 1,
                                 ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-
-                                    Text('0',style: GoogleFonts.poppins(color: Color(0xFF303131),fontWeight: FontWeight.w500,fontSize: 14),),
+                                    Text(
+                                      '0',
+                                      style: GoogleFonts.poppins(
+                                          color: Color(0xFF303131),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -1333,30 +1648,86 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                           children: [
                             Column(
                               children: [
-                                Text('Balance\nUnits',style: GoogleFonts.poppins(color: Color(0xFF8c8c8c),fontSize: 14,fontWeight: FontWeight.w500),),
-                                SizedBox(height: 5,),
-                                Text('7,534,163',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 14,fontWeight: FontWeight.w600),),
+                                Text(
+                                  'Balance\nUnits',
+                                  style: GoogleFonts.poppins(
+                                      color: Color(0xFF8c8c8c),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  '7,534,163',
+                                  style: GoogleFonts.poppins(
+                                      color: Color(0xFF0f625c),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600),
+                                ),
                               ],
                             ),
                             Column(
                               children: [
-                                Text('Average\nNAV',style: GoogleFonts.poppins(color: Color(0xFF8c8c8c),fontSize: 14,fontWeight: FontWeight.w500),),
-                                SizedBox(height: 5,),
-                                Text('6,63,600',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 14,fontWeight: FontWeight.w600),),
+                                Text(
+                                  'Average\nNAV',
+                                  style: GoogleFonts.poppins(
+                                      color: Color(0xFF8c8c8c),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  '6,63,600',
+                                  style: GoogleFonts.poppins(
+                                      color: Color(0xFF0f625c),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600),
+                                ),
                               ],
                             ),
                             Column(
                               children: [
-                                Text('Cost\nAmount',style: GoogleFonts.poppins(color: Color(0xFF8c8c8c),fontSize: 14,fontWeight: FontWeight.w500),),
-                                SizedBox(height: 5,),
-                                Text('5,00,000',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 14,fontWeight: FontWeight.w600),),
+                                Text(
+                                  'Cost\nAmount',
+                                  style: GoogleFonts.poppins(
+                                      color: Color(0xFF8c8c8c),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  '5,00,000',
+                                  style: GoogleFonts.poppins(
+                                      color: Color(0xFF0f625c),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600),
+                                ),
                               ],
                             ),
                             Column(
                               children: [
-                                Text('Present\nValue',style: GoogleFonts.poppins(color: Color(0xFF8c8c8c),fontSize: 14,fontWeight: FontWeight.w500),),
-                                SizedBox(height: 5,),
-                                Text('7,32,690',style: GoogleFonts.poppins(color: Color(0xFF0f625c),fontSize: 14,fontWeight: FontWeight.w600),),
+                                Text(
+                                  'Present\nValue',
+                                  style: GoogleFonts.poppins(
+                                      color: Color(0xFF8c8c8c),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  '7,32,690',
+                                  style: GoogleFonts.poppins(
+                                      color: Color(0xFF0f625c),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600),
+                                ),
                               ],
                             ),
                           ],
@@ -1364,7 +1735,7 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                       ),
                     ),
                     Container(
-                      margin: EdgeInsets.only(bottom: 20,top: 20),
+                      margin: EdgeInsets.only(bottom: 20, top: 20),
                       child: Wrap(
                         spacing: 12,
                         runSpacing: 28,
@@ -1372,12 +1743,14 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                           InkWell(
                             onTap: () {
                               // Define your action here
-                              print("New Fund Offer button pressed");
+                              //print("New Fund Offer button pressed");
                             },
-                            borderRadius: BorderRadius.circular(8), // Add ripple effect matching the button shape
+                            borderRadius: BorderRadius.circular(
+                                8), // Add ripple effect matching the button shape
                             child: Container(
                               width: 100,
-                              padding: const EdgeInsets.symmetric(vertical: 10), // Optional padding
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10), // Optional padding
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
@@ -1386,10 +1759,12 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                                     height: 50,
                                     decoration: const BoxDecoration(
                                       color: Color(0xFFb2daf4),
-                                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8)),
                                     ),
                                     child: Center(
-                                      child: Image.asset('assets/images/nw_fnd.png'),
+                                      child: Image.asset(
+                                          'assets/images/nw_fnd.png'),
                                     ),
                                   ),
                                   const SizedBox(height: 10),
@@ -1406,12 +1781,15 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                               ),
                             ),
                           ),
-
-                          Container(width: 1,height: 100,color: Color(0xFFc7d1d0),),
+                          Container(
+                            width: 1,
+                            height: 100,
+                            color: Color(0xFFc7d1d0),
+                          ),
                           InkWell(
                             onTap: () {
                               // Define your action here
-                              print("New Fund Offer button pressed");
+                              //print("New Fund Offer button pressed");
                             },
                             borderRadius: BorderRadius.circular(8),
                             child: SizedBox(
@@ -1424,16 +1802,23 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                                     height: 50,
                                     decoration: BoxDecoration(
                                       color: Color(0xFFefecdb),
-                                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8)),
                                     ),
                                     child: Center(
-                                      child: Image.asset('assets/images/thm_invst.png'),
+                                      child: Image.asset(
+                                          'assets/images/thm_invst.png'),
                                     ),
                                   ),
-                                  SizedBox(height: 10,),
-                                  Text('Unrealized Gain'
-                                    ,style: GoogleFonts.poppins(
-                                      color: Color(0xFF0f625c),fontSize: 14,fontWeight: FontWeight.w400,
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    'Unrealized Gain',
+                                    style: GoogleFonts.poppins(
+                                      color: Color(0xFF0f625c),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -1441,11 +1826,15 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                               ),
                             ),
                           ),
-                          Container(width: 1,height: 100,color: Color(0xFFc7d1d0),),
+                          Container(
+                            width: 1,
+                            height: 100,
+                            color: Color(0xFFc7d1d0),
+                          ),
                           InkWell(
                             onTap: () {
                               // Define your action here
-                              print("New Fund Offer button pressed");
+                              //print("New Fund Offer button pressed");
                             },
                             borderRadius: BorderRadius.circular(8),
                             child: SizedBox(
@@ -1458,16 +1847,23 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                                     height: 50,
                                     decoration: BoxDecoration(
                                       color: Color(0xFFa5d9d5),
-                                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8)),
                                     ),
                                     child: Center(
-                                      child: Image.asset('assets/images/int_mtfnd.png'),
+                                      child: Image.asset(
+                                          'assets/images/int_mtfnd.png'),
                                     ),
                                   ),
-                                  SizedBox(height: 10,),
-                                  Text('Overall Gain',
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    'Overall Gain',
                                     style: GoogleFonts.poppins(
-                                      color: Color(0xFF0f625c),fontSize: 14,fontWeight: FontWeight.w400,
+                                      color: Color(0xFF0f625c),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -1487,16 +1883,14 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
           ),
           Container(
             width: double.infinity,
-            padding: EdgeInsets.only(top: 10,bottom: 10,left: 25,right: 25),
+            padding: EdgeInsets.only(top: 10, bottom: 10, left: 25, right: 25),
             color: Colors.white,
             child: Wrap(
               spacing: 15,
               runSpacing: 15,
               children: [
                 InkWell(
-                  onTap: (){
-
-                  },
+                  onTap: () {},
                   child: SizedBox(
                     width: 60,
                     child: Column(
@@ -1506,19 +1900,20 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                           // Adjust as needed
                           fit: BoxFit.contain, // Adjust as needed
                         ),
-                        Text('Home',style: GoogleFonts.poppins(
-                          color: Color(0xFF648683),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),),
+                        Text(
+                          'Home',
+                          style: GoogleFonts.poppins(
+                            color: Color(0xFF648683),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
                 InkWell(
-                  onTap: (){
-
-                  },
+                  onTap: () {},
                   child: SizedBox(
                     width: 60,
                     child: Column(
@@ -1528,19 +1923,20 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                           // Adjust as needed
                           fit: BoxFit.contain, // Adjust as needed
                         ),
-                        Text('Portfolio',style: GoogleFonts.poppins(
-                          color: Color(0xFF648683),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),),
+                        Text(
+                          'Portfolio',
+                          style: GoogleFonts.poppins(
+                            color: Color(0xFF648683),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
                 InkWell(
-                  onTap: (){
-
-                  },
+                  onTap: () {},
                   child: SizedBox(
                     width: 50,
                     child: Column(
@@ -1550,19 +1946,20 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                           // Adjust as needed
                           fit: BoxFit.contain, // Adjust as needed
                         ),
-                        Text('Invest',style: GoogleFonts.poppins(
-                          color: Color(0xFF648683),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),),
+                        Text(
+                          'Invest',
+                          style: GoogleFonts.poppins(
+                            color: Color(0xFF648683),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
                 InkWell(
-                  onTap: (){
-
-                  },
+                  onTap: () {},
                   child: SizedBox(
                     width: 50,
                     child: Column(
@@ -1572,19 +1969,20 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                           // Adjust as needed
                           fit: BoxFit.contain, // Adjust as needed
                         ),
-                        Text('Report',style: GoogleFonts.poppins(
-                          color: Color(0xFF648683),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),),
+                        Text(
+                          'Report',
+                          style: GoogleFonts.poppins(
+                            color: Color(0xFF648683),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
                 InkWell(
-                  onTap: (){
-
-                  },
+                  onTap: () {},
                   child: SizedBox(
                     width: 60,
                     child: Column(
@@ -1594,11 +1992,14 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
                           // Adjust as needed
                           fit: BoxFit.contain, // Adjust as needed
                         ),
-                        Text('Settings',style: GoogleFonts.poppins(
-                          color: Color(0xFF648683),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),),
+                        Text(
+                          'Settings',
+                          style: GoogleFonts.poppins(
+                            color: Color(0xFF648683),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -1610,6 +2011,4 @@ class _familySchemeDetailsState extends State<familySchemeDetails>{
       ),
     );
   }
-
-
 }

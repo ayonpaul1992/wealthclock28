@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'login.dart';
 
-class changePasswordPage extends StatefulWidget {
-  const changePasswordPage({super.key});
+class ChangePasswordPage extends StatefulWidget {
+  const ChangePasswordPage({super.key});
 
   @override
-  State<changePasswordPage> createState() => _changePasswordPageState();
+  State<ChangePasswordPage> createState() => _ChangePasswordPageState();
 }
 
-class _changePasswordPageState extends State<changePasswordPage> {
+class _ChangePasswordPageState extends State<ChangePasswordPage> {
   final changePasswordText = TextEditingController();
   final changeRePasswordText = TextEditingController();
 
@@ -74,11 +74,10 @@ class _changePasswordPageState extends State<changePasswordPage> {
               const SizedBox(height: 14),
               ElevatedButton(
                 onPressed: () {
-                  String uChangePassword = changePasswordText.text.trim();
-                  String uChangeRePassword = changeRePasswordText.text.trim();
+                  changePasswordText.text.trim();
+                  changeRePasswordText.text.trim();
 
-                  print(
-                      "Change Password: $uChangePassword,Change Re-Password: $uChangeRePassword");
+                  //print("Change Password: $uChangePassword,Change Re-Password: $uChangeRePassword");
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -157,7 +156,7 @@ class _changePasswordPageState extends State<changePasswordPage> {
                                   InkWell(
                                     onTap: () {
                                       // Handle the link click here
-                                      print('Sign up clicked');
+                                      //print('Sign up clicked');
                                       // Navigate to the Terms and Conditions page if needed
                                       Navigator.push(
                                           context,

@@ -600,7 +600,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    familyPortfolioPage(memberName: userName)));
+                                    FamilyPortfolioPage(memberName: userName)));
                       },
                       child: Container(
                         width: double.infinity,
