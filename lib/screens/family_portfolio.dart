@@ -854,7 +854,7 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(selectedIndex: 0),
+      bottomNavigationBar: CustomBottomNavBar(selectedIndex: 3),
     );
   }
 

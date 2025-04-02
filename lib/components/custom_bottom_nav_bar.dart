@@ -1,71 +1,130 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wealthclock28/screens/dashboard_after_login.dart';
+import 'package:wealthclock28/screens/family_portfolio.dart';
+import 'package:wealthclock28/screens/individual_portfolio.dart';
 
-class CustomBottomNavBar extends StatelessWidget {
+class CustomBottomNavBar extends StatefulWidget {
   final int selectedIndex;
 
   const CustomBottomNavBar({super.key, required this.selectedIndex});
 
   @override
-  Widget build(BuildContext context) {
-    List<Map<String, String>> items = [
-      {'icon': 'assets/images/ftr_hmm.png', 'label': 'Home', 'route': '/home'},
-      {
-        'icon': 'assets/images/ftr_prtflo.png',
-        'label': 'Portfolio',
-        'route': '/portfolio'
-      },
-      {
-        'icon': 'assets/images/ftr_invst.png',
-        'label': 'Invest',
-        'route': '/invest'
-      },
-      {'icon': 'assets/images/rptt.png', 'label': 'Family', 'route': '/report'},
-      {
-        'icon': 'assets/images/stng.png',
-        'label': 'Settings',
-        'route': '/settings'
-      },
-    ];
+  // ignore: library_private_types_in_public_api
+  _CustomBottomNavBarState createState() => _CustomBottomNavBarState();
+}
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-      color: Colors.white,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: List.generate(items.length, (index) {
-          return InkWell(
-            onTap: () {
-              if (selectedIndex != index) {
-                Navigator.pushReplacementNamed(context, items[index]['route']!);
-              }
-            },
-            child: SizedBox(
-              width: 60,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(
-                    items[index]['icon']!,
-                    fit: BoxFit.contain,
+class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
+  String memberName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMemberName();
+  }
+
+  Future<void> _loadMemberName() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      memberName = prefs.getString('user_name') ?? 'Guest';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: SharedPreferences.getInstance(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return SizedBox(); // Show nothing until SharedPreferences is loaded
+        }
+
+        final prefs = snapshot.data as SharedPreferences;
+        String fetchedMemberName = prefs.getString('user_name') ?? 'Guest';
+
+        List<Map<String, dynamic>> items = [
+          {
+            'icon': 'assets/images/ftr_hmm.png',
+            'label': 'Home',
+            'route': const dashboardAfterLogin(userId: '')
+          },
+          {
+            'icon': 'assets/images/ftr_prtflo.png',
+            'label': 'Portfolio',
+            'route': const IndividualPortfolioPage(memberPan: '')
+          },
+          {
+            'icon': 'assets/images/ftr_invst.png',
+            'label': 'Invest',
+            'route': null
+          },
+          {
+            'icon': 'assets/images/rptt.png',
+            'label': 'Family',
+            'route': FamilyPortfolioPage(memberName: fetchedMemberName)
+          },
+          {
+            'icon': 'assets/images/stng.png',
+            'label': 'Settings',
+            'route': null
+          },
+        ];
+
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+          color: Colors.white,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(items.length, (index) {
+              return InkWell(
+                onTap: () {
+                  if (widget.selectedIndex != index) {
+                    if (items[index]['route'] == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              "${items[index]['label']} screen is under development!"),
+                        ),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => items[index]['route']!,
+                        ),
+                      );
+                    }
+                  }
+                },
+                child: SizedBox(
+                  width: 60,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        items[index]['icon']!,
+                        fit: BoxFit.contain,
+                      ),
+                      Text(
+                        items[index]['label']!,
+                        style: GoogleFonts.poppins(
+                          color: widget.selectedIndex == index
+                              ? Colors.blue
+                              : const Color(0xFF648683),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    items[index]['label']!,
-                    style: GoogleFonts.poppins(
-                      color: selectedIndex == index
-                          ? Colors.blue
-                          : const Color(0xFF648683),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }),
-      ),
+                ),
+              );
+            }),
+          ),
+        );
+      },
     );
   }
 }

@@ -278,7 +278,7 @@ class _IndividualPortfolioPageState extends State<IndividualPortfolioPage> {
                         color: Color(0xFF0f625c),
                       ),
                     ),
-                    
+
                     Text(
                       'MF Details',
                       style: GoogleFonts.poppins(
@@ -287,7 +287,7 @@ class _IndividualPortfolioPageState extends State<IndividualPortfolioPage> {
                         color: Color(0xFF09a99d),
                       ),
                     ),
-                    
+
                     Container(
                       margin: EdgeInsets.only(top: 20, bottom: 20),
                       child: SingleChildScrollView(
@@ -348,7 +348,7 @@ class _IndividualPortfolioPageState extends State<IndividualPortfolioPage> {
                         ),
                       ),
                     ),
-                    
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -546,7 +546,7 @@ class _IndividualPortfolioPageState extends State<IndividualPortfolioPage> {
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(selectedIndex: 0),
+      bottomNavigationBar: CustomBottomNavBar(selectedIndex: 1),
     );
   }
 
