@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:wealthclock28/extras/signupPdsfirst.dart';
 // Make sure to import this for JSON handling
 import 'forgot_password.dart';
 import '../extras/signupPds.dart';
@@ -361,10 +362,25 @@ class _LoginPageState extends State<LoginPage> {
                           InkWell(
                             onTap: () {
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const SignupPdsPage()));
+                                context,
+                                PageRouteBuilder(
+                                  transitionDuration: Duration(milliseconds: 500), // ✅ Smooth transition
+                                  pageBuilder: (context, animation, secondaryAnimation) => const SignupPdsFirst(),
+                                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                    const begin = Offset(1.0, 0.0); // ✅ Slide from right
+                                    const end = Offset.zero; // ✅ End position (normal)
+                                    const curve = Curves.easeInOut;
+
+                                    var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                                    var offsetAnimation = animation.drive(tween);
+
+                                    return SlideTransition(
+                                      position: offsetAnimation,
+                                      child: child,
+                                    );
+                                  },
+                                ),
+                              );
                             },
                             child: Text(
                               'Sign Up',

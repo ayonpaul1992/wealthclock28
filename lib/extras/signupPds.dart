@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../screens/login.dart';
 import 'signupAds.dart';
+import 'signupPdsfirst.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -853,57 +854,102 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                   ],
                 ),
               ),
-              const SizedBox(height: 14),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 500), // ✅ Adjust duration
-                      pageBuilder: (context, animation, secondaryAnimation) => SignupAdsPage(),
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                        const begin = Offset(1.0, 0.0); // ✅ Start position (right)
-                        const end = Offset.zero; // ✅ End position (normal)
-                        const curve = Curves.easeInOut;
+              const SizedBox(height: 25),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 500), // ✅ Adjust duration
+                          pageBuilder: (context, animation, secondaryAnimation) => SignupPdsFirst(),
+                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                            const begin = Offset(-1.0, 0.0); // ✅ Start position (right)
+                            const end = Offset.zero; // ✅ End position (normal)
+                            const curve = Curves.easeInOut;
 
-                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                        var offsetAnimation = animation.drive(tween);
+                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                            var offsetAnimation = animation.drive(tween);
 
-                        return SlideTransition(
-                          position: offsetAnimation,
-                          child: child,
-                        );
-                      },
+                            return SlideTransition(
+                              position: offsetAnimation,
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFfdd1a0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
                     ),
-                  );
-
-                  // Capture user input and print
-                  String ufName = firstNameText.text.trim();
-                  String ulName = lastNameText.text.trim();
-                  String uHdNtr = holdingNtrText.text.trim();
-                  String uOcptn = occupationText.text.trim();
-                  String uPdsDob = _dateController.text.trim();
-                  String uPdsOthrContrl = othersController.text.trim();
-                  String uPdsAddrsContrl = pdsAddressController.text.trim();
-                  String uPanNo = panNoText.text.trim();
-
-                  print("First Name: $ufName, Last Name: $ulName, Pan No.: $uPanNo, Holding nature: $uHdNtr, Occupation: $uOcptn, DOB: $uPdsDob, Others Controller: $uPdsOthrContrl, Address Controller: $uPdsAddrsContrl");
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFfdd1a0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+                    child: Text(
+                      'Back'.toUpperCase(),
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xFF222222),
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
-                ),
-                child: Text(
-                  'Next'.toUpperCase(),
-                  style: GoogleFonts.poppins(
-                    color: const Color(0xFF222222),
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
+                  SizedBox(width: 10,),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 500), // ✅ Adjust duration
+                          pageBuilder: (context, animation, secondaryAnimation) => SignupAdsPage(),
+                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                            const begin = Offset(1.0, 0.0); // ✅ Start position (right)
+                            const end = Offset.zero; // ✅ End position (normal)
+                            const curve = Curves.easeInOut;
+
+                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                            var offsetAnimation = animation.drive(tween);
+
+                            return SlideTransition(
+                              position: offsetAnimation,
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+
+                      // Capture user input and print
+                      String ufName = firstNameText.text.trim();
+                      String ulName = lastNameText.text.trim();
+                      String uHdNtr = holdingNtrText.text.trim();
+                      String uOcptn = occupationText.text.trim();
+                      String uPdsDob = _dateController.text.trim();
+                      String uPdsOthrContrl = othersController.text.trim();
+                      String uPdsAddrsContrl = pdsAddressController.text.trim();
+                      String uPanNo = panNoText.text.trim();
+
+                      print("First Name: $ufName, Last Name: $ulName, Pan No.: $uPanNo, Holding nature: $uHdNtr, Occupation: $uOcptn, DOB: $uPdsDob, Others Controller: $uPdsOthrContrl, Address Controller: $uPdsAddrsContrl");
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFfdd1a0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
+                    ),
+                    child: Text(
+                      'Next'.toUpperCase(),
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xFF222222),
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
               Padding(
                 padding: const EdgeInsets.only(),
