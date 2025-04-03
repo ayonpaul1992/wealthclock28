@@ -211,19 +211,19 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
               SfDateRangePicker(
                 selectionMode: DateRangePickerSelectionMode.single,
                 backgroundColor:
-                    Colors.white, // Set DatePicker background color
+                Colors.white, // Set DatePicker background color
                 selectionColor:
-                    Colors.cyan.shade900, // Active date selection color
+                Colors.cyan.shade900, // Active date selection color
                 todayHighlightColor: Colors
                     .cyan.shade900, // Focused color (today's date highlight)
                 startRangeSelectionColor:
-                    Colors.white, // Start range selection color
+                Colors.white, // Start range selection color
                 endRangeSelectionColor:
-                    Colors.white, // End range selection color
+                Colors.white, // End range selection color
                 rangeSelectionColor: Colors.white, // Range selection overlay
                 headerStyle: DateRangePickerHeaderStyle(
                   backgroundColor:
-                      Colors.transparent, // Transparent header background
+                  Colors.transparent, // Transparent header background
                   textStyle: GoogleFonts.poppins(
                       color: Color(0xFF3F4B4B),
                       fontSize: 18,
@@ -251,7 +251,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                       if (_selectedDate != null) {
                         setState(() {
                           _dateController.text =
-                              "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}";
+                          "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}";
                         });
                       }
                       Navigator.pop(context); // Close modal
@@ -268,6 +268,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
       },
     );
   }
+
 
   List<bool> showNomineeForms = [false, false];
   int openFormCount = 0; // Track the number of open forms
@@ -307,39 +308,107 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
   }
 
   void saveNominee() {
-    setState(() {
-      savedNominees.add({
-        'name': nomineeNameText.text,
-        'pan': nomineePanText.text,
-        'relationship': relationshipText.text,
-        'dob': _dateController.text,
-        'share': nomineeShareText.text,
+    if (editingIndex != null) {
+      // Editing an existing nominee:
+
+      int newShare = int.tryParse(nomineeShareText.text) ?? 0;
+      int oldShare = int.tryParse(savedNominees[editingIndex!]['share'] ?? '0') ?? 0;
+      if ((totalShare - oldShare + newShare) > 100) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Total share cannot exceed 100%.")),
+        );
+        return;
+      }
+
+      setState(() {
+        savedNominees[editingIndex!] = {
+          'name': nomineeNameText.text,
+          'pan': nomineePanText.text,
+          'relationship': relationshipText.text,
+          'dob': _dateController.text,
+          'share': nomineeShareText.text,
+        };
+        totalShare = totalShare - oldShare + newShare;
+        editingIndex = null; // Clear editing state
+        // Clear form fields after update:
+        nomineeNameText.clear();
+        nomineePanText.clear();
+        relationshipText.clear();
+        _dateController.clear();
+        nomineeShareText.clear();
       });
 
-      // Clear the fields after saving
-      nomineeNameText.clear();
-      nomineePanText.clear();
-      relationshipText.clear();
-      _dateController.clear();
-      nomineeShareText.clear();
+    } else {
+      // Adding a new nominee:
 
-      // Close the forms
-      showNomineeForms = [false, false];
-      openFormCount = 0;
-    });
+      if (savedNominees.length >= 3) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Cannot add more than 3 nominees.")),
+        );
+        return;
+      }
+
+      int newShare = int.tryParse(nomineeShareText.text) ?? 0;
+      if (totalShare + newShare > 100) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Total share cannot exceed 100%.")),
+        );
+        return;
+      }
+
+      setState(() {
+        savedNominees.add({
+          'name': nomineeNameText.text,
+          'pan': nomineePanText.text,
+          'relationship': relationshipText.text,
+          'dob': _dateController.text,
+          'share': nomineeShareText.text,
+        });
+
+        totalShare += newShare;
+        isNomineeBoxList.add(false);
+
+        nomineeNameText.clear();
+        nomineePanText.clear();
+        relationshipText.clear();
+        _dateController.clear();
+        nomineeShareText.clear();
+
+        showNomineeForms = [false, false];
+        openFormCount = 0;
+      });
+    }
   }
 
   void deleteSavedNominee(int index) {
     setState(() {
-      savedNominees.removeAt(index);
+      if (index >= 0 && index < savedNominees.length) {
+        int removedShare = int.tryParse(savedNominees[index]['share'] ?? '0') ?? 0;
+        totalShare -= removedShare;
+        savedNominees.removeAt(index);
+        isNomineeBoxList.removeAt(index);
+
+        // Check if the deleted nominee was the one being edited:
+        if (editingIndex == index) {
+          editingIndex = null; // Reset editing index
+          // Clear form fields:
+          nomineeNameText.clear();
+          nomineePanText.clear();
+          relationshipText.clear();
+          _dateController.clear();
+          nomineeShareText.clear();
+        }
+      }
     });
   }
+
   List<bool> isNomineeBoxList = [];
-  @override
   void initState() {
     super.initState();
     isNomineeBoxList = List.generate(savedNominees.length, (index) => false);
   }
+  int totalShare = 0;
+  int? editingIndex;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -820,563 +889,359 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                     ),
                     Container(
                       width: double.infinity,
-                      decoration: BoxDecoration(
-                        border: Border.all( // ✅ Correct way to use BorderSide
-                          color: Colors.grey, // Change to your desired color
-                          width: 1.0, // Adjust border thickness
-                        ),
-                        borderRadius: BorderRadius.circular(8.0),
-                        boxShadow: [ // Optional: Add shadow
-                          BoxShadow(
-                            color: Colors.white.withOpacity(0.1),
-                            blurRadius: 5,
-                            spreadRadius: 1,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Wrap(
-
+                        padding: EdgeInsets.only(),
+                        child: Column(
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            Wrap(
+                              runSpacing: 10,
                               children: [
-                                for (int i = 0; i < savedNominees.length; i++)
-                                  Column(
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 8.0,right: 0),
-                                        child: SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                for (int i = 0; i < savedNominees.length && i < 3; i++) // Limit to 3 boxes
+                                  Container(
+                                    margin: EdgeInsets.only(bottom: 20),
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      border: Border.all(
+                                        color: Colors.grey,
+                                        width: 1.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.white.withOpacity(0.1),
+                                          blurRadius: 5,
+                                          spreadRadius: 1,
+                                          offset: Offset(0, 3),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Padding(
+                                      padding: EdgeInsets.only(top: 8, left: 8, right: 0, bottom: 8),
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            width: double.infinity,
+                                            child: Padding(
+                                              padding: EdgeInsets.only(left: 8.0, right: 0),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
-                                                  Text(
-                                                    (savedNominees[i]['name'] ?? "").toUpperCase(),
-                                                    style: GoogleFonts.poppins(
+                                                  Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        (savedNominees[i]['name'] ?? "").toUpperCase(),
+                                                        style: GoogleFonts.poppins(
+                                                          color: Color(0xFF0f625c),
+                                                          fontSize: 17,
+                                                          fontWeight: FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 8),
+                                                      _buildNomineeDetail("SHARE", (savedNominees[i]['share'] ?? "") + "%"),
+                                                    ],
+                                                  ),
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        isNomineeBoxList[i] = !isNomineeBoxList[i];
+                                                      });
+                                                    },
+                                                    icon: Icon(
+                                                      isNomineeBoxList[i] ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                                                      size: 26,
                                                       color: Color(0xFF0f625c),
-                                                      fontSize: 17,
-                                                      fontWeight: FontWeight.w500,
                                                     ),
                                                   ),
-                                                  SizedBox(height: 8),
-                                                  _buildNomineeDetail("SHARE", "${savedNominees[i]['share'] ?? ""}%"),
                                                 ],
                                               ),
-                                              IconButton(
-                                                onPressed: () {
-                                                  setState(() {
-                                                    isNomineeBoxList[i] = !isNomineeBoxList[i];
-                                                  });
+                                            ),
+                                          ),
+                                          if (isNomineeBoxList[i])
+                                            Padding(
+                                              padding: EdgeInsets.only(left: 8),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  SizedBox(height: 8),
+                                                  _buildNomineeDetail("PAN", savedNominees[i]['pan'] ?? ""),
+                                                  SizedBox(height: 8),
+                                                  _buildNomineeDetail("Relationship", savedNominees[i]['relationship'] ?? ""),
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      _buildNomineeDetail("DOB", savedNominees[i]['dob'] ?? ""),
+                                                      Container(
+                                                        child: Row(
+                                                          children: [
+                                                            IconButton(
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  editingIndex = i; // Set the index of the nominee being edited
+
+                                                                  // Populate form fields with the nominee's data:
+                                                                  nomineeNameText.text = savedNominees[i]['name'] ?? '';
+                                                                  nomineePanText.text = savedNominees[i]['pan'] ?? '';
+                                                                  relationshipText.text = savedNominees[i]['relationship'] ?? '';
+                                                                  _dateController.text = savedNominees[i]['dob'] ?? '';
+                                                                  nomineeShareText.text = savedNominees[i]['share'] ?? '';
+                                                                });
+                                                              },
+                                                              icon: Icon(Icons.edit, color: Color(0xFF09a99d)),
+                                                              tooltip: 'Edit Nominee',
+                                                            ),
+                                                            IconButton(
+                                                              onPressed: () {
+                                                                deleteSavedNominee(i); // Delete nominee
+                                                              },
+                                                              icon: Icon(Icons.delete, color: Colors.red),
+                                                              tooltip: 'Delete Nominee',
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            // Conditionally show the form
+                            if (savedNominees.length < 3 || editingIndex != null)
+                              Column(
+                                children: [
+                                  Wrap(
+                                    spacing: 10,
+                                    runSpacing: 15,
+                                    children: [
+                                      buildInputField("Nominee Name", nomineeNameText),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(left: 10),
+                                            child: Text(
+                                              'Relationship',
+                                              style: GoogleFonts.poppins(
+                                                color: Color(0xFF6E7B7A),
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 10),
+                                          Stack(
+                                            children: [
+                                              GestureDetector(
+                                                behavior: HitTestBehavior.translucent,
+                                                onTap: () {
+                                                  if (isRelationshipDropdownOpen) {
+                                                    closeRelationshipDropdown();
+                                                  }
+                                                  FocusManager.instance.primaryFocus?.unfocus();
                                                 },
-                                                icon: Icon(
-                                                  isNomineeBoxList[i]
-                                                      ? Icons.keyboard_arrow_up
-                                                      : Icons.keyboard_arrow_down,
-                                                  size: 26,
-                                                  color: Color(0xFF0f625c),
+                                                child: Container(width: 171),
+                                              ),
+                                              CompositedTransformTarget(
+                                                link: _layerRelationshipLink,
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius: BorderRadius.circular(50),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.black.withOpacity(0.1),
+                                                        blurRadius: 15,
+                                                        spreadRadius: 0,
+                                                        offset: Offset(0, 3),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  child: SizedBox(
+                                                    width: 171,
+                                                    child: TextField(
+                                                      controller: relationshipText,
+                                                      readOnly: editingIndex == null, // Enable editing only when editing
+                                                      onTap: editingIndex == null ? toggleRelationshipDropdown : null,
+                                                      decoration: InputDecoration(
+                                                        hintText: 'Select',
+                                                        hintStyle: GoogleFonts.poppins(
+                                                          color: Color(0xFF648683),
+                                                          fontSize: 14,
+                                                        ),
+                                                        contentPadding: const EdgeInsets.only(top: 8, bottom: 8, left: 15, right: 15),
+                                                        suffixIcon: Icon(
+                                                          isRelationshipDropdownOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                                                          color: Color(0xFF648683),
+                                                        ),
+                                                        enabledBorder: OutlineInputBorder(
+                                                          borderRadius: BorderRadius.circular(50),
+                                                          borderSide: BorderSide(color: Colors.white, width: 1),
+                                                        ),
+                                                        focusedBorder: OutlineInputBorder(
+                                                          borderRadius: BorderRadius.circular(50),
+                                                          borderSide: BorderSide(color: Color(0xFF0f625c), width: 1),
+                                                        ),
+                                                      ),
+                                                      style: const TextStyle(
+                                                        color: Color(0xFF648683),
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             ],
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                      if (isNomineeBoxList[i]) // Show details only when expanded
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              SizedBox(height: 8),
-                                              _buildNomineeDetail("PAN", savedNominees[i]['pan'] ?? ""),
-                                              SizedBox(height: 8),
-                                              _buildNomineeDetail("Relationship", savedNominees[i]['relationship'] ?? ""),
-                                              SizedBox(
-                                                width: double.infinity,
-                                                child: SingleChildScrollView(
-                                                  scrollDirection: Axis.horizontal,
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(left: 10),
+                                            child: Text(
+                                              'Nominee DOB',
+                                              style: GoogleFonts.poppins(
+                                                color: Color(0xFF6E7B7A),
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 10),
+                                          Container(
+                                            width: 171,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(50),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black.withOpacity(0.1),
+                                                  blurRadius: 15,
+                                                  spreadRadius: 0,
+                                                  offset: Offset(0, 3),
+                                                ),
+                                              ],
+                                            ),
+                                            child: SizedBox(
+                                              width: 171,
+                                              child: GestureDetector(
+                                                onTap: editingIndex == null ? () => _showDatePicker(context) : null,
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12.8),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius: BorderRadius.circular(50),
+                                                    border: isLoading
+                                                        ? Border.all(color: Color(0xFF0f625c), width: 1)
+                                                        : Border.all(color: Colors.transparent, width: 1),
+                                                    boxShadow: [
+                                                      BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 5),
+                                                    ],
+                                                  ),
                                                   child: Row(
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
-                                                    _buildNomineeDetail("DOB", savedNominees[i]['dob'] ?? ""),
-                                                      IconButton(
-                                                        onPressed: () {
-                                                          deleteSavedNominee(i);
-                                                        },
-                                                        icon: Icon(Icons.delete, color: Colors.red),
-                                                        tooltip: 'Delete Nominee', // Add a tooltip
+                                                      Text(
+                                                        _dateController.text.isNotEmpty ? _dateController.text : "Select Date",
+                                                        style: TextStyle(color: Color(0xFF648683), fontSize: 14),
                                                       ),
+                                                      Icon(Icons.calendar_month_outlined, color: Color(0xFF648683), size: 20),
                                                     ],
                                                   ),
                                                 ),
                                               ),
-                                            ],
+                                            ),
                                           ),
-                                        ),
+                                        ],
+                                      ),
+                                      buildInputField("Nominee PAN No.", nomineePanText),
+                                      buildNomineeShareField(),
+                                      // ... (Other form fields)
                                     ],
                                   ),
-                              ],
-                            ),
+                                  Row(
+                                    children: [
+                                      if (editingIndex != null)
+                                        TextButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              editingIndex = null; // Clear editing state
+                                              // Clear form fields:
+                                              nomineeNameText.clear();
+                                              nomineePanText.clear();
+                                              relationshipText.clear();
+                                              _dateController.clear();
+                                              nomineeShareText.clear();
+                                            });
+                                          },
+                                          child: Text('Cancel',style: GoogleFonts.poppins(
+                                              color: Colors.red, fontSize: 14)),
+                                        ),
+                                      if(editingIndex != null) TextButton(
+                                        onPressed: saveNominee,
+                                        child: Text(editingIndex != null ? 'Update' : 'Save',style: GoogleFonts.poppins(
+                                            color: Color(0xFF0DA99E), fontSize: 14)),
+                                      ),
+                                    ],
+                                  )
+                                  // ... (Other form related widgets)
+                                ],
+                              ),
                           ],
                         ),
                       ),
                     ),
-                    Column(
-                      children: [
-                        Wrap(
-                          spacing: 10,
-                          runSpacing: 15,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(
-                                    left: 10,
-                                  ),
-                                  child: Text(
-                                    'Nominee Name',
-                                    style: GoogleFonts.poppins(
-                                      color: Color(0xFF6E7B7A),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black
-                                            .withOpacity(0.1), // Shadow color
-                                        blurRadius: 15, // Blur effect
-                                        spreadRadius: 0, // Spread effect
-                                        offset:
-                                            Offset(0, 3), // Position of shadow
-                                      ),
-                                    ],
-                                  ),
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    child: TextField(
-                                      controller: nomineeNameText,
-                                      decoration: _inputDecoration(''),
-                                      style: const TextStyle(
-                                        color: Color(0xFF648683),
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(
-                                    left: 10,
-                                  ),
-                                  child: Text(
-                                    'Relationship',
-                                    style: GoogleFonts.poppins(
-                                      color: Color(0xFF6E7B7A),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Stack(
-                                  children: [
-                                    GestureDetector(
-                                      behavior: HitTestBehavior
-                                          .translucent, // ✅ Detects taps outside
-                                      onTap: () {
-                                        if (isRelationshipDropdownOpen) {
-                                          closeRelationshipDropdown(); // ✅ Close dropdown when clicking outside
-                                        }
-                                        FocusManager.instance.primaryFocus
-                                            ?.unfocus(); // Remove focus
-                                      },
-                                      child: Container(
-                                        width: 171,
-                                      ), // Empty container to detect taps outside
-                                    ),
-                                    CompositedTransformTarget(
-                                      link: _layerRelationshipLink,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.black.withOpacity(0.1),
-                                              blurRadius: 15,
-                                              spreadRadius: 0,
-                                              offset: Offset(0, 3),
-                                            ),
-                                          ],
-                                        ),
-                                        child: SizedBox(
-                                          width: 171,
-                                          child: TextField(
-                                            controller: relationshipText,
-                                            readOnly:
-                                                true, // ✅ Allows focus but prevents keyboard popup
-                                            onTap:
-                                                toggleRelationshipDropdown, // ✅ Opens dropdown on tap
-                                            decoration: InputDecoration(
-                                              hintText: 'Select',
-                                              hintStyle: GoogleFonts.poppins(
-                                                color: Color(0xFF648683),
-                                                fontSize: 14,
-                                              ),
-                                              contentPadding:
-                                                  const EdgeInsets.only(
-                                                      top: 8,
-                                                      bottom: 8,
-                                                      left: 15,
-                                                      right: 15),
-                                              suffixIcon: Icon(
-                                                isRelationshipDropdownOpen
-                                                    ? Icons.keyboard_arrow_up
-                                                    : Icons.keyboard_arrow_down,
-                                                color: Color(0xFF648683),
-                                              ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(50),
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(50),
-                                                borderSide: BorderSide(
-                                                    color: Color(0xFF0f625c),
-                                                    width: 1),
-                                              ),
-                                            ),
-                                            style: const TextStyle(
-                                              color: Color(0xFF648683),
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(
-                                    left: 10,
-                                  ),
-                                  child: Text(
-                                    'Nominee DOB',
-                                    style: GoogleFonts.poppins(
-                                      color: Color(0xFF6E7B7A),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                  width: 171,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white, // Background color
-                                    borderRadius: BorderRadius.circular(
-                                        50), // Match border radius
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black
-                                            .withOpacity(0.1), // Shadow color
-                                        blurRadius: 15, // Blur effect
-                                        spreadRadius: 0, // Spread effect
-                                        offset:
-                                            Offset(0, 3), // Position of shadow
-                                      ),
-                                    ],
-                                  ),
-                                  child: SizedBox(
-                                    width: 171,
-                                    child: GestureDetector(
-                                      onTap: () => _showDatePicker(context),
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 15, vertical: 12.8),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                          border: isLoading
-                                              ? Border.all(
-                                                  color: Color(0xFF0f625c),
-                                                  width:
-                                                      1) // Show border when focused
-                                              : Border.all(
-                                                  color: Colors.transparent,
-                                                  width:
-                                                      1), // Hide border when not focused
-                                          boxShadow: [
-                                            BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.1),
-                                                blurRadius: 5)
-                                          ],
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              _dateController.text.isNotEmpty
-                                                  ? _dateController.text
-                                                  : "Select Date",
-                                              style: TextStyle(
-                                                  color: Color(0xFF648683),
-                                                  fontSize: 14),
-                                            ),
-                                            Icon(
-                                              Icons.calendar_month_outlined,
-                                              color: Color(0xFF648683),
-                                              size: 20,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(
-                                    left: 10,
-                                  ),
-                                  child: Text(
-                                    'Nominee PAN No.',
-                                    style: GoogleFonts.poppins(
-                                      color: Color(0xFF6E7B7A),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black
-                                            .withOpacity(0.1), // Shadow color
-                                        blurRadius: 15, // Blur effect
-                                        spreadRadius: 0, // Spread effect
-                                        offset:
-                                            Offset(0, 3), // Position of shadow
-                                      ),
-                                    ],
-                                  ),
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    child: TextField(
-                                      controller: nomineePanText,
-                                      decoration: _inputDecoration(''),
-                                      style: const TextStyle(
-                                        color: Color(0xFF648683),
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(
-                                    left: 10,
-                                  ),
-                                  child: Text(
-                                    'Nominee Share %',
-                                    style: GoogleFonts.poppins(
-                                      color: Color(0xFF6E7B7A),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black
-                                            .withOpacity(0.1), // Shadow color
-                                        blurRadius: 15, // Blur effect
-                                        spreadRadius: 0, // Spread effect
-                                        offset:
-                                            Offset(0, 3), // Position of shadow
-                                      ),
-                                    ],
-                                  ),
-                                  child: SizedBox(
-                                    width: 171,
-                                    child: TextField(
-                                      controller: nomineeShareText,
-                                      keyboardType: TextInputType
-                                          .number, // ✅ Allows only numbers
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly
-                                      ],
-                                      decoration: _inputDecoration(''),
-                                      style: const TextStyle(
-                                        color: Color(0xFF648683),
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(
+                    Container(
                       width: double.infinity,
                       child: Wrap(
                         alignment: WrapAlignment.center,
                         children: [
-                          Column(
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  saveNominee();
-                                },
-                                child: Text(
-                                  '+ Add New Nominee',
-                                  style: GoogleFonts.poppins(
-                                    color: Color(0xFF0F625C),
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
+                          if (savedNominees.length < 3) // Add this condition
+                            Column(
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    saveNominee();
+                                  },
+                                  child: Text(
+                                    '+ Add New Nominee',
+                                    style: GoogleFonts.poppins(
+                                      color: Color(0xFF0F625C),
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              for (int i = 0; i < 2; i++)
-                                if (showNomineeForms[i])
-                                  Column(
-                                    children: [
-                                      Wrap(
-                                        spacing: 10,
-                                        runSpacing: 15,
-                                        children: [
-                                          buildInputField(
-                                              "Nominee Name", nomineeNameText),
-                                          // ... (Your other input fields)
-                                          TextButton(
-                                            onPressed: () {
-                                              deleteNomineeForm(i);
-                                            },
-                                            child: Text("Delete Nominee Form"),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                            ],
-                          ),
-                          // Column(
-                          //   children: [
-                          //     // Show saved nominees in boxes
-                          //     for (int i = 0; i < savedNominees.length; i++)
-                          //       Container(
-                          //         margin: EdgeInsets.all(8.0),
-                          //         padding: EdgeInsets.all(16.0),
-                          //         decoration: BoxDecoration(
-                          //           border: Border.all(color: Colors.grey),
-                          //           borderRadius: BorderRadius.circular(8.0),
-                          //         ),
-                          //         child: Column(
-                          //           crossAxisAlignment: CrossAxisAlignment.start,
-                          //           children: [
-                          //             Text("Name: ${savedNominees[i]['name']}"),
-                          //             Text("PAN: ${savedNominees[i]['pan']}"),
-                          //             Text("Relationship: ${savedNominees[i]['relationship']}"),
-                          //             Text("DOB: ${savedNominees[i]['dob']}"),
-                          //             Text("Share: ${savedNominees[i]['share']}"),
-                          //             TextButton(
-                          //               onPressed: () {
-                          //                 deleteSavedNominee(i);
-                          //               },
-                          //               child: Text("Delete"),
-                          //             ),
-                          //           ],
-                          //         ),
-                          //       ),
-                          //   ],
-                          // ),
-                          // TextButton(
-                          //     onPressed: () {
-                          //       setState(() {
-                          //         showNomineeForm = !showNomineeForm; // Toggle form visibility
-                          //       });
-                          //     },
-                          //     child: Text(
-                          //       '+ Add New Nominee',
-                          //       style: GoogleFonts.poppins(
-                          //         color: Color(0xFF0F625C),
-                          //         fontWeight: FontWeight.w600,
-                          //         fontSize: 14,
-                          //       ),
-                          //     )),
-                          // TextButton(
-                          //     onPressed: () {
-                          //       Navigator.push(
-                          //         context,
-                          //         MaterialPageRoute(
-                          //             builder: (context) =>
-                          //                 SignupAdsPage()), // ✅ Corrected builder
-                          //       );
-                          //     },
-                          //     child: Text(
-                          //       'Delete Nominee',
-                          //       style: GoogleFonts.poppins(
-                          //         color: Colors.red,
-                          //         fontWeight: FontWeight.w600,
-                          //         fontSize: 14,
-                          //       ),
-                          //     )),
+                                for (int i = 0; i < 2; i++)
+                                  if (showNomineeForms[i])
+                                    Column(
+                                      children: [
+                                        Wrap(
+                                          spacing: 10,
+                                          runSpacing: 15,
+                                          children: [
+                                            buildInputField("Nominee Name", nomineeNameText),
+                                            TextButton(
+                                              onPressed: () {
+                                                deleteNomineeForm(i);
+                                              },
+                                              child: Text("Delete Nominee Form"),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                              ],
+                            ),
                         ],
                       ),
                     ),
@@ -1775,13 +1640,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
       children: [
         TextButton(
           onPressed: () {
-            // Replace this with your actual delete nominee logic.
-            // For example:
-            // 1. Remove the nominee from your data list.
-            // 2. Update the UI to reflect the change.
-            // 3. If needed, navigate to another page or show a confirmation.
             print('Delete Nominee button pressed');
-            // Example of showing a snackbar:
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Nominee deleted (example)')),
             );
@@ -1816,6 +1675,72 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
             color: Color(0xFF09a99d),
             fontSize: 14,
             fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+  Widget buildNomineeShareField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          margin: EdgeInsets.only(left: 10),
+          child: Text(
+            'Nominee Share %',
+            style: GoogleFonts.poppins(
+              color: Color(0xFF6E7B7A),
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+        SizedBox(height: 10),
+        Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 15,
+                spreadRadius: 0,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: SizedBox(
+            width: 171,
+            child: TextField(
+              controller: nomineeShareText,
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                TextInputFormatter.withFunction((oldValue, newValue) {
+                  if (newValue.text.isEmpty) {
+                    return newValue;
+                  }
+                  final value = int.parse(newValue.text);
+                  if (value >= 0 && value <= 100) {
+                    return newValue;
+                  }
+                  return oldValue;
+                }),
+              ],
+              decoration: _inputDecoration(''),
+              style: const TextStyle(
+                color: Color(0xFF648683),
+                fontSize: 14,
+              ),
+              onChanged: (value) {
+                setState(() {
+                  if (value.isNotEmpty) {
+                    int share = int.parse(value);
+                    if (share >= 0 && share <= 100) {
+                      nomineeShareText.text = value;
+                    }
+                  }
+                });
+              },
+            ),
           ),
         ),
       ],

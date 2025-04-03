@@ -1,25 +1,25 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
-import '../screens/login.dart';
-import 'signupPds.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-
-class SignupNdsPage extends StatefulWidget {
-  const SignupNdsPage({super.key});
-
-  @override
-  State<StatefulWidget> createState() => _SignupNdsPageState();
-}
-class _SignupNdsPageState extends State<SignupNdsPage>{
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
-  }
-}
+// import 'package:flutter/cupertino.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:google_fonts/google_fonts.dart';
+// import 'package:intl/intl.dart';
+// import '../screens/login.dart';
+// import 'signupPds.dart';
+// import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+//
+// class SignupNdsPage extends StatefulWidget {
+//   const SignupNdsPage({super.key});
+//
+//   @override
+//   State<StatefulWidget> createState() => _SignupNdsPageState();
+// }
+// class _SignupNdsPageState extends State<SignupNdsPage>{
+//   @override
+//   Widget build(BuildContext context) {
+//     // TODO: implement build
+//     throw UnimplementedError();
+//   }
+// }
 // class _SignupNdsPageState extends State<SignupNdsPage> {
 //   final nomineeNameText = TextEditingController();
 //   final nomineePanText = TextEditingController();
@@ -1313,4 +1313,4 @@ class _SignupNdsPageState extends State<SignupNdsPage>{
 //     );
 //   }
 // }
-
+//
