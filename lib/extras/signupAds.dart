@@ -21,7 +21,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
   final acNoText = TextEditingController();
   final branchNameText = TextEditingController();
   final TextEditingController acTypeText = TextEditingController();
-  final TextEditingController _dateController = TextEditingController();
+
   bool isAcTypeDropdownOpen = false;
   OverlayEntry? actypeOverlay;
 
@@ -101,7 +101,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
   final pdsAddressController = TextEditingController();
   bool isLoading = false;
   bool isNomineeBox = false;
-  final bool _isPanVisible = false; // For showing a loading spinner
+
   // check button nominee applicable purpose start
   List<String> nmAplyoptions = ['YES', 'NO'];
   String nmAplyselectedOption = "YES";
@@ -555,6 +555,16 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                     SizedBox(width: 10,),
                     ElevatedButton(
                       onPressed: () {
+                        if (ifscCodeText.text.trim().isEmpty ||
+                            micrCodeText.text.trim().isEmpty ||
+                            acNoText.text.trim().isEmpty ||
+                            branchNameText.text.trim().isEmpty ||
+                            acTypeText.text.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Please fill in all the fields.')),
+                          );
+                          return; // Do not proceed if fields are empty
+                        }
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => SignupNdsPage()),

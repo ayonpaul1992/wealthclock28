@@ -900,6 +900,19 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                   SizedBox(width: 10,),
                   ElevatedButton(
                     onPressed: () {
+                      if (firstNameText.text.trim().isEmpty ||
+                          lastNameText.text.trim().isEmpty ||
+                          holdingNtrText.text.trim().isEmpty ||
+                          occupationText.text.trim().isEmpty ||
+                          _dateController.text.trim().isEmpty ||
+                          panNoText.text.trim().isEmpty ||
+                          othersController.text.trim().isEmpty ||
+                          pdsAddressController.text.trim().isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please fill in all the fields.')),
+                        );
+                        return; // Do not proceed if fields are empty
+                      }
                       Navigator.push(
                         context,
                         PageRouteBuilder(

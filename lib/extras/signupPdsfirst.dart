@@ -21,26 +21,17 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
   final passText = TextEditingController();
   final repassText = TextEditingController();
   final phoneText = TextEditingController();
-
   final othersController = TextEditingController();
   final pdsAddressController = TextEditingController();
   bool isLoading = false;
-
-
   bool _isPanVisible = false; // For showing a loading spinner
+  bool _isrePasVisible = false; // For showing a loading spinner
   // Function to show the error or success messages
-
-
-
-
-
 
   void _showMessage(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -302,16 +293,16 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                             width: 171,
                             child: TextField(
                               controller: repassText,
-                              obscureText: !_isPanVisible, // Toggle text visibility
+                              obscureText: !_isrePasVisible, // Toggle text visibility
                               decoration: _inputDecoration('**********').copyWith(
                                 suffixIcon: IconButton(
                                   icon: Icon(
-                                    _isPanVisible ? Icons.visibility : Icons.visibility_off,
+                                    _isrePasVisible ? Icons.visibility : Icons.visibility_off,
                                     color: const Color(0xFF648683),
                                   ),
                                   onPressed: () {
                                     setState(() {
-                                      _isPanVisible = !_isPanVisible; // Toggle visibility
+                                      _isrePasVisible = !_isrePasVisible; // Toggle visibility
                                     });
                                   },
                                 ),
@@ -332,14 +323,31 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
+                      if (emailText.text.trim().isEmpty ||
+                          phoneText.text.trim().isEmpty ||
+                          passText.text.trim().isEmpty ||
+                          repassText.text.trim().isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please fill in all the fields.')),
+                        );
+                        return; // Do not proceed if fields are empty
+                      }
+
+                      if (passText.text.trim() != repassText.text.trim()) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Passwords do not match.')),
+                        );
+                        return; // Do not proceed if passwords don't match
+                      }
+
                       Navigator.push(
                         context,
                         PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 500), // ✅ Adjust duration
-                          pageBuilder: (context, animation, secondaryAnimation) => SignupPdsPage(),
+                          transitionDuration: const Duration(milliseconds: 500),
+                          pageBuilder: (context, animation, secondaryAnimation) => const SignupPdsPage(),
                           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                            const begin = Offset(1.0, 0.0); // ✅ Start position (right)
-                            const end = Offset.zero; // ✅ End position (normal)
+                            const begin = Offset(1.0, 0.0);
+                            const end = Offset.zero;
                             const curve = Curves.easeInOut;
 
                             var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
@@ -360,7 +368,6 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                       String uphoneText = phoneText.text.trim();
                       String uPdsOthrContrl = othersController.text.trim();
                       String uPdsAddrsContrl = pdsAddressController.text.trim();
-
 
                       print("Others Controller: $uPdsOthrContrl, Address Controller: $uPdsAddrsContrl, Email Id: $uemailText, Password: $upassText, Re-Password: $urepassText, Phone: $uphoneText");
                     },
