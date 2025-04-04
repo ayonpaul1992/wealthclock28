@@ -549,14 +549,58 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                               ],
                             ),
                             // Conditionally show the form
-                            if (savedNominees.length < 3 || editingIndex != null)
+                            if (savedNominees.length < 3 && totalShare < 100 || editingIndex != null)
                               Column(
                                 children: [
                                   Wrap(
                                     spacing: 10,
                                     runSpacing: 15,
                                     children: [
-                                      buildInputField("Nominee Name", nomineeNameText),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(left: 10),
+                                            child: Text(
+                                              'Nominee Name',
+                                              style: GoogleFonts.poppins(
+                                                color: Color(0xFF6E7B7A),
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 10,),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.1), // Shadow color
+                                                  blurRadius: 15, // Blur effect
+                                                  spreadRadius: 0, // Spread effect
+                                                  offset: Offset(0, 3), // Position of shadow
+                                                ),
+                                              ],
+                                            ),
+                                            child: SizedBox(
+                                              width: double.infinity,
+                                              child: TextField(
+                                                controller: nomineeNameText,
+                                                decoration: _inputDecoration(''),
+                                                style: const TextStyle(
+                                                  color: Color(0xFF648683),
+                                                  fontSize: 14,
+                                                ),
+                                                inputFormatters: [
+                                                  LengthLimitingTextInputFormatter(
+                                                      25), // Limit to 25 characters
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                       Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -699,7 +743,51 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                           ),
                                         ],
                                       ),
-                                      buildInputField("Nominee PAN No.", nomineePanText),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(left: 10),
+                                            child: Text(
+                                              'Nominee PAN No.',
+                                              style: GoogleFonts.poppins(
+                                                color: Color(0xFF6E7B7A),
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 10,),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.1), // Shadow color
+                                                  blurRadius: 15, // Blur effect
+                                                  spreadRadius: 0, // Spread effect
+                                                  offset: Offset(0, 3), // Position of shadow
+                                                ),
+                                              ],
+                                            ),
+                                            child: SizedBox(
+                                              width: double.infinity,
+                                              child: TextField(
+                                                controller: nomineePanText,
+                                                decoration: _inputDecoration(''),
+                                                style: const TextStyle(
+                                                  color: Color(0xFF648683),
+                                                  fontSize: 14,
+                                                ),
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+                                                  LengthLimitingTextInputFormatter(10),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                       buildNomineeShareField(),
                                       // ... (Other form fields)
                                     ],
@@ -741,11 +829,21 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                       child: Wrap(
                         alignment: WrapAlignment.center,
                         children: [
-                          if (savedNominees.length < 3) // Add this condition
+                          if (savedNominees.length < 3 && totalShare < 100) // Add this condition
                             Column(
                               children: [
                                 TextButton(
                                   onPressed: () {
+                                    // PAN Number Validation
+                                    String pan = nomineePanText.text.trim().toUpperCase(); // Convert to uppercase for consistency
+                                    RegExp panRegExp = RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$'); // PAN format regex
+
+                                    if (!panRegExp.hasMatch(pan)) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Invalid PAN number format.')),
+                                      );
+                                      return; // Do not proceed if PAN is invalid
+                                    }
                                     saveNominee();
                                   },
                                   child: Text(
@@ -839,7 +937,6 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-
                       String unomineeNameText = nomineeNameText.text.trim();
                       String unomineePan = nomineePanText.text.trim();
                       String unomineeShare = nomineeShareText.text.trim();

@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../screens/login.dart';
 import 'signupAds.dart';
@@ -171,7 +172,6 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
   final bool _isPanVisible = false; // For showing a loading spinner
   // Function to show the error or success messages
 
-
   // check button gender purpose start
   List<String> options = ['Male', 'Female'];
   String selectedOption = "Male";
@@ -196,7 +196,8 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
           padding: EdgeInsets.all(15),
           decoration: BoxDecoration(
             color: Colors.white, // Background color
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)), // Rounded top corners
+            borderRadius: BorderRadius.vertical(
+                top: Radius.circular(20)), // Rounded top corners
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.2), // Shadow color
@@ -211,15 +212,24 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
             children: [
               SfDateRangePicker(
                 selectionMode: DateRangePickerSelectionMode.single,
-                backgroundColor: Colors.white, // Set DatePicker background color
-                selectionColor: Colors.cyan.shade900, // Active date selection color
-                todayHighlightColor: Colors.cyan.shade900, // Focused color (today's date highlight)
-                startRangeSelectionColor: Colors.white, // Start range selection color
-                endRangeSelectionColor: Colors.white, // End range selection color
+                backgroundColor:
+                    Colors.white, // Set DatePicker background color
+                selectionColor:
+                    Colors.cyan.shade900, // Active date selection color
+                todayHighlightColor: Colors
+                    .cyan.shade900, // Focused color (today's date highlight)
+                startRangeSelectionColor:
+                    Colors.white, // Start range selection color
+                endRangeSelectionColor:
+                    Colors.white, // End range selection color
                 rangeSelectionColor: Colors.white, // Range selection overlay
                 headerStyle: DateRangePickerHeaderStyle(
-                  backgroundColor: Colors.transparent, // Transparent header background
-                  textStyle: GoogleFonts.poppins(color: Color(0xFF3F4B4B), fontSize: 18, fontWeight: FontWeight.w600),
+                  backgroundColor:
+                      Colors.transparent, // Transparent header background
+                  textStyle: GoogleFonts.poppins(
+                      color: Color(0xFF3F4B4B),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600),
                 ),
                 onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
                   setState(() {
@@ -234,19 +244,23 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                     onPressed: () {
                       Navigator.pop(context); // Close modal
                     },
-                    child: Text("Cancel", style: GoogleFonts.poppins(color: Colors.red, fontSize: 16)),
+                    child: Text("Cancel",
+                        style: GoogleFonts.poppins(
+                            color: Colors.red, fontSize: 16)),
                   ),
                   TextButton(
                     onPressed: () {
                       if (_selectedDate != null) {
                         setState(() {
                           _dateController.text =
-                          "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}";
+                              "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}";
                         });
                       }
                       Navigator.pop(context); // Close modal
                     },
-                    child: Text("OK", style: GoogleFonts.poppins(color: Color(0xFF0DA99E), fontSize: 16)),
+                    child: Text("OK",
+                        style: GoogleFonts.poppins(
+                            color: Color(0xFF0DA99E), fontSize: 16)),
                   ),
                 ],
               ),
@@ -334,7 +348,6 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                   spacing: 10, // Space between text fields
                   runSpacing: 15,
                   children: [
-
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -356,26 +369,29 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         ),
                         Container(
                           decoration: BoxDecoration(
-
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                color: Colors.black
+                                    .withOpacity(0.1), // Shadow color
                                 blurRadius: 15, // Blur effect
                                 spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
+                                offset: Offset(0, 3), // Position of shadow
                               ),
                             ],
                           ),
                           child: SizedBox(
                             width: 171,
                             child: TextField(
-                              controller: firstNameText,
-                              decoration: _inputDecoration(''),
-                              style: const TextStyle(
-                                color: Color(0xFF648683),
-                                fontSize: 14,
-                              ),
-                            ),
+                                controller: firstNameText,
+                                decoration: _inputDecoration(''),
+                                style: const TextStyle(
+                                  color: Color(0xFF648683),
+                                  fontSize: 14,
+                                ),
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(
+                                      25), // Limit to 25 characters
+                                ]),
                           ),
                         )
                       ],
@@ -401,26 +417,29 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         ),
                         Container(
                           decoration: BoxDecoration(
-
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                color: Colors.black
+                                    .withOpacity(0.1), // Shadow color
                                 blurRadius: 15, // Blur effect
                                 spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
+                                offset: Offset(0, 3), // Position of shadow
                               ),
                             ],
                           ),
                           child: SizedBox(
                             width: 171,
                             child: TextField(
-                              controller: lastNameText,
-                              decoration: _inputDecoration(''),
-                              style: const TextStyle(
-                                color: Color(0xFF648683),
-                                fontSize: 14,
-                              ),
-                            ),
+                                controller: lastNameText,
+                                decoration: _inputDecoration(''),
+                                style: const TextStyle(
+                                  color: Color(0xFF648683),
+                                  fontSize: 14,
+                                ),
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(
+                                      25), // Limit to 25 characters
+                                ]),
                           ),
                         ),
                       ],
@@ -447,14 +466,18 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         Stack(
                           children: [
                             GestureDetector(
-                              behavior: HitTestBehavior.translucent, // ✅ Detects taps outside
+                              behavior: HitTestBehavior
+                                  .translucent, // ✅ Detects taps outside
                               onTap: () {
                                 if (isDropdownOpen) {
                                   closeDropdown(); // ✅ Close dropdown when clicking outside
                                 }
-                                FocusManager.instance.primaryFocus?.unfocus(); // Remove focus
+                                FocusManager.instance.primaryFocus
+                                    ?.unfocus(); // Remove focus
                               },
-                              child: Container(width: 171,), // Empty container to detect taps outside
+                              child: Container(
+                                width: 171,
+                              ), // Empty container to detect taps outside
                             ),
                             CompositedTransformTarget(
                               link: _layerLink,
@@ -475,8 +498,10 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                   width: 171,
                                   child: TextField(
                                     controller: holdingNtrText,
-                                    readOnly: true, // ✅ Allows focus but prevents keyboard popup
-                                    onTap: toggleDropdown, // ✅ Opens dropdown on tap
+                                    readOnly:
+                                        true, // ✅ Allows focus but prevents keyboard popup
+                                    onTap:
+                                        toggleDropdown, // ✅ Opens dropdown on tap
                                     decoration: InputDecoration(
                                       hintText: 'Select',
                                       hintStyle: GoogleFonts.poppins(
@@ -484,7 +509,10 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                         fontSize: 14,
                                       ),
                                       contentPadding: const EdgeInsets.only(
-                                          top: 8, bottom: 8, left: 15, right: 15),
+                                          top: 8,
+                                          bottom: 8,
+                                          left: 15,
+                                          right: 15),
                                       suffixIcon: Icon(
                                         isDropdownOpen
                                             ? Icons.keyboard_arrow_up
@@ -536,13 +564,13 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         ),
                         Container(
                           decoration: BoxDecoration(
-
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                color: Colors.black
+                                    .withOpacity(0.1), // Shadow color
                                 blurRadius: 15, // Blur effect
                                 spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
+                                offset: Offset(0, 3), // Position of shadow
                               ),
                             ],
                           ),
@@ -555,6 +583,12 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                 color: Color(0xFF648683),
                                 fontSize: 14,
                               ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'[a-zA-Z0-9]')),
+                                LengthLimitingTextInputFormatter(
+                                    10), // Limit to 10 characters
+                              ],
                             ),
                             // child: TextField(
                             //   controller: repassText,
@@ -603,14 +637,18 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         Stack(
                           children: [
                             GestureDetector(
-                              behavior: HitTestBehavior.translucent, // ✅ Detects taps outside
+                              behavior: HitTestBehavior
+                                  .translucent, // ✅ Detects taps outside
                               onTap: () {
                                 if (isOcptnDropdownOpen) {
                                   closeOcptnDropdown(); // ✅ Close dropdown when clicking outside
                                 }
-                                FocusManager.instance.primaryFocus?.unfocus(); // Remove focus
+                                FocusManager.instance.primaryFocus
+                                    ?.unfocus(); // Remove focus
                               },
-                              child: Container(width: 171,), // Empty container to detect taps outside
+                              child: Container(
+                                width: 171,
+                              ), // Empty container to detect taps outside
                             ),
                             CompositedTransformTarget(
                               link: _layerOcptnLink,
@@ -631,8 +669,10 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                   width: 171,
                                   child: TextField(
                                     controller: occupationText,
-                                    readOnly: true, // ✅ Allows focus but prevents keyboard popup
-                                    onTap: toggleOcptnDropdown, // ✅ Opens dropdown on tap
+                                    readOnly:
+                                        true, // ✅ Allows focus but prevents keyboard popup
+                                    onTap:
+                                        toggleOcptnDropdown, // ✅ Opens dropdown on tap
                                     decoration: InputDecoration(
                                       hintText: 'Select',
                                       hintStyle: GoogleFonts.poppins(
@@ -640,7 +680,10 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                         fontSize: 14,
                                       ),
                                       contentPadding: const EdgeInsets.only(
-                                          top: 8, bottom: 8, left: 15, right: 15),
+                                          top: 8,
+                                          bottom: 8,
+                                          left: 15,
+                                          right: 15),
                                       suffixIcon: Icon(
                                         isOcptnDropdownOpen
                                             ? Icons.keyboard_arrow_up
@@ -694,38 +737,59 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                           width: 171,
                           decoration: BoxDecoration(
                             color: Colors.white, // Background color
-                            borderRadius: BorderRadius.circular(50), // Match border radius
+                            borderRadius: BorderRadius.circular(
+                                50), // Match border radius
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                color: Colors.black
+                                    .withOpacity(0.1), // Shadow color
                                 blurRadius: 15, // Blur effect
                                 spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
+                                offset: Offset(0, 3), // Position of shadow
                               ),
                             ],
                           ),
                           child: SizedBox(
                             width: 171,
                             child: GestureDetector(
-                              onTap: ()=> _showDatePicker(context),
+                              onTap: () => _showDatePicker(context),
                               child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12.8),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 12.8),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(50),
                                   border: isLoading
-                                      ? Border.all(color: Color(0xFF0f625c), width: 1) // Show border when focused
-                                      : Border.all(color: Colors.transparent, width: 1), // Hide border when not focused
-                                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 5)],
+                                      ? Border.all(
+                                          color: Color(0xFF0f625c),
+                                          width: 1) // Show border when focused
+                                      : Border.all(
+                                          color: Colors.transparent,
+                                          width:
+                                              1), // Hide border when not focused
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 5)
+                                  ],
                                 ),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      _dateController.text.isNotEmpty ? _dateController.text : "Select Date",
-                                      style: TextStyle(color: Color(0xFF648683), fontSize: 14),
+                                      _dateController.text.isNotEmpty
+                                          ? _dateController.text
+                                          : "Select Date",
+                                      style: TextStyle(
+                                          color: Color(0xFF648683),
+                                          fontSize: 14),
                                     ),
-                                    Icon(Icons.calendar_month_outlined, color: Color(0xFF648683),size: 20,),
+                                    Icon(
+                                      Icons.calendar_month_outlined,
+                                      color: Color(0xFF648683),
+                                      size: 20,
+                                    ),
                                   ],
                                 ),
                               ),
@@ -759,13 +823,15 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                           Container(
                             decoration: BoxDecoration(
                               color: Colors.white, // Background color
-                              borderRadius: BorderRadius.circular(50), // Match border radius
+                              borderRadius: BorderRadius.circular(
+                                  50), // Match border radius
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1), // Shadow color
+                                  color: Colors.black
+                                      .withOpacity(0.1), // Shadow color
                                   blurRadius: 15, // Blur effect
                                   spreadRadius: 0, // Spread effect
-                                  offset: Offset(0,3), // Position of shadow
+                                  offset: Offset(0, 3), // Position of shadow
                                 ),
                               ],
                             ),
@@ -806,13 +872,15 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.white, // Background color
-                            borderRadius: BorderRadius.circular(50), // Match border radius
+                            borderRadius: BorderRadius.circular(
+                                50), // Match border radius
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                color: Colors.black
+                                    .withOpacity(0.1), // Shadow color
                                 blurRadius: 15, // Blur effect
                                 spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
+                                offset: Offset(0, 3), // Position of shadow
                               ),
                             ],
                           ),
@@ -863,14 +931,20 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                       Navigator.push(
                         context,
                         PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 500), // ✅ Adjust duration
-                          pageBuilder: (context, animation, secondaryAnimation) => SignupPdsFirst(),
-                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                            const begin = Offset(-1.0, 0.0); // ✅ Start position (right)
+                          transitionDuration:
+                              Duration(milliseconds: 500), // ✅ Adjust duration
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  SignupPdsFirst(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            const begin =
+                                Offset(-1.0, 0.0); // ✅ Start position (right)
                             const end = Offset.zero; // ✅ End position (normal)
                             const curve = Curves.easeInOut;
 
-                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
                             var offsetAnimation = animation.drive(tween);
 
                             return SlideTransition(
@@ -886,7 +960,8 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 35),
                     ),
                     child: Text(
                       'Back'.toUpperCase(),
@@ -897,7 +972,9 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10,),
+                  SizedBox(
+                    width: 10,
+                  ),
                   ElevatedButton(
                     onPressed: () {
                       if (firstNameText.text.trim().isEmpty ||
@@ -906,24 +983,56 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                           occupationText.text.trim().isEmpty ||
                           _dateController.text.trim().isEmpty ||
                           panNoText.text.trim().isEmpty ||
-                          othersController.text.trim().isEmpty ||
                           pdsAddressController.text.trim().isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please fill in all the fields.')),
+                          const SnackBar(
+                              content: Text('Please fill in all the fields.')),
                         );
                         return; // Do not proceed if fields are empty
+                      }
+
+                      // Check for "Others" selection and validate accordingly.
+                      if (mrtSelectedOption == "Others" &&
+                          othersController.text.trim().isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content:
+                                  Text('Please fill in the "Others" field.')),
+                        );
+                        return; // Do not proceed if "Others" is selected and field is empty
+                      }
+
+                      // PAN Number Validation
+                      String pan = panNoText.text
+                          .trim()
+                          .toUpperCase(); // Convert to uppercase for consistency
+                      RegExp panRegExp = RegExp(
+                          r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$'); // PAN format regex
+
+                      if (!panRegExp.hasMatch(pan)) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Invalid PAN number format.')),
+                        );
+                        return; // Do not proceed if PAN is invalid
                       }
                       Navigator.push(
                         context,
                         PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 500), // ✅ Adjust duration
-                          pageBuilder: (context, animation, secondaryAnimation) => SignupAdsPage(),
-                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                            const begin = Offset(1.0, 0.0); // ✅ Start position (right)
+                          transitionDuration:
+                              Duration(milliseconds: 500), // ✅ Adjust duration
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  SignupAdsPage(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            const begin =
+                                Offset(1.0, 0.0); // ✅ Start position (right)
                             const end = Offset.zero; // ✅ End position (normal)
                             const curve = Curves.easeInOut;
 
-                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
                             var offsetAnimation = animation.drive(tween);
 
                             return SlideTransition(
@@ -944,14 +1053,16 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                       String uPdsAddrsContrl = pdsAddressController.text.trim();
                       String uPanNo = panNoText.text.trim();
 
-                      print("First Name: $ufName, Last Name: $ulName, Pan No.: $uPanNo, Holding nature: $uHdNtr, Occupation: $uOcptn, DOB: $uPdsDob, Others Controller: $uPdsOthrContrl, Address Controller: $uPdsAddrsContrl");
+                      print(
+                          "First Name: $ufName, Last Name: $ulName, Pan No.: $uPanNo, Holding nature: $uHdNtr, Occupation: $uOcptn, DOB: $uPdsDob, Others Controller: $uPdsOthrContrl, Address Controller: $uPdsAddrsContrl");
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFfdd1a0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 35),
                     ),
                     child: Text(
                       'Next'.toUpperCase(),
@@ -1025,15 +1136,28 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                       Navigator.push(
                                         context,
                                         PageRouteBuilder(
-                                          transitionDuration: Duration(milliseconds: 500), // ✅ Smooth transition
-                                          pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
-                                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                            const begin = Offset(-1.0, 0.0); // ✅ Slide from right
-                                            const end = Offset.zero; // ✅ End position (normal)
+                                          transitionDuration: Duration(
+                                              milliseconds:
+                                                  500), // ✅ Smooth transition
+                                          pageBuilder: (context, animation,
+                                                  secondaryAnimation) =>
+                                              const LoginPage(),
+                                          transitionsBuilder: (context,
+                                              animation,
+                                              secondaryAnimation,
+                                              child) {
+                                            const begin = Offset(-1.0,
+                                                0.0); // ✅ Slide from right
+                                            const end = Offset
+                                                .zero; // ✅ End position (normal)
                                             const curve = Curves.easeInOut;
 
-                                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                                            var offsetAnimation = animation.drive(tween);
+                                            var tween = Tween(
+                                                    begin: begin, end: end)
+                                                .chain(
+                                                    CurveTween(curve: curve));
+                                            var offsetAnimation =
+                                                animation.drive(tween);
 
                                             return SlideTransition(
                                               position: offsetAnimation,
@@ -1052,7 +1176,6 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                       ),
                                     ),
                                   ),
-
                                 ],
                               ),
                             ),

@@ -220,6 +220,10 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                 color: Color(0xFF648683),
                                 fontSize: 14,
                               ),
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(
+                                      20), // Limit to 25 characters
+                                ]
                             ),
                           ),
                         )
@@ -265,6 +269,10 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                 color: Color(0xFF648683),
                                 fontSize: 14,
                               ),
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(
+                                      12), // Limit to 25 characters
+                                ]
                             ),
                           ),
                         )
@@ -310,6 +318,10 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                 color: Color(0xFF648683),
                                 fontSize: 14,
                               ),
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(
+                                      9), // Limit to 25 characters
+                                ]
                             ),
                           ),
                         ),
@@ -355,6 +367,10 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                 color: Color(0xFF648683),
                                 fontSize: 14,
                               ),
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(
+                                      50), // Limit to 25 characters
+                                ]
                             ),
                             // child: TextField(
                             //   controller: repassText,
@@ -520,6 +536,10 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                 color: Color(0xFF648683),
                                 fontSize: 14,
                               ),
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(
+                                      50), // Limit to 25 characters
+                                ]
                             ),
                           ),
                         )

@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../screens/login.dart';
 import 'signupAds.dart';
@@ -180,10 +181,10 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
-                                blurRadius: 15, // Blur effect
-                                spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 15,
+                                spreadRadius: 0,
+                                offset: Offset(0, 3),
                               ),
                             ],
                           ),
@@ -197,6 +198,10 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                                 color: Color(0xFF648683),
                                 fontSize: 14,
                               ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly, // Allow only digits
+                                LengthLimitingTextInputFormatter(10), // Limit to 10 characters
+                              ],
                             ),
                           ),
                         )
@@ -331,6 +336,20 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                           const SnackBar(content: Text('Please fill in all the fields.')),
                         );
                         return; // Do not proceed if fields are empty
+                      }
+
+                      if (!emailText.text.trim().contains('@') || !emailText.text.trim().contains('.')) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please enter a valid email address.')),
+                        );
+                        return;
+                      }
+
+                      if (phoneText.text.trim().length != 10) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Phone number must be 10 digits.')),
+                        );
+                        return;
                       }
 
                       if (passText.text.trim() != repassText.text.trim()) {
