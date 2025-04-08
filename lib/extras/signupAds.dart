@@ -101,6 +101,11 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
   final pdsAddressController = TextEditingController();
   bool isLoading = false;
   bool isNomineeBox = false;
+  String? ifscError;
+  String? micrError;
+  String? acNoError;
+  String? branchNameError;
+  String? acTypeError;
 
   // check button nominee applicable purpose start
   List<String> nmAplyoptions = ['YES', 'NO'];
@@ -223,10 +228,25 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                 inputFormatters: [
                                   LengthLimitingTextInputFormatter(
                                       20), // Limit to 25 characters
-                                ]
+                                ],
+                              onChanged: (value) {
+                                if (value.isNotEmpty && acNoError != null) {
+                                  setState(() {
+                                    acNoError = null;
+                                  });
+                                }
+                              },
                             ),
                           ),
-                        )
+                        ),
+                        if (acNoError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0, top: 5),
+                            child: Text(
+                              acNoError!,
+                              style: TextStyle(color: Colors.red, fontSize: 12),
+                            ),
+                          ),
                       ],
                     ),
                     Column(
@@ -272,10 +292,25 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                 inputFormatters: [
                                   LengthLimitingTextInputFormatter(
                                       12), // Limit to 25 characters
-                                ]
+                                ],
+                              onChanged: (value) {
+                                if (value.isNotEmpty && ifscError != null) {
+                                  setState(() {
+                                    ifscError = null;
+                                  });
+                                }
+                              },
                             ),
                           ),
-                        )
+                        ),
+                        if (ifscError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0, top: 5),
+                            child: Text(
+                              ifscError!,
+                              style: TextStyle(color: Colors.red, fontSize: 12),
+                            ),
+                          ),
                       ],
                     ),
                     Column(
@@ -321,10 +356,25 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                 inputFormatters: [
                                   LengthLimitingTextInputFormatter(
                                       9), // Limit to 25 characters
-                                ]
+                                ],
+                              onChanged: (value) {
+                                if (value.isNotEmpty && micrError != null) {
+                                  setState(() {
+                                    micrError = null;
+                                  });
+                                }
+                              },
                             ),
                           ),
                         ),
+                        if (micrError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0, top: 5),
+                            child: Text(
+                              micrError!,
+                              style: TextStyle(color: Colors.red, fontSize: 12),
+                            ),
+                          ),
                       ],
                     ),
                     Column(
@@ -551,10 +601,33 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => SignupPdsPage()),
-                        );
+                        setState(() {
+                          // Reset errors first
+                          ifscError = micrError = acNoError = branchNameError = acTypeError = null;
+
+                          // Validate each field
+                          if (ifscCodeText.text.trim().isEmpty) ifscError = 'IFSC code is required.';
+                          if (micrCodeText.text.trim().isEmpty) micrError = 'MICR code is required.';
+                          if (acNoText.text.trim().isEmpty) acNoError = 'Account number is required.';
+                          if (branchNameText.text.trim().isEmpty) branchNameError = 'Branch name is required.';
+                          if (acTypeText.text.trim().isEmpty || acTypeText.text.trim() == 'Select')
+                            acTypeError = 'Please select account type.';
+
+                          // Stop navigation if any errors
+                          if (ifscError != null ||
+                              micrError != null ||
+                              acNoError != null ||
+                              branchNameError != null ||
+                              acTypeError != null) {
+                            return;
+                          }
+
+                          // Navigate only if all fields are valid
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SignupNdsPage()),
+                          );
+                        });
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFfdd1a0),

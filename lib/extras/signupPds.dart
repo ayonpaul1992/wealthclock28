@@ -167,6 +167,16 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
   final othersController = TextEditingController();
   final pdsAddressController = TextEditingController();
   bool isLoading = false;
+  String? firstNameError;
+  String? lastNameError;
+  String? holdingNtrError;
+  String? occupationError;
+  String? dobError;
+  String? panError;
+  String? addressError;
+  String? othersError;
+  String? checkboxError;
+  String? maritalStatusError;
 
   DateTime? _selectedDate;
   final bool _isPanVisible = false; // For showing a loading spinner
@@ -382,18 +392,39 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                           child: SizedBox(
                             width: 171,
                             child: TextField(
-                                controller: firstNameText,
-                                decoration: _inputDecoration(''),
-                                style: const TextStyle(
-                                  color: Color(0xFF648683),
-                                  fontSize: 14,
-                                ),
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(
-                                      25), // Limit to 25 characters
-                                ]),
+                              controller: firstNameText,
+                              decoration: _inputDecoration(''),
+                              style: const TextStyle(
+                                color: Color(0xFF648683),
+                                fontSize: 14,
+                              ),
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(
+                                    25), // Limit to 25 characters
+                              ],
+                              onChanged: (value) {
+                                if (value.isNotEmpty &&
+                                    firstNameError != null) {
+                                  setState(() {
+                                    firstNameError =
+                                        null; // clear error on user input
+                                  });
+                                }
+                              },
+                            ),
                           ),
-                        )
+                        ),
+                        if (firstNameError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0, top: 5),
+                            child: Text(
+                              firstNameError!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                     Column(
@@ -430,27 +461,42 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                           child: SizedBox(
                             width: 171,
                             child: TextField(
-                                controller: lastNameText,
-                                decoration: _inputDecoration(''),
-                                style: const TextStyle(
-                                  color: Color(0xFF648683),
-                                  fontSize: 14,
-                                ),
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(
-                                      25), // Limit to 25 characters
-                                ]),
+                              controller: lastNameText,
+                              decoration: _inputDecoration(''),
+                              style: const TextStyle(
+                                color: Color(0xFF648683),
+                                fontSize: 14,
+                              ),
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(
+                                    25), // Limit to 25 characters
+                              ],
+                              onChanged: (value) {
+                                if (value.isNotEmpty && lastNameError != null) {
+                                  setState(() {
+                                    lastNameError = null;
+                                  });
+                                }
+                              },
+                            ),
                           ),
                         ),
+                        if (lastNameError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0, top: 5),
+                            child: Text(
+                              lastNameError!,
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
+                            ),
+                          ),
                       ],
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
+                          margin: const EdgeInsets.only(left: 10),
                           child: Text(
                             'Holding Nature',
                             style: GoogleFonts.poppins(
@@ -460,87 +506,75 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Stack(
-                          children: [
-                            GestureDetector(
-                              behavior: HitTestBehavior
-                                  .translucent, // ✅ Detects taps outside
-                              onTap: () {
-                                if (isDropdownOpen) {
-                                  closeDropdown(); // ✅ Close dropdown when clicking outside
-                                }
-                                FocusManager.instance.primaryFocus
-                                    ?.unfocus(); // Remove focus
-                              },
-                              child: Container(
-                                width: 171,
-                              ), // Empty container to detect taps outside
-                            ),
-                            CompositedTransformTarget(
-                              link: _layerLink,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(50),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 15,
-                                      spreadRadius: 0,
-                                      offset: Offset(0, 3),
-                                    ),
-                                  ],
+                        const SizedBox(height: 10),
+
+                        // Dropdown with shadow & styling
+                        CompositedTransformTarget(
+                          link: _layerLink,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(50),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 15,
+                                  spreadRadius: 0,
+                                  offset: Offset(0, 3),
                                 ),
-                                child: SizedBox(
-                                  width: 171,
-                                  child: TextField(
-                                    controller: holdingNtrText,
-                                    readOnly:
-                                        true, // ✅ Allows focus but prevents keyboard popup
-                                    onTap:
-                                        toggleDropdown, // ✅ Opens dropdown on tap
-                                    decoration: InputDecoration(
-                                      hintText: 'Select',
-                                      hintStyle: GoogleFonts.poppins(
-                                        color: Color(0xFF648683),
-                                        fontSize: 14,
-                                      ),
-                                      contentPadding: const EdgeInsets.only(
-                                          top: 8,
-                                          bottom: 8,
-                                          left: 15,
-                                          right: 15),
-                                      suffixIcon: Icon(
-                                        isDropdownOpen
-                                            ? Icons.keyboard_arrow_up
-                                            : Icons.keyboard_arrow_down,
-                                        color: Color(0xFF648683),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(50),
-                                        borderSide: BorderSide(
-                                            color: Colors.white, width: 1),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(50),
-                                        borderSide: BorderSide(
-                                            color: Color(0xFF0f625c), width: 1),
-                                      ),
-                                    ),
-                                    style: const TextStyle(
-                                      color: Color(0xFF648683),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                              ],
+                            ),
+                            child: SizedBox(
+                              width: 171,
+                              child: TextField(
+                                controller: holdingNtrText,
+                                readOnly: true,
+                                onTap: toggleDropdown,
+                                decoration: InputDecoration(
+                                  hintText: 'Select',
+                                  hintStyle: GoogleFonts.poppins(
+                                    color: Color(0xFF648683),
+                                    fontSize: 14,
                                   ),
+                                  contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                                  suffixIcon: Icon(
+                                    isDropdownOpen
+                                        ? Icons.keyboard_arrow_up
+                                        : Icons.keyboard_arrow_down,
+                                    color: Color(0xFF648683),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: const BorderSide(color: Colors.white, width: 1),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: const BorderSide(color: Color(0xFF0f625c), width: 1),
+                                  ),
+                                ),
+                                style: const TextStyle(
+                                  color: Color(0xFF648683),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
-                          ],
-                        )
+                          ),
+                        ),
+
+                        // ✅ Show error below the field — NOT inside Stack
+                        if (holdingNtrError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0, top: 6),
+                            child: Text(
+                              holdingNtrError!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                     Column(
@@ -589,6 +623,13 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                 LengthLimitingTextInputFormatter(
                                     10), // Limit to 10 characters
                               ],
+                              onChanged: (value) {
+                                if (value.length == 10 && panError != null) {
+                                  setState(() {
+                                    panError = null;
+                                  });
+                                }
+                              },
                             ),
                             // child: TextField(
                             //   controller: repassText,
@@ -613,15 +654,22 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             // ),
                           ),
                         ),
+                        if (panError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0, top: 5),
+                            child: Text(
+                              panError!,
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
+                            ),
+                          ),
                       ],
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
+                          margin: const EdgeInsets.only(left: 10),
                           child: Text(
                             'Occupation',
                             style: GoogleFonts.poppins(
@@ -631,87 +679,79 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Stack(
-                          children: [
-                            GestureDetector(
-                              behavior: HitTestBehavior
-                                  .translucent, // ✅ Detects taps outside
-                              onTap: () {
-                                if (isOcptnDropdownOpen) {
-                                  closeOcptnDropdown(); // ✅ Close dropdown when clicking outside
-                                }
-                                FocusManager.instance.primaryFocus
-                                    ?.unfocus(); // Remove focus
-                              },
-                              child: Container(
-                                width: 171,
-                              ), // Empty container to detect taps outside
-                            ),
-                            CompositedTransformTarget(
-                              link: _layerOcptnLink,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(50),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 15,
-                                      spreadRadius: 0,
-                                      offset: Offset(0, 3),
-                                    ),
-                                  ],
+                        const SizedBox(height: 10),
+
+                        // Dropdown field
+                        CompositedTransformTarget(
+                          link: _layerOcptnLink,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(50),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 15,
+                                  spreadRadius: 0,
+                                  offset: const Offset(0, 3),
                                 ),
-                                child: SizedBox(
-                                  width: 171,
-                                  child: TextField(
-                                    controller: occupationText,
-                                    readOnly:
-                                        true, // ✅ Allows focus but prevents keyboard popup
-                                    onTap:
-                                        toggleOcptnDropdown, // ✅ Opens dropdown on tap
-                                    decoration: InputDecoration(
-                                      hintText: 'Select',
-                                      hintStyle: GoogleFonts.poppins(
-                                        color: Color(0xFF648683),
-                                        fontSize: 14,
-                                      ),
-                                      contentPadding: const EdgeInsets.only(
-                                          top: 8,
-                                          bottom: 8,
-                                          left: 15,
-                                          right: 15),
-                                      suffixIcon: Icon(
-                                        isOcptnDropdownOpen
-                                            ? Icons.keyboard_arrow_up
-                                            : Icons.keyboard_arrow_down,
-                                        color: Color(0xFF648683),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(50),
-                                        borderSide: BorderSide(
-                                            color: Colors.white, width: 1),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(50),
-                                        borderSide: BorderSide(
-                                            color: Color(0xFF0f625c), width: 1),
-                                      ),
-                                    ),
-                                    style: const TextStyle(
-                                      color: Color(0xFF648683),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                              ],
+                            ),
+                            child: SizedBox(
+                              width: 171,
+                              child: TextField(
+                                controller: occupationText,
+                                readOnly: true,
+                                onTap: toggleOcptnDropdown,
+                                decoration: InputDecoration(
+                                  hintText: 'Select',
+                                  hintStyle: GoogleFonts.poppins(
+                                    color: Color(0xFF648683),
+                                    fontSize: 14,
                                   ),
+                                  contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                                  suffixIcon: Icon(
+                                    isOcptnDropdownOpen
+                                        ? Icons.keyboard_arrow_up
+                                        : Icons.keyboard_arrow_down,
+                                    color: const Color(0xFF648683),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide:
+                                    const BorderSide(color: Colors.white, width: 1),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide:
+                                    const BorderSide(color: Color(0xFF0f625c), width: 1),
+                                  ),
+                                ),
+                                style: const TextStyle(
+                                  color: Color(0xFF648683),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
-                          ],
-                        )
+                          ),
+                        ),
+
+                        // ✅ Error message below field
+                        if (occupationError != null)
+                          const SizedBox(height: 6),
+                        if (occupationError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: Text(
+                              occupationError!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                     Column(
@@ -796,47 +836,77 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             ),
                           ),
                         ),
+                        if (dobError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0, top: 5),
+                            child: Text(
+                              dobError!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
                       ],
-                    ),
-                    Wrap(
-                      spacing: 10, // Horizontal space between checkboxes
-                      runSpacing: 10, // Vertical space if wrapped
-                      children: options
-                          .map((option) => checkboxOption(option))
-                          .toList(),
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Wrap(
-                          spacing: 10, // Horizontal space between checkboxes
-                          runSpacing: 10, // Vertical space if wrapped
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: options
+                              .map((option) => checkboxOption(option))
+                              .toList(),
+                        ),
+                        if (checkboxError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0, top: 5),
+                            child: Text(
+                              checkboxError!,
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
+                            ),
+                          ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
                           children: mrtOptions
                               .map((option) => maritalStateBoxOption(option))
                               .toList(),
                         ),
+                        if (maritalStatusError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0, top: 5),
+                            child: Text(
+                              maritalStatusError!,
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
+                            ),
+                          ),
 
                         // Show TextField only if "Others" is selected
                         if (mrtSelectedOption == "Others") ...[
-                          const SizedBox(
-                              height: 10), // Spacing before TextField
+                          const SizedBox(height: 10),
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.white, // Background color
-                              borderRadius: BorderRadius.circular(
-                                  50), // Match border radius
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(50),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black
-                                      .withOpacity(0.1), // Shadow color
-                                  blurRadius: 15, // Blur effect
-                                  spreadRadius: 0, // Spread effect
-                                  offset: Offset(0, 3), // Position of shadow
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 15,
+                                  offset: Offset(0, 3),
                                 ),
                               ],
                             ),
                             child: SizedBox(
-                              width: double.infinity, // Adjust width as needed
+                              width: double.infinity,
                               child: TextField(
                                 controller: othersController,
                                 decoration: _inputDecoration('Type here'),
@@ -847,6 +917,16 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                               ),
                             ),
                           ),
+                          if (othersError != null)
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 12.0, top: 5),
+                              child: Text(
+                                othersError!,
+                                style: const TextStyle(
+                                    color: Colors.red, fontSize: 12),
+                              ),
+                            ),
                         ]
                       ],
                     ),
@@ -854,9 +934,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
+                          margin: EdgeInsets.only(left: 10),
                           child: Text(
                             'Address',
                             style: GoogleFonts.poppins(
@@ -866,21 +944,16 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
+                        SizedBox(height: 10),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.white, // Background color
-                            borderRadius: BorderRadius.circular(
-                                50), // Match border radius
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(50),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black
-                                    .withOpacity(0.1), // Shadow color
-                                blurRadius: 15, // Blur effect
-                                spreadRadius: 0, // Spread effect
-                                offset: Offset(0, 3), // Position of shadow
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 15,
+                                offset: Offset(0, 3),
                               ),
                             ],
                           ),
@@ -891,8 +964,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                               maxLines: 4,
                               decoration: _inputDecoration('').copyWith(
                                 contentPadding: EdgeInsets.symmetric(
-                                    vertical: 10,
-                                    horizontal: 12), // Padding inside the box
+                                    vertical: 10, horizontal: 12),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide:
@@ -904,8 +976,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                       BorderSide(color: Colors.white, width: 1),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      10), // Same border radius when focused
+                                  borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
                                       color: Color(0xFF0f625c), width: 1),
                                 ),
@@ -917,6 +988,15 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                             ),
                           ),
                         ),
+                        if (addressError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0, top: 5),
+                            child: Text(
+                              addressError!,
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
+                            ),
+                          ),
                       ],
                     ),
                   ],
@@ -977,58 +1057,73 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      if (firstNameText.text.trim().isEmpty ||
-                          lastNameText.text.trim().isEmpty ||
-                          holdingNtrText.text.trim().isEmpty ||
-                          occupationText.text.trim().isEmpty ||
-                          _dateController.text.trim().isEmpty ||
-                          panNoText.text.trim().isEmpty ||
-                          pdsAddressController.text.trim().isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Please fill in all the fields.')),
-                        );
-                        return; // Do not proceed if fields are empty
-                      }
+                      bool hasError = false;
 
-                      // Check for "Others" selection and validate accordingly.
-                      if (mrtSelectedOption == "Others" &&
-                          othersController.text.trim().isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content:
-                                  Text('Please fill in the "Others" field.')),
-                        );
-                        return; // Do not proceed if "Others" is selected and field is empty
-                      }
+                      setState(() {
+                        // Reset error messages
+                        firstNameError = lastNameError = holdingNtrError =
+                            occupationError = dobError =
+                                panError = addressError = othersError = null;
 
-                      // PAN Number Validation
-                      String pan = panNoText.text
-                          .trim()
-                          .toUpperCase(); // Convert to uppercase for consistency
-                      RegExp panRegExp = RegExp(
-                          r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$'); // PAN format regex
+                        // Validations
+                        if (firstNameText.text.trim().isEmpty) {
+                          firstNameError = 'First name is required.';
+                          hasError = true;
+                        }
+                        if (lastNameText.text.trim().isEmpty) {
+                          lastNameError = 'Last name is required.';
+                          hasError = true;
+                        }
+                        if (holdingNtrText.text.trim().isEmpty) {
+                          holdingNtrError = 'Please select an option.';
+                          hasError = true;
+                        }
+                        if (occupationText.text.trim().isEmpty) {
+                          occupationError = 'Please select an option.';
+                          hasError = true;
+                        }
+                        if (_dateController.text.trim().isEmpty) {
+                          dobError = 'Date of Birth is required.';
+                          hasError = true;
+                        }
+                        if (pdsAddressController.text.trim().isEmpty) {
+                          addressError = 'Address is required.';
+                          hasError = true;
+                        }
 
-                      if (!panRegExp.hasMatch(pan)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Invalid PAN number format.')),
-                        );
-                        return; // Do not proceed if PAN is invalid
-                      }
+                        String pan = panNoText.text.trim().toUpperCase();
+                        RegExp panRegExp =
+                            RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$');
+                        if (pan.isEmpty) {
+                          panError = 'PAN number is required.';
+                          hasError = true;
+                        } else if (!panRegExp.hasMatch(pan)) {
+                          panError = 'Invalid PAN format.';
+                          hasError = true;
+                        }
+
+                        if (mrtSelectedOption == "Others" &&
+                            othersController.text.trim().isEmpty) {
+                          othersError = 'Please fill in the "Others" field.';
+                          hasError = true;
+                        }
+                      });
+
+                      if (hasError)
+                        return; // 🚫 Stop navigation if any error exists
+
+                      // ✅ Safe to navigate
                       Navigator.push(
                         context,
                         PageRouteBuilder(
-                          transitionDuration:
-                              Duration(milliseconds: 500), // ✅ Adjust duration
+                          transitionDuration: Duration(milliseconds: 500),
                           pageBuilder:
                               (context, animation, secondaryAnimation) =>
                                   SignupAdsPage(),
                           transitionsBuilder:
                               (context, animation, secondaryAnimation, child) {
-                            const begin =
-                                Offset(1.0, 0.0); // ✅ Start position (right)
-                            const end = Offset.zero; // ✅ End position (normal)
+                            const begin = Offset(1.0, 0.0);
+                            const end = Offset.zero;
                             const curve = Curves.easeInOut;
 
                             var tween = Tween(begin: begin, end: end)
@@ -1042,19 +1137,6 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                           },
                         ),
                       );
-
-                      // Capture user input and print
-                      String ufName = firstNameText.text.trim();
-                      String ulName = lastNameText.text.trim();
-                      String uHdNtr = holdingNtrText.text.trim();
-                      String uOcptn = occupationText.text.trim();
-                      String uPdsDob = _dateController.text.trim();
-                      String uPdsOthrContrl = othersController.text.trim();
-                      String uPdsAddrsContrl = pdsAddressController.text.trim();
-                      String uPanNo = panNoText.text.trim();
-
-                      print(
-                          "First Name: $ufName, Last Name: $ulName, Pan No.: $uPanNo, Holding nature: $uHdNtr, Occupation: $uOcptn, DOB: $uPdsDob, Others Controller: $uPdsOthrContrl, Address Controller: $uPdsAddrsContrl");
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFfdd1a0),

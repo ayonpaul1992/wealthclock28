@@ -17,21 +17,127 @@ class SignupPdsFirst extends StatefulWidget {
 }
 
 class _SignupPdsFirstState extends State<SignupPdsFirst> {
-
   final emailText = TextEditingController();
   final passText = TextEditingController();
   final repassText = TextEditingController();
   final phoneText = TextEditingController();
   final othersController = TextEditingController();
   final pdsAddressController = TextEditingController();
+  FocusNode emailFocusNode = FocusNode();
+  FocusNode phoneFocusNode = FocusNode();
+  FocusNode passFocusNode = FocusNode();
+  FocusNode repassFocusNode = FocusNode();
   bool isLoading = false;
   bool _isPanVisible = false; // For showing a loading spinner
   bool _isrePasVisible = false; // For showing a loading spinner
+  String _emailError = '';
+  String _phoneError = '';
+  String _passError = '';
+  String _repassError = '';
   // Function to show the error or success messages
 
   void _showMessage(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    emailFocusNode.addListener(_handleEmailFocusChange);
+    phoneFocusNode.addListener(_handlePhoneFocusChange);
+    passFocusNode.addListener(_handlePassFocusChange);
+    repassFocusNode.addListener(_handleRepassFocusChange);
+  }
+
+  @override
+  void dispose() {
+    emailFocusNode.removeListener(_handleEmailFocusChange);
+    phoneFocusNode.removeListener(_handlePhoneFocusChange);
+    passFocusNode.removeListener(_handlePassFocusChange);
+    repassFocusNode.removeListener(_handleRepassFocusChange);
+    emailFocusNode.dispose();
+    phoneFocusNode.dispose();
+    passFocusNode.dispose();
+    repassFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _handleEmailFocusChange() {
+    if (!emailFocusNode.hasFocus) {
+      setState(() {
+        _emailError = _validateEmail(emailText.text);
+      });
+    }
+  }
+
+  void _handlePhoneFocusChange() {
+    if (!phoneFocusNode.hasFocus) {
+      setState(() {
+        _phoneError = _validatePhone(phoneText.text);
+      });
+    }
+  }
+
+  void _handlePassFocusChange() {
+    if (!passFocusNode.hasFocus) {
+      setState(() {
+        _passError = _validatePassword(passText.text);
+      });
+    }
+  }
+
+  void _handleRepassFocusChange() {
+    if (!repassFocusNode.hasFocus) {
+      setState(() {
+        _repassError = _validateRePassword(repassText.text);
+      });
+    }
+  }
+
+  String _validateEmail(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) {
+      return 'Please enter your email address.';
+    }
+    if (!trimmed.contains('@') || !trimmed.contains('.')) {
+      return 'Please enter a valid email address.';
+    }
+    return '';
+  }
+
+  String _validatePhone(String value) {
+    if (value.trim().isEmpty) {
+      return 'Please enter your phone number.';
+    }
+    if (value.trim().length != 10) {
+      return 'Phone number must be 10 digits.';
+    }
+    return '';
+  }
+
+  String _validatePassword(String value) {
+    if (value.trim().isEmpty) {
+      return 'Please enter your password.';
+    }
+    // You can add more password strength validation here if needed
+    return '';
+  }
+
+  String _validateRePassword(String value) {
+    if (value.trim().isEmpty) {
+      return 'Please re-enter your password.';
+    }
+    if (value.trim() != passText.text.trim()) {
+      return 'Passwords do not match.';
+    }
+    return '';
+  }
+
+  bool _isValidEmail(String value) {
+    return value.trim().isNotEmpty &&
+        value.trim().contains('@') &&
+        value.trim().contains('.');
   }
 
   @override
@@ -109,7 +215,9 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
               Container(
                 child: Wrap(
                   spacing: 10, // Space between text fields
+
                   runSpacing: 15,
+
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,10 +243,14 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                color: Colors.black
+                                    .withOpacity(0.1), // Shadow color
+
                                 blurRadius: 15, // Blur effect
+
                                 spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
+
+                                offset: Offset(0, 3), // Position of shadow
                               ),
                             ],
                           ),
@@ -152,9 +264,24 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                                 fontSize: 14,
                               ),
                               autofillHints: [AutofillHints.email],
+                              onChanged: (value) {
+                                setState(() {
+                                  _emailError = _validateEmail(value);
+                                });
+                              },
                             ),
                           ),
-                        )
+                        ),
+                        if (_emailError.isNotEmpty)
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(left: 10.0, top: 5.0),
+                            child: Text(
+                              _emailError,
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
+                            ),
+                          ),
                       ],
                     ),
                     Column(
@@ -199,12 +326,30 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                                 fontSize: 14,
                               ),
                               inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly, // Allow only digits
-                                LengthLimitingTextInputFormatter(10), // Limit to 10 characters
+                                FilteringTextInputFormatter
+                                    .digitsOnly, // Allow only digits
+
+                                LengthLimitingTextInputFormatter(
+                                    10), // Limit to 10 characters
                               ],
+                              onChanged: (value) {
+                                setState(() {
+                                  _phoneError = _validatePhone(value);
+                                });
+                              },
                             ),
                           ),
-                        )
+                        ),
+                        if (_phoneError.isNotEmpty)
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(left: 10.0, top: 5.0),
+                            child: Text(
+                              _phoneError,
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
+                            ),
+                          ),
                       ],
                     ),
                     Column(
@@ -231,10 +376,14 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                color: Colors.black
+                                    .withOpacity(0.1), // Shadow color
+
                                 blurRadius: 15, // Blur effect
+
                                 spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
+
+                                offset: Offset(0, 3), // Position of shadow
                               ),
                             ],
                           ),
@@ -242,25 +391,52 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                             width: 171,
                             child: TextField(
                               controller: passText,
-                              obscureText: !_isPanVisible, // Toggle text visibility
-                              decoration: _inputDecoration('**********').copyWith(
+
+                              obscureText:
+                                  !_isPanVisible, // Toggle text visibility
+
+                              decoration:
+                                  _inputDecoration('**********').copyWith(
                                 suffixIcon: IconButton(
                                   icon: Icon(
-                                    _isPanVisible ? Icons.visibility : Icons.visibility_off,
+                                    _isPanVisible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
                                     color: const Color(0xFF648683),
                                   ),
                                   onPressed: () {
                                     setState(() {
-                                      _isPanVisible = !_isPanVisible; // Toggle visibility
+                                      _isPanVisible =
+                                          !_isPanVisible; // Toggle visibility
                                     });
                                   },
                                 ),
                               ),
-                              style: const TextStyle(color: Color(0xFF648683), fontSize: 15),
+
+                              style: const TextStyle(
+                                  color: Color(0xFF648683), fontSize: 15),
+
                               autofillHints: const [AutofillHints.password],
+                              onChanged: (value) {
+                                setState(() {
+                                  _passError = _validatePassword(value);
+                                  _repassError =
+                                      _validateRePassword(repassText.text);
+                                });
+                              },
                             ),
                           ),
-                        )
+                        ),
+                        if (_passError.isNotEmpty)
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(left: 10.0, top: 5.0),
+                            child: Text(
+                              _passError,
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
+                            ),
+                          ),
                       ],
                     ),
                     Column(
@@ -287,10 +463,14 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                color: Colors.black
+                                    .withOpacity(0.1), // Shadow color
+
                                 blurRadius: 15, // Blur effect
+
                                 spreadRadius: 0, // Spread effect
-                                offset: Offset(0,3), // Position of shadow
+
+                                offset: Offset(0, 3), // Position of shadow
                               ),
                             ],
                           ),
@@ -298,25 +478,50 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                             width: 171,
                             child: TextField(
                               controller: repassText,
-                              obscureText: !_isrePasVisible, // Toggle text visibility
-                              decoration: _inputDecoration('**********').copyWith(
+
+                              obscureText:
+                                  !_isrePasVisible, // Toggle text visibility
+
+                              decoration:
+                                  _inputDecoration('**********').copyWith(
                                 suffixIcon: IconButton(
                                   icon: Icon(
-                                    _isrePasVisible ? Icons.visibility : Icons.visibility_off,
+                                    _isrePasVisible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
                                     color: const Color(0xFF648683),
                                   ),
                                   onPressed: () {
                                     setState(() {
-                                      _isrePasVisible = !_isrePasVisible; // Toggle visibility
+                                      _isrePasVisible =
+                                          !_isrePasVisible; // Toggle visibility
                                     });
                                   },
                                 ),
                               ),
-                              style: const TextStyle(color: Color(0xFF648683), fontSize: 15),
+
+                              style: const TextStyle(
+                                  color: Color(0xFF648683), fontSize: 15),
+
                               autofillHints: const [AutofillHints.password],
+                              onChanged: (value) {
+                                setState(() {
+                                  _repassError = _validateRePassword(value);
+                                });
+                              },
                             ),
                           ),
-                        )
+                        ),
+                        if (_repassError.isNotEmpty)
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(left: 10.0, top: 5.0),
+                            child: Text(
+                              _repassError,
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
+                            ),
+                          ),
                       ],
                     ),
                   ],
@@ -328,50 +533,68 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      if (emailText.text.trim().isEmpty ||
-                          phoneText.text.trim().isEmpty ||
-                          passText.text.trim().isEmpty ||
-                          repassText.text.trim().isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please fill in all the fields.')),
-                        );
-                        return; // Do not proceed if fields are empty
+                      // Run all validators and update the UI
+                      setState(() {
+                        _emailError = _validateEmail(emailText.text);
+                        _phoneError = _validatePhone(phoneText.text);
+                        _passError = _validatePassword(passText.text);
+                        _repassError = _validateRePassword(repassText.text);
+                      });
+
+                      // Check if any validation failed
+                      if (_emailError.isNotEmpty ||
+                          _phoneError.isNotEmpty ||
+                          _passError.isNotEmpty ||
+                          _repassError.isNotEmpty) {
+                        // Show the first available error using SnackBar
+                        final firstError = _emailError.isNotEmpty
+                            ? _emailError
+                            : _phoneError.isNotEmpty
+                            ? _phoneError
+                            : _passError.isNotEmpty
+                            ? _passError
+                            : _repassError;
+
+                        // ScaffoldMessenger.of(context).showSnackBar(
+                        //   SnackBar(content: Text(firstError)),
+                        // );
+                        return; // Prevent navigation
                       }
 
-                      if (!emailText.text.trim().contains('@') || !emailText.text.trim().contains('.')) {
+                      // Final checks (redundant safety for double protection)
+                      final phone = phoneText.text.trim();
+                      final pass = passText.text.trim();
+                      final repass = repassText.text.trim();
+
+                      if (phone.length != 10 || !RegExp(r'^\d{10}$').hasMatch(phone)) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please enter a valid email address.')),
+                          SnackBar(content: Text('Phone number must be exactly 10 digits.')),
                         );
                         return;
                       }
 
-                      if (phoneText.text.trim().length != 10) {
+                      if (pass != repass) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Phone number must be 10 digits.')),
+                          SnackBar(content: Text('Passwords do not match.')),
                         );
                         return;
                       }
 
-                      if (passText.text.trim() != repassText.text.trim()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Passwords do not match.')),
-                        );
-                        return; // Do not proceed if passwords don't match
-                      }
-
+                      // ✅ All validations passed, move to next page
                       Navigator.push(
                         context,
                         PageRouteBuilder(
                           transitionDuration: const Duration(milliseconds: 500),
-                          pageBuilder: (context, animation, secondaryAnimation) => const SignupPdsPage(),
-                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          pageBuilder: (context, animation, secondaryAnimation) =>
+                          const SignupPdsPage(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
                             const begin = Offset(1.0, 0.0);
                             const end = Offset.zero;
                             const curve = Curves.easeInOut;
-
-                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
                             var offsetAnimation = animation.drive(tween);
-
                             return SlideTransition(
                               position: offsetAnimation,
                               child: child,
@@ -380,22 +603,21 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                         ),
                       );
 
-                      // Capture user input and print
-                      String uemailText = emailText.text.trim();
-                      String upassText = passText.text.trim();
-                      String urepassText = repassText.text.trim();
-                      String uphoneText = phoneText.text.trim();
-                      String uPdsOthrContrl = othersController.text.trim();
-                      String uPdsAddrsContrl = pdsAddressController.text.trim();
-
-                      print("Others Controller: $uPdsOthrContrl, Address Controller: $uPdsAddrsContrl, Email Id: $uemailText, Password: $upassText, Re-Password: $urepassText, Phone: $uphoneText");
+                      // (Optional) Print captured data for debug
+                      print("Email: ${emailText.text.trim()}");
+                      print("Phone: $phone");
+                      print("Password: $pass");
+                      print("Re-Password: $repass");
+                      print("Others: ${othersController.text.trim()}");
+                      print("Address: ${pdsAddressController.text.trim()}");
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFfdd1a0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 35),
                     ),
                     child: Text(
                       'Next'.toUpperCase(),
@@ -469,15 +691,28 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                                       Navigator.push(
                                         context,
                                         PageRouteBuilder(
-                                          transitionDuration: Duration(milliseconds: 500), // ✅ Smooth transition
-                                          pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
-                                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                            const begin = Offset(-1.0, 0.0); // ✅ Slide from right
-                                            const end = Offset.zero; // ✅ End position (normal)
+                                          transitionDuration: Duration(
+                                              milliseconds:
+                                                  500), // ✅ Smooth transition
+                                          pageBuilder: (context, animation,
+                                                  secondaryAnimation) =>
+                                              const LoginPage(),
+                                          transitionsBuilder: (context,
+                                              animation,
+                                              secondaryAnimation,
+                                              child) {
+                                            const begin = Offset(-1.0,
+                                                0.0); // ✅ Slide from right
+                                            const end = Offset
+                                                .zero; // ✅ End position (normal)
                                             const curve = Curves.easeInOut;
 
-                                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                                            var offsetAnimation = animation.drive(tween);
+                                            var tween = Tween(
+                                                    begin: begin, end: end)
+                                                .chain(
+                                                    CurveTween(curve: curve));
+                                            var offsetAnimation =
+                                                animation.drive(tween);
 
                                             return SlideTransition(
                                               position: offsetAnimation,
@@ -496,7 +731,6 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                                       ),
                                     ),
                                   ),
-
                                 ],
                               ),
                             ),
@@ -543,5 +777,4 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
       ),
     );
   }
-
 }
