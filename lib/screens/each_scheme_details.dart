@@ -1205,7 +1205,6 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                         ),
                                                       ),
                                                     ),
-
                                                     Column(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
@@ -1289,7 +1288,6 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                         ),
                                                       ],
                                                     ),
-
                                                     Padding(
                                                       padding: EdgeInsets.only(
                                                           left: 10, right: 10),
@@ -1303,7 +1301,6 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                         ),
                                                       ),
                                                     ),
-
                                                     Column(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
@@ -1400,62 +1397,6 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                         ),
                                                       ],
                                                     ),
-
-                                                    // Column(
-                                                    //   crossAxisAlignment:
-                                                    //       CrossAxisAlignment
-                                                    //           .start,
-                                                    //   children: [
-                                                    //     Column(
-                                                    //       crossAxisAlignment:
-                                                    //           CrossAxisAlignment
-                                                    //               .center,
-                                                    //       children: [
-                                                    //         SizedBox(
-                                                    //           height: 54,
-                                                    //         ),
-                                                    //         Text(
-                                                    //           'Balance',
-                                                    //           style: GoogleFonts.poppins(
-                                                    //               color: Color(
-                                                    //                   0xFF0f625c),
-                                                    //               fontSize: 13,
-                                                    //               fontWeight:
-                                                    //                   FontWeight
-                                                    //                       .w500),
-                                                    //         ),
-                                                    //         Text(
-                                                    //           NumberFormat
-                                                    //               .currency(
-                                                    //             locale:
-                                                    //                 'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
-                                                    //             symbol:
-                                                    //                 '', // Change the symbol as needed
-                                                    //             decimalDigits:
-                                                    //                 2, // Number of decimal places
-                                                    //           ).format(double.tryParse(transBalancedUnits[
-                                                    //                       index]
-                                                    //                   .replaceAll(
-                                                    //                       ',',
-                                                    //                       '')) ??
-                                                    //               0.00),
-                                                    //           style: GoogleFonts
-                                                    //               .poppins(
-                                                    //             color: Color(
-                                                    //                 0xFF0f625c),
-                                                    //             fontSize: 14,
-                                                    //             fontWeight:
-                                                    //                 FontWeight
-                                                    //                     .w500,
-                                                    //           ),
-                                                    //         ),
-                                                    //       ],
-                                                    //     ),
-                                                    //     SizedBox(
-                                                    //       height: 10,
-                                                    //     ),
-                                                    //   ],
-                                                    // ),
                                                   ],
                                                 ),
                                               ),
@@ -1482,7 +1423,7 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(selectedIndex: 0),
+      bottomNavigationBar: CustomBottomNavBar(selectedIndex: -1),
     );
   }
 
