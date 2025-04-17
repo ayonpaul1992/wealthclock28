@@ -86,6 +86,12 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
   }
   bool isLoading = false;
   bool isNomineeBox = false;
+  String? nomineeError;
+  String? nomineePanError;
+  String? relationshipError;
+  String? nomineedobError;
+  String? nomineeShareError;
+  String? panError;
   DateTime? _selectedDate;
   void _showDatePicker(BuildContext context) {
     showModalBottomSheet(
@@ -294,6 +300,117 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
       });
     }
   }
+
+  // void saveNominee() {
+  //   bool hasError = false;
+  //   setState(() {
+  //     // Reset error messages
+  //     nomineeError = nomineePanError = nomineedobError =
+  //         nomineeShareError = relationshipError = null;
+  //
+  //     // Validations
+  //     if (nomineeNameText.text.trim().isEmpty) {
+  //       nomineeError = 'Nominee name is required.';
+  //       hasError = true;
+  //     }
+  //     if (relationshipText.text.trim().isEmpty) {
+  //       relationshipError = 'Please select an option.';
+  //       hasError = true;
+  //     }
+  //     if (_dateController.text.trim().isEmpty) {
+  //       nomineedobError = 'Date of Birth is required.';
+  //       hasError = true;
+  //     }
+  //     if (nomineeShareText.text.trim().isEmpty) {
+  //       nomineeShareError = 'Nominee share is required.';
+  //       hasError = true;
+  //     }
+  //     // PAN Number Validation
+  //     String pan = nomineePanText.text.trim().toUpperCase();
+  //     RegExp panRegExp = RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$');
+  //     if (pan.isEmpty) {
+  //       nomineePanError = 'PAN number is required.';
+  //       hasError = true;
+  //     } else if (!panRegExp.hasMatch(pan)) {
+  //       nomineePanError = 'Invalid PAN format.';
+  //       hasError = true;
+  //     }
+  //
+  //     if (!hasError) {
+  //       if (editingIndex != null) {
+  //         // Editing an existing nominee:
+  //
+  //         int newShare = int.tryParse(nomineeShareText.text) ?? 0;
+  //         int oldShare =
+  //             int.tryParse(savedNominees[editingIndex!]['share'] ?? '0') ?? 0;
+  //         if ((totalShare - oldShare + newShare) > 100) {
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(content: Text("Total share cannot exceed 100%.")),
+  //           );
+  //           return;
+  //         }
+  //
+  //         setState(() {
+  //           savedNominees[editingIndex!] = {
+  //             'name': nomineeNameText.text,
+  //             'pan': nomineePanText.text,
+  //             'relationship': relationshipText.text,
+  //             'dob': _dateController.text,
+  //             'share': nomineeShareText.text,
+  //           };
+  //           totalShare = totalShare - oldShare + newShare;
+  //           editingIndex = null; // Clear editing state
+  //           // Clear form fields after update:
+  //           nomineeNameText.clear();
+  //           nomineePanText.clear();
+  //           relationshipText.clear();
+  //           _dateController.clear();
+  //           nomineeShareText.clear();
+  //         });
+  //       } else {
+  //         // Adding a new nominee:
+  //
+  //         if (savedNominees.length >= 3) {
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(content: Text("Cannot add more than 3 nominees.")),
+  //           );
+  //           return;
+  //         }
+  //
+  //         int newShare = int.tryParse(nomineeShareText.text) ?? 0;
+  //         if (totalShare + newShare > 100) {
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(content: Text("Total share cannot exceed 100%.")),
+  //           );
+  //           return;
+  //         }
+  //
+  //         setState(() {
+  //           savedNominees.add({
+  //             'name': nomineeNameText.text,
+  //             'pan': nomineePanText.text,
+  //             'relationship': relationshipText.text,
+  //             'dob': _dateController.text,
+  //             'share': nomineeShareText.text,
+  //           });
+  //
+  //           totalShare += newShare;
+  //           isNomineeBoxList.add(false);
+  //
+  //           nomineeNameText.clear();
+  //           nomineePanText.clear();
+  //           relationshipText.clear();
+  //           _dateController.clear();
+  //           nomineeShareText.clear();
+  //
+  //           showNomineeForms = [false, false];
+  //           openFormCount = 0;
+  //         });
+  //       }
+  //     }
+  //   });
+  //   if (hasError) return; // 🚫 Stop if any validation error exists
+  // }
 
   void deleteSavedNominee(int index) {
     setState(() {
@@ -596,9 +713,25 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                                   LengthLimitingTextInputFormatter(
                                                       25), // Limit to 25 characters
                                                 ],
+                                                onChanged: (value) {
+                                                  if (value.isNotEmpty && nomineeError != null) {
+                                                    setState(() {
+                                                      nomineeError = null;
+                                                    });
+                                                  }
+                                                },
                                               ),
                                             ),
                                           ),
+                                          if (nomineeError != null)
+                                            Padding(
+                                              padding: const EdgeInsets.only(left: 8.0, top: 5),
+                                              child: Text(
+                                                nomineeError!,
+                                                style: const TextStyle(
+                                                    color: Colors.red, fontSize: 12),
+                                              ),
+                                            ),
                                         ],
                                       ),
                                       Column(
@@ -680,6 +813,19 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                               ),
                                             ],
                                           ),
+                                          if (relationshipError != null)
+                                            const SizedBox(height: 6),
+                                          if (relationshipError != null)
+                                            Padding(
+                                              padding: const EdgeInsets.only(left: 12.0),
+                                              child: Text(
+                                                relationshipError!,
+                                                style: const TextStyle(
+                                                  color: Colors.red,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
                                         ],
                                       ),
                                       Column(
@@ -741,6 +887,17 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                               ),
                                             ),
                                           ),
+                                          if (nomineedobError != null)
+                                            Padding(
+                                              padding: const EdgeInsets.only(left: 12.0, top: 5),
+                                              child: Text(
+                                                nomineedobError!,
+                                                style: const TextStyle(
+                                                  color: Colors.red,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
                                         ],
                                       ),
                                       Column(
@@ -783,9 +940,25 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                                   FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
                                                   LengthLimitingTextInputFormatter(10),
                                                 ],
+                                                onChanged: (value) {
+                                                  if (value.length == 10 && nomineePanError != null) {
+                                                    setState(() {
+                                                      nomineePanError = null;
+                                                    });
+                                                  }
+                                                },
                                               ),
                                             ),
                                           ),
+                                          if (nomineePanError != null)
+                                            Padding(
+                                              padding: const EdgeInsets.only(left: 8.0, top: 5),
+                                              child: Text(
+                                                nomineePanError!,
+                                                style: const TextStyle(
+                                                    color: Colors.red, fontSize: 12),
+                                              ),
+                                            ),
                                         ],
                                       ),
                                       buildNomineeShareField(),
@@ -834,17 +1007,45 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                               children: [
                                 TextButton(
                                   onPressed: () {
-                                    // PAN Number Validation
-                                    String pan = nomineePanText.text.trim().toUpperCase(); // Convert to uppercase for consistency
-                                    RegExp panRegExp = RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$'); // PAN format regex
+                                    bool hasError = false;
+                                    setState(() {
 
-                                    if (!panRegExp.hasMatch(pan)) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Invalid PAN number format.')),
-                                      );
-                                      return; // Do not proceed if PAN is invalid
+
+                                    // Reset error messages
+                                    nomineeError = nomineePanError= nomineedobError = nomineeShareError = relationshipError = null;
+
+                                    // Validations
+                                    if (nomineeNameText.text.trim().isEmpty) {
+                                      nomineeError = 'Nominee name is required.';
+                                      hasError = true;
+                                    }
+                                    if (relationshipText.text.trim().isEmpty) {
+                                      relationshipError = 'Please select an option.';
+                                      hasError = true;
+                                    }
+                                    if (_dateController.text.trim().isEmpty) {
+                                      nomineedobError = 'Date of Birth is required.';
+                                      hasError = true;
+                                    }
+                                    if (nomineeShareText.text.trim().isEmpty) {
+                                      nomineeShareError = 'Nominee share is required.';
+                                      hasError = true;
+                                    }
+                                    // PAN Number Validation
+                                    String pan = nomineePanText.text.trim().toUpperCase();
+                                    RegExp panRegExp =
+                                    RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$');
+                                    if (pan.isEmpty) {
+                                      nomineePanError = 'PAN number is required.';
+                                      hasError = true;
+                                    } else if (!panRegExp.hasMatch(pan)) {
+                                      nomineePanError = 'Invalid PAN format.';
+                                      hasError = true;
                                     }
                                     saveNominee();
+                                    });
+                                    if (hasError)
+                                      return; // 🚫 Stop navigation if any error exists
                                   },
                                   child: Text(
                                     '+ Add New Nominee',
@@ -1370,6 +1571,15 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
             ),
           ),
         ),
+        if (nomineeShareError != null)
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0, top: 5),
+            child: Text(
+              nomineeShareError!,
+              style: const TextStyle(
+                  color: Colors.red, fontSize: 12),
+            ),
+          ),
       ],
     );
   }

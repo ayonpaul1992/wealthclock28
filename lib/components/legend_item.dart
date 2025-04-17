@@ -21,7 +21,7 @@ class LegendItem extends StatelessWidget {
       children: [
         Container(
           color: color,
-          width: 4,
+          width: 3,
           height: 30,
         ),
         const SizedBox(width: 10),
@@ -34,7 +34,7 @@ class LegendItem extends StatelessWidget {
                 title,
                 style: GoogleFonts.poppins(
                   color: const Color(0xFF303131),
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -42,7 +42,7 @@ class LegendItem extends StatelessWidget {
                 '$percentage%',
                 style: GoogleFonts.poppins(
                   color: const Color(0xFF8c8c8c),
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -54,7 +54,7 @@ class LegendItem extends StatelessWidget {
           amount,
           style: GoogleFonts.poppins(
             color: const Color(0xFF0f625c),
-            fontSize: 14,
+            fontSize: 13,
             fontWeight: FontWeight.w500,
           ),
         ),

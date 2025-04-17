@@ -265,7 +265,7 @@ class _IndividualPortfolioPageState extends State<IndividualPortfolioPage> {
                 ),
               ),
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -403,8 +403,8 @@ class _IndividualPortfolioPageState extends State<IndividualPortfolioPage> {
                         padding: EdgeInsets.only(
                           top: 26,
                           bottom: 13,
-                          left: 18,
-                          right: 18,
+                          left: 10,
+                          right: 10,
                         ),
                         child: Column(
                           children: [
@@ -446,12 +446,12 @@ class _IndividualPortfolioPageState extends State<IndividualPortfolioPage> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(width: 20),
+                                  SizedBox(width: 15),
 
                                   // Right Section: Pie Chart
                                   SizedBox(
-                                    height: 140, // Adjust as needed
-                                    width: 140, // Adjust as needed
+                                    height: 120, // Adjust as needed
+                                    width: 120, // Adjust as needed
                                     child: PieChart(
                                       PieChartData(
                                         sections: [

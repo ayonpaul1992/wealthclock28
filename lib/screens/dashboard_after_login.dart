@@ -247,7 +247,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                 ),
               ),
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -383,10 +383,10 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                       ),
                       child: Padding(
                         padding: EdgeInsets.only(
-                          top: 26,
+                          top: 20,
                           bottom: 13,
-                          left: 18,
-                          right: 18,
+                          left: 10,
+                          right: 10,
                         ),
                         child: Column(
                           children: [
@@ -428,12 +428,12 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(width: 20),
+                                  SizedBox(width:15),
 
                                   // Right Section: Pie Chart
                                   SizedBox(
-                                    height: 140, // Adjust as needed
-                                    width: 140, // Adjust as needed
+                                    height: 120, // Adjust as needed
+                                    width: 120, // Adjust as needed
                                     child: PieChart(
                                       PieChartData(
                                         sections: [
@@ -656,6 +656,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                         ),
                       ),
                     ),
+                    SizedBox(height: 20),
                   ],
                 ),
               ),

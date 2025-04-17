@@ -52,7 +52,7 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
   String otherAmount = '0.00';
 
   String currentDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
-
+  bool _isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -67,6 +67,7 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
 
     if (authToken == null || authToken.isEmpty) {
       setState(() {
+        _isLoading = false;
         userName = userCurrentValue = userTotalGain =
             cumulativeXirrValue = absoluteReturnValue = "Auth token not found!";
         schemeName = schemeCurrentValue =
@@ -140,6 +141,7 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
           }
 
           setState(() {
+            _isLoading = false;
             userName = fetchedName;
             cumulativeXirrValue = cumulativeXirr;
             absoluteReturnValue = absoluteReturn;
@@ -180,10 +182,11 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
           });
         } else {
           setState(() {
-            userName = "Invalid data format";
+            _isLoading = false;
+            userName = "";
             cumulativeXirrValue = "No Value";
             absoluteReturnValue = "No Value";
-            schemeName = "Invalid data format";
+            schemeName = "";
             userCurrentValue = userTotalGain = "0.00";
             equityPercentage = "0.00";
             equityAmount = "0.00";
@@ -197,9 +200,10 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
         }
       } else {
         final errorMessage = response.statusCode == 400
-            ? json.decode(response.body)["message"] ?? "Bad Request"
-            : "Error ${response.statusCode}: Something went wrong!";
+            ? json.decode(response.body)["message"] ?? "0"
+            : "0";
         setState(() {
+          _isLoading = false;
           userName = userCurrentValue = userTotalGain =
               cumulativeXirrValue = absoluteReturnValue = errorMessage;
           schemeName = errorMessage;
@@ -217,10 +221,11 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
       //print('Error: $e');
       //print('StackTrace: $stackTrace');
       setState(() {
-        userName = "Error fetching data!";
+        _isLoading = false;
+        userName = "";
         cumulativeXirrValue = "0.00";
         absoluteReturnValue = "0.00";
-        schemeName = "Error fetching data!";
+        schemeName = "";
         userCurrentValue = userTotalGain = "0.00";
         equityPercentage = "0.00";
         equityAmount = "0.00";
@@ -402,8 +407,8 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                         padding: EdgeInsets.only(
                           top: 26,
                           bottom: 13,
-                          left: 18,
-                          right: 18,
+                          left: 10,
+                          right: 10,
                         ),
                         child: Column(
                           children: [
@@ -445,12 +450,12 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(width: 20),
+                                  SizedBox(width: 15),
 
                                   // Right Section: Pie Chart
                                   SizedBox(
-                                    height: 140, // Adjust as needed
-                                    width: 140, // Adjust as needed
+                                    height: 120, // Adjust as needed
+                                    width: 120, // Adjust as needed
                                     child: PieChart(
                                       PieChartData(
                                         sections: [
@@ -525,327 +530,266 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                     ),
 
                     Container(
-                      child: schemes.isNotEmpty
-                          ? ListView.builder(
-                              shrinkWrap: true,
-                              physics: BouncingScrollPhysics(),
-                              itemCount: schemes
-                                  .where((scheme) =>
-                                      (scheme['current_val'] ?? 0) != 0 ||
-                                      (scheme['Invested_val'] ?? 0) != 0)
-                                  .length, // Count only schemes that have non-zero values
-                              itemBuilder: (context, index) {
-                                var validSchemes = schemes
-                                    .where((scheme) =>
-                                        (scheme['current_val'] ?? 0) != 0 ||
-                                        (scheme['Invested_val'] ?? 0) != 0)
-                                    .toList();
+                      child: Builder(
+                        builder: (context) {
+                          // Filter valid schemes
+                          final validSchemes = schemes.where((scheme) =>
+                          (scheme['current_val'] != null &&
+                              scheme['current_val'].toString() != '0') ||
+                              (scheme['Invested_val'] != null &&
+                                  scheme['Invested_val'].toString() != '0')).toList();
 
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical:
-                                          8), // Adds spacing between items
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      elevation: 3,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      backgroundColor: Colors.white,
-                                      padding: EdgeInsets
-                                          .zero, // Ensure no unwanted padding
-                                    ),
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              IndividualPortfolioPage(
-                                            memberPan: validSchemes[index]
-                                                    ['member_pan'] ??
-                                                validSchemes[index]
-                                                    ['member_code'],
-                                          ),
-                                          //     familySchemeDetails(
-                                          //   scheme: validSchemes[index],
-                                          // ),
-                                        ),
-                                      );
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.all(15),
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.white,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Expanded(
-                                                child: Text(
-                                                  validSchemes[index]
-                                                              ['member_name']
-                                                          ?.toString() ??
-                                                      'N/A', // Dynamically display scheme name
-                                                  style: GoogleFonts.poppins(
-                                                    color: Color(0xFF0f625c),
-                                                    fontSize: 17,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ),
-                                              Icon(
-                                                Icons.arrow_forward_ios,
-                                                color: Color(0xFF0d958b),
-                                                size: 18,
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(height: 10),
-                                          Text(
-                                            NumberFormat.currency(
-                                              locale:
-                                                  'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
-                                              symbol:
-                                                  '₹ ', // Change to '$', '€', etc., as needed
-                                              decimalDigits:
-                                                  2, // Ensures two decimal places
-                                            ).format(double.tryParse(
-                                                    validSchemes[index]
-                                                                ['current_val']
-                                                            ?.toString()
-                                                            .replaceAll(
-                                                                ',', '') ??
-                                                        '0') ??
-                                                0.00),
-                                            style: GoogleFonts.poppins(
-                                              color: Color(0xFF0f625c),
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                          SizedBox(height: 10),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Column(
-                                                children: [
-                                                  Text(
-                                                    'Cost Amount',
-                                                    style: GoogleFonts.poppins(
-                                                      color: Color(0xFF8c8c8c),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    NumberFormat.currency(
-                                                      locale:
-                                                          'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
-                                                      symbol:
-                                                          '₹ ', // Change this as needed
-                                                      decimalDigits:
-                                                          2, // Ensures two decimal places
-                                                    ).format(double.tryParse(
-                                                            validSchemes[index][
-                                                                        'Invested_val']
-                                                                    ?.toString()
-                                                                    .replaceAll(
-                                                                        ',',
-                                                                        '') ??
-                                                                '0') ??
-                                                        0.00),
-                                                    style: GoogleFonts.poppins(
-                                                      color: Color(0xFF303131),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Column(
-                                                children: [
-                                                  Text(
-                                                    'Folio No.',
-                                                    style: GoogleFonts.poppins(
-                                                      color: Color(0xFF8c8c8c),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    'N/A', // Dynamic folio number
-                                                    style: GoogleFonts.poppins(
-                                                      color: Color(0xFF303131),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Column(
-                                                children: [
-                                                  Text(
-                                                    'Gain/Loss',
-                                                    style: GoogleFonts.poppins(
-                                                      color: Color(0xFF8c8c8c),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      // Parse gain/loss value from string to double
-                                                      Builder(
-                                                        builder: (context) {
-                                                          double gainLoss = double.tryParse(calculateGainLoss(
-                                                                  validSchemes[
-                                                                          index]
-                                                                      [
-                                                                      'current_val'],
-                                                                  validSchemes[
-                                                                          index]
-                                                                      [
-                                                                      'Invested_val'])) ??
-                                                              0.0; // Default to 0.0 if parsing fails
-
-                                                          return Row(
-                                                            children: [
-                                                              Icon(
-                                                                gainLoss >= 0
-                                                                    ? Icons
-                                                                        .arrow_upward
-                                                                    : Icons
-                                                                        .arrow_downward,
-                                                                color: gainLoss >=
-                                                                        0
-                                                                    ? Color(
-                                                                        0xFF09a99d)
-                                                                    : Color(
-                                                                        0xFFD32F2F),
-                                                                size: 15,
-                                                              ),
-                                                              Text(
-                                                                NumberFormat
-                                                                    .currency(
-                                                                  locale:
-                                                                      'en_IN', // Use 'en_US' for US format or 'en_IN' for Indian format
-                                                                  symbol:
-                                                                      '₹ ', // Change symbol as needed
-                                                                  decimalDigits:
-                                                                      2, // Ensures two decimal places
-                                                                ).format(
-                                                                    gainLoss),
-                                                                style:
-                                                                    GoogleFonts
-                                                                        .poppins(
-                                                                  color: gainLoss >=
-                                                                          0
-                                                                      ? Color(
-                                                                          0xFF09a99d)
-                                                                      : Color(
-                                                                          0xFFD32F2F),
-                                                                  fontSize: 14,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          );
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                              top: 18,
-                                              bottom: 18,
-                                            ),
-                                            width: double.infinity,
-                                            color: Color(0xFFd7d7d7),
-                                            height: 1,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    'Abs. Ret.: ',
-                                                    style: GoogleFonts.poppins(
-                                                      color: Color(0xFF0f625c),
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    ' ${validSchemes[index]['abs_return']?.toString() ?? '0'}%', // Dynamic XIRR
-                                                    style: GoogleFonts.poppins(
-                                                      color: Color(0xFF0f625c),
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(width: 15),
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    'XIRR:',
-                                                    style: GoogleFonts.poppins(
-                                                      color: Color(0xFF0f625c),
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    ' ${validSchemes[index]['xirr']?.toString() ?? '0'}%', // Dynamic XIRR
-                                                    style: GoogleFonts.poppins(
-                                                      color: Color(0xFF0f625c),
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            )
-                          : Center(
+                          // If still loading
+                          if (_isLoading) {
+                            return const Center(
                               child: CircularProgressIndicator(
                                 color: Color(0xFF0f625c),
                               ),
-                            ),
-                    ),
+                            );
+                          }
+
+                          // If no valid schemes found
+                          if (validSchemes.isEmpty) {
+                            return Center(
+                              child: Text(
+                                'No valid family member found',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 15,
+                                  color: Color(0xFF0f625c),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            );
+                          }
+
+                          // Show list of valid schemes
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: validSchemes.length,
+                            itemBuilder: (context, index) {
+                              final scheme = validSchemes[index];
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 3,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    backgroundColor: Colors.white,
+                                    padding: EdgeInsets.zero,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => IndividualPortfolioPage(
+                                          memberPan: scheme['member_pan'] ?? scheme['member_code'],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(15),
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.white,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // Member Name
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                scheme['member_name']?.toString() ?? 'N/A',
+                                                style: GoogleFonts.poppins(
+                                                  color: Color(0xFF0f625c),
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                            const Icon(Icons.arrow_forward_ios,
+                                                color: Color(0xFF0d958b), size: 18),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+
+                                        // Current Value
+                                        Text(
+                                          NumberFormat.currency(
+                                            locale: 'en_IN',
+                                            symbol: '₹ ',
+                                            decimalDigits: 2,
+                                          ).format(double.tryParse(
+                                              scheme['current_val']
+                                                  ?.toString()
+                                                  .replaceAll(',', '') ??
+                                                  '0') ??
+                                              0.0),
+                                          style: GoogleFonts.poppins(
+                                            color: Color(0xFF0f625c),
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+
+                                        // Cost Amount, Folio No., Gain/Loss
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Text('Cost Amount',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF8c8c8c),
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w500)),
+                                                Text(
+                                                  NumberFormat.currency(
+                                                    locale: 'en_IN',
+                                                    symbol: '₹ ',
+                                                    decimalDigits: 2,
+                                                  ).format(double.tryParse(
+                                                      scheme['Invested_val']
+                                                          ?.toString()
+                                                          .replaceAll(',', '') ??
+                                                          '0') ??
+                                                      0.0),
+                                                  style: GoogleFonts.poppins(
+                                                    color: Color(0xFF303131),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Column(
+                                              children: [
+                                                Text('Folio No.',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF8c8c8c),
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w500)),
+                                                Text(
+                                                  'N/A', // Replace with actual folio if available
+                                                  style: GoogleFonts.poppins(
+                                                    color: Color(0xFF303131),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Column(
+                                              children: [
+                                                Text('Gain/Loss',
+                                                    style: GoogleFonts.poppins(
+                                                        color: Color(0xFF8c8c8c),
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w500)),
+                                                Builder(builder: (context) {
+                                                  double gainLoss = double.tryParse(
+                                                      calculateGainLoss(
+                                                          scheme['current_val'],
+                                                          scheme['Invested_val'])) ??
+                                                      0.0;
+                                                  return Row(
+                                                    children: [
+                                                      Icon(
+                                                        gainLoss >= 0
+                                                            ? Icons.arrow_upward
+                                                            : Icons.arrow_downward,
+                                                        color: gainLoss >= 0
+                                                            ? Color(0xFF09a99d)
+                                                            : Color(0xFFD32F2F),
+                                                        size: 15,
+                                                      ),
+                                                      Text(
+                                                        NumberFormat.currency(
+                                                          locale: 'en_IN',
+                                                          symbol: '₹ ',
+                                                          decimalDigits: 2,
+                                                        ).format(gainLoss),
+                                                        style: GoogleFonts.poppins(
+                                                          color: gainLoss >= 0
+                                                              ? Color(0xFF09a99d)
+                                                              : Color(0xFFD32F2F),
+                                                          fontSize: 14,
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                }),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 18),
+                                        const Divider(color: Color(0xFFd7d7d7), height: 1),
+                                        const SizedBox(height: 18),
+
+                                        // Abs Return & XIRR
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text('Abs. Ret.: ',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF0f625c),
+                                                      fontSize: 15,
+                                                      fontWeight: FontWeight.w400,
+                                                    )),
+                                                Text(
+                                                  '${scheme['abs_return']?.toString() ?? '0'}%',
+                                                  style: GoogleFonts.poppins(
+                                                    color: Color(0xFF0f625c),
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(width: 15),
+                                            Row(
+                                              children: [
+                                                Text('XIRR:',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF0f625c),
+                                                      fontSize: 15,
+                                                      fontWeight: FontWeight.w400,
+                                                    )),
+                                                Text(
+                                                  '${scheme['xirr']?.toString() ?? '0'}%',
+                                                  style: GoogleFonts.poppins(
+                                                    color: Color(0xFF0f625c),
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    )
+
                     // Add more widgets here
                   ],
                 ),

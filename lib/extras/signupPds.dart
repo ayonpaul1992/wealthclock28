@@ -985,6 +985,13 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                 color: Color(0xFF648683),
                                 fontSize: 14,
                               ),
+                              onChanged: (value) {
+                                if (value.length == 10 && addressError != null) {
+                                  setState(() {
+                                    addressError = null;
+                                  });
+                                }
+                              },
                             ),
                           ),
                         ),

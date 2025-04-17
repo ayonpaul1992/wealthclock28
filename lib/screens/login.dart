@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:wealthclock28/extras/signupPdsfirst.dart';
@@ -12,6 +13,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboard_after_login.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    return newValue.copyWith(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
+  }
+}
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -211,7 +224,10 @@ class _LoginPageState extends State<LoginPage> {
                 controller: panText,
                 decoration: _inputDecoration('PAN ID (Optional)'),
                 style: const TextStyle(color: Color(0xFF648683), fontSize: 15),
-                // autofillHints: [AutofillHints.panNumber],
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9]')), // Only uppercase letters & numbers
+                  UpperCaseTextFormatter(), // Converts lowercase to uppercase automatically
+                ],
               ),
               const SizedBox(height: 14),
               ElevatedButton(
@@ -313,87 +329,87 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
-                    // Stack(
-                    //   children: [
-                    //     Container(
-                    //       margin: const EdgeInsets.only(top: 40, bottom: 30),
-                    //       width: double.infinity,
-                    //       height: 1,
-                    //       color: const Color(0xFFc7d2d0),
-                    //     ),
-                    //     Positioned(
-                    //       top: 22,
-                    //       left: 160,
-                    //       child: Container(
-                    //         width: 33,
-                    //         height: 33,
-                    //         decoration: BoxDecoration(
-                    //           color: Colors.white,
-                    //           borderRadius: BorderRadius.circular(100),
-                    //         ),
-                    //         child: Center(
-                    //           child: Text(
-                    //             'or',
-                    //             style: GoogleFonts.poppins(
-                    //               color: const Color(0xFF648683),
-                    //               fontSize: 17,
-                    //               fontWeight: FontWeight.w400,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                    // Container(
-                    //   width: 400,
-                    //   margin: const EdgeInsets.only(top: 0),
-                    //   child: Wrap(
-                    //     alignment: WrapAlignment.center,
-                    //     children: [
-                    //       Text(
-                    //         'Don’t have an account?',
-                    //         style: GoogleFonts.poppins(
-                    //           color: const Color(0xFF0f625c),
-                    //           fontSize: 17,
-                    //           fontWeight: FontWeight.w500,
-                    //         ),
-                    //       ),
-                    //       InkWell(
-                    //         onTap: () {
-                    //           Navigator.push(
-                    //             context,
-                    //             PageRouteBuilder(
-                    //               transitionDuration: Duration(milliseconds: 500), // ✅ Smooth transition
-                    //               pageBuilder: (context, animation, secondaryAnimation) => const SignupPdsFirst(),
-                    //               transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    //                 const begin = Offset(1.0, 0.0); // ✅ Slide from right
-                    //                 const end = Offset.zero; // ✅ End position (normal)
-                    //                 const curve = Curves.easeInOut;
-                    //
-                    //                 var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                    //                 var offsetAnimation = animation.drive(tween);
-                    //
-                    //                 return SlideTransition(
-                    //                   position: offsetAnimation,
-                    //                   child: child,
-                    //                 );
-                    //               },
-                    //             ),
-                    //           );
-                    //         },
-                    //         child: Text(
-                    //           'Sign Up',
-                    //           style: GoogleFonts.poppins(
-                    //             color: const Color(0xFF0da99e),
-                    //             fontSize: 17,
-                    //             fontWeight: FontWeight.w500,
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
+                    Stack(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 40, bottom: 30),
+                          width: double.infinity,
+                          height: 1,
+                          color: const Color(0xFFc7d2d0),
+                        ),
+                        Positioned(
+                          top: 22,
+                          left: 160,
+                          child: Container(
+                            width: 33,
+                            height: 33,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'or',
+                                style: GoogleFonts.poppins(
+                                  color: const Color(0xFF648683),
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      width: 400,
+                      margin: const EdgeInsets.only(top: 0),
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        children: [
+                          Text(
+                            'Don’t have an account?',
+                            style: GoogleFonts.poppins(
+                              color: const Color(0xFF0f625c),
+                              fontSize: 17,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  transitionDuration: Duration(milliseconds: 500), // ✅ Smooth transition
+                                  pageBuilder: (context, animation, secondaryAnimation) => const SignupPdsFirst(),
+                                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                    const begin = Offset(1.0, 0.0); // ✅ Slide from right
+                                    const end = Offset.zero; // ✅ End position (normal)
+                                    const curve = Curves.easeInOut;
+
+                                    var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                                    var offsetAnimation = animation.drive(tween);
+
+                                    return SlideTransition(
+                                      position: offsetAnimation,
+                                      child: child,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'Sign Up',
+                              style: GoogleFonts.poppins(
+                                color: const Color(0xFF0da99e),
+                                fontSize: 17,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),

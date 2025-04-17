@@ -105,6 +105,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
   String? micrError;
   String? acNoError;
   String? branchNameError;
+  String? bankNameError;
   String? acTypeError;
 
   // check button nominee applicable purpose start
@@ -225,10 +226,10 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                 color: Color(0xFF648683),
                                 fontSize: 14,
                               ),
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(
-                                      20), // Limit to 25 characters
-                                ],
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(
+                                    20), // Limit to 25 characters
+                              ],
                               onChanged: (value) {
                                 if (value.isNotEmpty && acNoError != null) {
                                   setState(() {
@@ -241,10 +242,11 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                         ),
                         if (acNoError != null)
                           Padding(
-                            padding: const EdgeInsets.only(left: 12.0, top: 5),
+                            padding: const EdgeInsets.only(left: 8.0, top: 5),
                             child: Text(
                               acNoError!,
-                              style: TextStyle(color: Colors.red, fontSize: 12),
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
                             ),
                           ),
                       ],
@@ -289,10 +291,10 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                 color: Color(0xFF648683),
                                 fontSize: 14,
                               ),
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(
-                                      12), // Limit to 25 characters
-                                ],
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(
+                                    12), // Limit to 25 characters
+                              ],
                               onChanged: (value) {
                                 if (value.isNotEmpty && ifscError != null) {
                                   setState(() {
@@ -305,10 +307,11 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                         ),
                         if (ifscError != null)
                           Padding(
-                            padding: const EdgeInsets.only(left: 12.0, top: 5),
+                            padding: const EdgeInsets.only(left: 8.0, top: 5),
                             child: Text(
                               ifscError!,
-                              style: TextStyle(color: Colors.red, fontSize: 12),
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
                             ),
                           ),
                       ],
@@ -353,10 +356,10 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                 color: Color(0xFF648683),
                                 fontSize: 14,
                               ),
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(
-                                      9), // Limit to 25 characters
-                                ],
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(
+                                    9), // Limit to 25 characters
+                              ],
                               onChanged: (value) {
                                 if (value.isNotEmpty && micrError != null) {
                                   setState(() {
@@ -369,10 +372,11 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                         ),
                         if (micrError != null)
                           Padding(
-                            padding: const EdgeInsets.only(left: 12.0, top: 5),
+                            padding: const EdgeInsets.only(left: 8.0, top: 5),
                             child: Text(
                               micrError!,
-                              style: TextStyle(color: Colors.red, fontSize: 12),
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
                             ),
                           ),
                       ],
@@ -400,8 +404,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black
-                                    .withOpacity(0.1), // Shadow color
+                                color: Colors.black.withOpacity(0.1), // Shadow color
                                 blurRadius: 15, // Blur effect
                                 spreadRadius: 0, // Spread effect
                                 offset: Offset(0, 3), // Position of shadow
@@ -417,43 +420,34 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                 color: Color(0xFF648683),
                                 fontSize: 14,
                               ),
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(
-                                      50), // Limit to 25 characters
-                                ]
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(50), // Limit to 25 characters
+                              ],
+                              onChanged: (value) {
+                                if (value.isNotEmpty && bankNameError != null) {
+                                  setState(() {
+                                    bankNameError = null;
+                                  });
+                                }
+                              },
                             ),
-                            // child: TextField(
-                            //   controller: repassText,
-                            //   obscureText: !_isPanVisible, // Toggle text visibility
-                            //   decoration: _inputDecoration('').copyWith(
-                            //     suffixIcon: IconButton(
-                            //       icon: Icon(
-                            //         _isPanVisible ? Icons.visibility : Icons.visibility_off,
-                            //         color: Color(0xFF648683),
-                            //       ),
-                            //       onPressed: () {
-                            //         setState(() {
-                            //           _isPanVisible = !_isPanVisible; // Toggle visibility
-                            //         });
-                            //       },
-                            //     ),
-                            //   ),
-                            //   style: const TextStyle(
-                            //     color: Color(0xFF648683),
-                            //     fontSize: 15,
-                            //   ),
-                            // ),
                           ),
                         ),
+                        if (bankNameError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0, top: 5),
+                            child: Text(
+                              bankNameError!,
+                              style: const TextStyle(color: Colors.red, fontSize: 12),
+                            ),
+                          ),
                       ],
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
+                          margin: EdgeInsets.only(left: 10),
                           child: Text(
                             'Account Type',
                             style: GoogleFonts.poppins(
@@ -463,87 +457,103 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Stack(
+                        SizedBox(height: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            GestureDetector(
-                              behavior: HitTestBehavior
-                                  .translucent, // ✅ Detects taps outside
-                              onTap: () {
-                                if (isAcTypeDropdownOpen) {
-                                  closeAcTypeDropdown(); // ✅ Close dropdown when clicking outside
-                                }
-                                FocusManager.instance.primaryFocus
-                                    ?.unfocus(); // Remove focus
-                              },
-                              child: Container(
-                                width: 171,
-                              ), // Empty container to detect taps outside
-                            ),
-                            CompositedTransformTarget(
-                              link: _layerAcTypeLink,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(50),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 15,
-                                      spreadRadius: 0,
-                                      offset: Offset(0, 3),
-                                    ),
-                                  ],
+                            Stack(
+                              children: [
+                                GestureDetector(
+                                  behavior: HitTestBehavior.translucent,
+                                  onTap: () {
+                                    if (isAcTypeDropdownOpen) {
+                                      closeAcTypeDropdown();
+                                    }
+                                    FocusManager.instance.primaryFocus?.unfocus();
+                                  },
+                                  child: Container(width: 171),
                                 ),
-                                child: SizedBox(
-                                  width: 171,
-                                  child: TextField(
-                                    controller: acTypeText,
-                                    readOnly:
-                                        true, // ✅ Allows focus but prevents keyboard popup
-                                    onTap:
-                                        toggleAcTypeDropdown, // ✅ Opens dropdown on tap
-                                    decoration: InputDecoration(
-                                      hintText: 'Select',
-                                      hintStyle: GoogleFonts.poppins(
-                                        color: Color(0xFF648683),
-                                        fontSize: 14,
-                                      ),
-                                      contentPadding: const EdgeInsets.only(
-                                          top: 8,
-                                          bottom: 8,
-                                          left: 15,
-                                          right: 15),
-                                      suffixIcon: Icon(
-                                        isAcTypeDropdownOpen
-                                            ? Icons.keyboard_arrow_up
-                                            : Icons.keyboard_arrow_down,
-                                        color: Color(0xFF648683),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(50),
-                                        borderSide: BorderSide(
-                                            color: Colors.white, width: 1),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(50),
-                                        borderSide: BorderSide(
-                                            color: Color(0xFF0f625c), width: 1),
+                                CompositedTransformTarget(
+                                  link: _layerAcTypeLink,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(50),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 15,
+                                          spreadRadius: 0,
+                                          offset: Offset(0, 3),
+                                        ),
+                                      ],
+                                    ),
+                                    child: SizedBox(
+                                      width: 171,
+                                      child: TextField(
+                                        controller: acTypeText,
+                                        readOnly: true,
+                                        onTap: toggleAcTypeDropdown,
+                                        decoration: InputDecoration(
+                                          hintText: 'Select',
+                                          hintStyle: GoogleFonts.poppins(
+                                            color: Color(0xFF648683),
+                                            fontSize: 14,
+                                          ),
+                                          contentPadding: const EdgeInsets.symmetric(
+                                            vertical: 8,
+                                            horizontal: 15,
+                                          ),
+                                          suffixIcon: Icon(
+                                            isAcTypeDropdownOpen
+                                                ? Icons.keyboard_arrow_up
+                                                : Icons.keyboard_arrow_down,
+                                            color: Color(0xFF648683),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(50),
+                                            borderSide: BorderSide(color: Colors.white, width: 1),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(50),
+                                            borderSide:
+                                            BorderSide(color: Color(0xFF0f625c), width: 1),
+                                          ),
+                                        ),
+                                        style: const TextStyle(
+                                          color: Color(0xFF648683),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        onChanged: (value) {
+                                          if (value.isNotEmpty && acTypeError != null) {
+                                            setState(() {
+                                              acTypeError = null;
+                                            });
+                                          }
+                                        },
                                       ),
                                     ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (acTypeError != null)
+                              Padding(
+                                padding: const EdgeInsets.only(left: 12.0, top: 5),
+                                child: Container(
+                                  width: 159,
+                                  child: Text(
+                                    acTypeError!,
                                     style: const TextStyle(
-                                      color: Color(0xFF648683),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
+                                      color: Colors.red,
+                                      fontSize: 12,
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                     Column(
@@ -586,102 +596,159 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                 color: Color(0xFF648683),
                                 fontSize: 14,
                               ),
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(
-                                      50), // Limit to 25 characters
-                                ]
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(
+                                    50), // Limit to 25 characters
+                              ],
+                              onChanged: (value) {
+                                if (value.isNotEmpty &&
+                                    branchNameError != null) {
+                                  setState(() {
+                                    branchNameError = null;
+                                  });
+                                }
+                              },
                             ),
                           ),
-                        )
+                        ),
+                        if (branchNameError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0, top: 5),
+                            child: Text(
+                              branchNameError!,
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
+                            ),
+                          ),
                       ],
                     ),
-                SizedBox(height: 2,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          // Reset errors first
-                          ifscError = micrError = acNoError = branchNameError = acTypeError = null;
-
-                          // Validate each field
-                          if (ifscCodeText.text.trim().isEmpty) ifscError = 'IFSC code is required.';
-                          if (micrCodeText.text.trim().isEmpty) micrError = 'MICR code is required.';
-                          if (acNoText.text.trim().isEmpty) acNoError = 'Account number is required.';
-                          if (branchNameText.text.trim().isEmpty) branchNameError = 'Branch name is required.';
-                          if (acTypeText.text.trim().isEmpty || acTypeText.text.trim() == 'Select')
-                            acTypeError = 'Please select account type.';
-
-                          // Stop navigation if any errors
-                          if (ifscError != null ||
-                              micrError != null ||
-                              acNoError != null ||
-                              branchNameError != null ||
-                              acTypeError != null) {
-                            return;
-                          }
-
-                          // Navigate only if all fields are valid
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => SignupNdsPage()),
-                          );
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFfdd1a0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
-                      ),
-                      child: Text(
-                        'Back'.toUpperCase(),
-                        style: GoogleFonts.poppins(
-                          color: const Color(0xFF222222),
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                    SizedBox(
+                      height: 2,
                     ),
-                    SizedBox(width: 10,),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (ifscCodeText.text.trim().isEmpty ||
-                            micrCodeText.text.trim().isEmpty ||
-                            acNoText.text.trim().isEmpty ||
-                            branchNameText.text.trim().isEmpty ||
-                            acTypeText.text.trim().isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Please fill in all the fields.')),
-                          );
-                          return; // Do not proceed if fields are empty
-                        }
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => SignupNdsPage()),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFfdd1a0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SignupPdsPage()),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFfdd1a0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 35),
+                          ),
+                          child: Text(
+                            'Back'.toUpperCase(),
+                            style: GoogleFonts.poppins(
+                              color: const Color(0xFF222222),
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
-                      ),
-                      child: Text(
-                        'Next'.toUpperCase(),
-                        style: GoogleFonts.poppins(
-                          color: const Color(0xFF222222),
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
+                        SizedBox(
+                          width: 10,
                         ),
-                      ),
-                    ),
-                  ],
-                ),
+                        ElevatedButton(
+                          onPressed: () {
+                            bool hasError = false;
+                            setState(() {
+                              // Reset errors first
+                              ifscError = micrError = acNoError =
+                                  branchNameError =
+                                      bankNameError = acTypeError = null;
 
+                              // Validate each field
+                              if (ifscCodeText.text.trim().isEmpty){
+                                ifscError = 'IFSC code is required.';
+                                hasError = true;
+                              }
+                              if (micrCodeText.text.trim().isEmpty){
+                                micrError = 'MICR code is required.';
+                                hasError = true;
+                              }
+                              if (acNoText.text.trim().isEmpty){
+                                acNoError = 'Account number is required.';
+                                hasError = true;
+                              }
+                              if (branchNameText.text.trim().isEmpty){
+                                branchNameError = 'Branch name is required.';
+                                hasError = true;
+                              }
+                              if (bankNameText.text.trim().isEmpty){
+                                bankNameError = 'Bank name is required.';
+                                hasError = true;
+                              }
+                              if (acTypeText.text.trim().isEmpty){
+                                acTypeError = 'Please select account type.';
+                                hasError = true;
+                              }
+
+                              // Stop navigation if any errors
+                              // if (ifscError != null ||
+                              //     micrError != null ||
+                              //     acNoError != null ||
+                              //     bankNameError != null ||
+                              //     branchNameError != null ||
+                              //     acTypeError != null) {
+                              //   return;
+                              // }
+                            });
+                            if (hasError)
+                              return; // 🚫 Stop navigation if any error exists
+
+                            // ✅ Safe to navigate
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                transitionDuration: Duration(milliseconds: 500),
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        SignupNdsPage(),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  const begin = Offset(1.0, 0.0);
+                                  const end = Offset.zero;
+                                  const curve = Curves.easeInOut;
+
+                                  var tween = Tween(begin: begin, end: end)
+                                      .chain(CurveTween(curve: curve));
+                                  var offsetAnimation = animation.drive(tween);
+
+                                  return SlideTransition(
+                                    position: offsetAnimation,
+                                    child: child,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFfdd1a0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 35),
+                          ),
+                          child: Text(
+                            'Next'.toUpperCase(),
+                            style: GoogleFonts.poppins(
+                              color: const Color(0xFF222222),
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -980,5 +1047,4 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
       ],
     );
   }
-
 }

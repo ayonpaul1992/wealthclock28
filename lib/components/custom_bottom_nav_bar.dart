@@ -37,7 +37,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
       future: SharedPreferences.getInstance(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return SizedBox(); // Show nothing until SharedPreferences is loaded
+          return const SizedBox(); // Show nothing until SharedPreferences is loaded
         }
 
         final prefs = snapshot.data as SharedPreferences;
@@ -71,57 +71,70 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
           },
         ];
 
-        return Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-          color: Colors.white,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(items.length, (index) {
-              return InkWell(
-                onTap: () {
-                  if (widget.selectedIndex != index) {
-                    if (items[index]['route'] == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                              "${items[index]['label']} screen is under development!"),
-                        ),
-                      );
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => items[index]['route']!,
-                        ),
-                      );
-                    }
-                  }
-                },
-                child: SizedBox(
-                  width: 60,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(
-                        items[index]['icon']!,
-                        fit: BoxFit.contain,
-                      ),
-                      Text(
-                        items[index]['label']!,
-                        style: GoogleFonts.poppins(
-                          color: widget.selectedIndex == index
-                              ? Colors.blue
-                              : const Color(0xFF648683),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
+        return SafeArea(
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.4),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 4),
                 ),
-              );
-            }),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(items.length, (index) {
+                return InkWell(
+                  onTap: () {
+                    if (widget.selectedIndex != index) {
+                      if (items[index]['route'] == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "${items[index]['label']} screen is under development!",
+                            ),
+                          ),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => items[index]['route']!,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  child: SizedBox(
+                    width: 60,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          items[index]['icon']!,
+                          fit: BoxFit.contain,
+                        ),
+                        Text(
+                          items[index]['label']!,
+                          style: GoogleFonts.poppins(
+                            color: widget.selectedIndex == index
+                                ? Colors.blue
+                                : const Color(0xFF648683),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ),
           ),
         );
       },
