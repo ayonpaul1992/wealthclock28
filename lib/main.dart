@@ -8,8 +8,10 @@ void main() async {
   WidgetsFlutterBinding
       .ensureInitialized(); // Ensures async operations work before runApp
   String? userId = await getUserId(); // Retrieve stored userId
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? authToken = prefs.getString('auth_token');
   runApp(
-    MyApp(userId: userId),
+    MyApp(userId: userId, authToken: authToken),
   );
 }
 
@@ -20,26 +22,32 @@ Future<String?> getUserId() async {
 
 class MyApp extends StatelessWidget {
   final String? userId;
-  const MyApp({super.key, this.userId});
+  final String? authToken;
+
+  const MyApp({super.key, this.userId, this.authToken});
 
   @override
   Widget build(BuildContext context) {
+    final bool isLoggedIn = userId != null && authToken != null;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(),
       ),
-      onUnknownRoute: (settings) {
-        return MaterialPageRoute(
-          builder: (context) => userId == null
-              ? const LoginPage()
-              : dashboardAfterLogin(userId: userId!),
-        );
-        // return null;
-      },
-      home: userId == null
-          ? const LoginPage()
-          : dashboardAfterLogin(userId: userId!),
+      home:
+          isLoggedIn ? dashboardAfterLogin(userId: userId!) : const LoginPage(),
+      // onUnknownRoute: (settings) {
+      //   return MaterialPageRoute(
+      //     builder: (context) => userId == null
+      //         ? const LoginPage()
+      //         : dashboardAfterLogin(userId: userId!),
+      //   );
+      //   // return null;
+      // },
+      // home: userId == null
+      //     ? const LoginPage()
+      //     : dashboardAfterLogin(userId: userId!),
     );
   }
 }

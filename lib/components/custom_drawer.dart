@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:wealthclock28/screens/dashboard_after_login.dart';
+import 'package:wealthclock28/screens/login.dart';
 
 class CustomDrawer extends StatefulWidget {
   final String activeTile;
@@ -91,7 +92,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
         await prefs.clear();
 
         // Navigate to the login screen after successful logout
-        Navigator.pushReplacementNamed(context, '/login');
+        // Navigator.pushReplacementNamed(context, '/login');
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
       } else if (response.statusCode == 401) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Unauthorized')),
