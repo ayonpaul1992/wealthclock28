@@ -47,27 +47,27 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
           {
             'icon': 'assets/images/ftr_hmm.png',
             'label': 'Home',
-            'route': const dashboardAfterLogin(userId: '')
+            'route': const dashboardAfterLogin(userId: ''),
           },
           {
             'icon': 'assets/images/ftr_prtflo.png',
             'label': 'Portfolio',
-            'route': const IndividualPortfolioPage(memberPan: '')
+            'route': const IndividualPortfolioPage(memberPan: ''),
           },
           {
             'icon': 'assets/images/ftr_invst.png',
             'label': 'Invest',
-            'route': null
+            'route': null,
           },
           {
             'icon': 'assets/images/rptt.png',
             'label': 'Family',
-            'route': FamilyPortfolioPage(memberName: fetchedMemberName)
+            'route': FamilyPortfolioPage(memberName: fetchedMemberName),
           },
           {
             'icon': 'assets/images/stng.png',
             'label': 'Settings',
-            'route': null
+            'route': null,
           },
         ];
 
@@ -79,10 +79,10 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.4),
-                  blurRadius: 10,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 4),
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 5,
+                  spreadRadius: 0,
+                  offset: const Offset(0, -4), // Pushes shadow to the top
                 ),
               ],
             ),
@@ -115,16 +115,14 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset(
-                          items[index]['icon']!,
-                          fit: BoxFit.contain,
-                        ),
+                        Image.asset(items[index]['icon']!, fit: BoxFit.contain),
                         Text(
                           items[index]['label']!,
                           style: GoogleFonts.poppins(
-                            color: widget.selectedIndex == index
-                                ? Colors.blue
-                                : const Color(0xFF648683),
+                            color:
+                                widget.selectedIndex == index
+                                    ? Colors.blue
+                                    : const Color(0xFF648683),
                             fontSize: 13,
                             fontWeight: FontWeight.w400,
                           ),

@@ -1,0 +1,2 @@
+E:/flutter_office_projects/Wealthclock_work/wealthclock28/android/app/.cxx/Debug/344s5j67/armeabi-v7a/CMakeFiles/edit_cache.dir
+E:/flutter_office_projects/Wealthclock_work/wealthclock28/android/app/.cxx/Debug/344s5j67/armeabi-v7a/CMakeFiles/rebuild_cache.dir
