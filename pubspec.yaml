@@ -44,6 +44,7 @@ dependencies:
   fl_chart: ^0.70.2
   flutter_secure_storage: ^9.2.4
   syncfusion_flutter_datepicker: ^29.1.33
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
