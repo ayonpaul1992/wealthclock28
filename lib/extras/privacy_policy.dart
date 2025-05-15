@@ -13,11 +13,27 @@ class PrivacyPolicyPage extends StatefulWidget {
 class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
 
   Future<void> _launchURL() async {
-    const url = 'https://m.moneycontrol.com/';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
+    final Uri url = Uri.parse('https://www.wealthclockadvisors.com/');
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw Exception('Could not launch $url');
+    }
+  }
+  Future<void> _launchMailURL() async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'contact@wealthclockadvisors.com',
+      // Optionally add query parameters like subject/body
+      // queryParameters: {
+      //   'subject': 'Your Subject Here',
+      //   'body': 'Hello, I have a query...',
+      // },
+    );
+
+    if (!await launchUrl(emailUri)) {
+      throw 'Could not launch email app';
     }
   }
 
@@ -95,23 +111,36 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
+                              // TextSpan(
+                              //   text: 'www.wealthclockadvisors.com',
+                              //   style: GoogleFonts.poppins(
+                              //     color: Colors.blue,
+                              //     fontSize: 13,
+                              //     fontWeight: FontWeight.w400,
+                              //     decoration: TextDecoration.underline,
+                              //     decorationColor: Colors.blue, // <-- Underline color
+                              //     decorationThickness: 1.2,     // Optional: makes the line slightly thicker
+                              //   ),
+                              //   recognizer: TapGestureRecognizer()
+                              //     ..onTap = () async {
+                              //       final url = Uri.parse('https://www.wealthclockadvisors.com');
+                              //       if (await canLaunchUrl(url)) {
+                              //         await launchUrl(url);
+                              //       }
+                              //     },
+                              // ),
                               TextSpan(
                                 text: 'www.wealthclockadvisors.com',
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(
                                   color: Colors.blue,
                                   fontSize: 13,
                                   fontWeight: FontWeight.w400,
                                   decoration: TextDecoration.underline,
-                                  decorationColor: Colors.blue, // <-- Underline color
-                                  decorationThickness: 1.2,     // Optional: makes the line slightly thicker
+                                  decorationColor: Colors.blue,
+                                  decorationThickness: 1.2,
                                 ),
                                 recognizer: TapGestureRecognizer()
-                                  ..onTap = () async {
-                                    final url = Uri.parse('https://www.wealthclockadvisors.com');
-                                    if (await canLaunchUrl(url)) {
-                                      await launchUrl(url);
-                                    }
-                                  },
+                                  ..onTap = _launchURL, // Call the function when tapped
                               ),
                               TextSpan(
                                 text:
@@ -186,20 +215,16 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                               ),
                               TextSpan(
                                 text: 'www.wealthclockadvisors.com',
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(
                                   color: Colors.blue,
                                   fontSize: 13,
                                   fontWeight: FontWeight.w400,
                                   decoration: TextDecoration.underline,
-                                  decorationColor: Colors.blue, // Underline color
+                                  decorationColor: Colors.blue,
+                                  decorationThickness: 1.2,
                                 ),
                                 recognizer: TapGestureRecognizer()
-                                  ..onTap = () async {
-                                    final url = Uri.parse('https://www.wealthclockadvisors.com');
-                                    if (await canLaunchUrl(url)) {
-                                      await launchUrl(url);
-                                    }
-                                  },
+                                  ..onTap = _launchURL, // Call the function when tapped
                               ),
                               TextSpan(
                                 text: ' platform.',
@@ -295,45 +320,30 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                             ),
                           ),
                         ),
-                        Text.rich(
-                          TextSpan(
+                        RichText(
+                          text: TextSpan(
+                            style: GoogleFonts.poppins(
+                              color: Color(0xFF0f625c),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                            ),
                             children: [
                               TextSpan(
                                 text: 'Incase you have any concerns or grievances then please email us at ',
-                                style: GoogleFonts.poppins(
-                                  color: Color(0xFF0f625c),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w400,
-                                ),
                               ),
                               TextSpan(
                                 text: 'contact@wealthclockadvisors.com',
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(
                                   color: Colors.blue,
                                   fontSize: 13,
                                   fontWeight: FontWeight.w400,
                                   decoration: TextDecoration.underline,
                                   decorationColor: Colors.blue,
+                                  decorationThickness: 1.2,
                                 ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () async {
-                                    final Uri emailUri = Uri(
-                                      scheme: 'mailto',
-                                      path: 'contact@wealthclockadvisors.com',
-                                    );
-                                    if (await canLaunchUrl(emailUri)) {
-                                      await launchUrl(emailUri);
-                                    }
-                                  },
+                                recognizer: TapGestureRecognizer()..onTap = _launchMailURL,
                               ),
-                              TextSpan(
-                                text: '.',
-                                style: GoogleFonts.poppins(
-                                  color: Color(0xFF0f625c),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
+                              TextSpan(text: '.'),
                             ],
                           ),
                         ),

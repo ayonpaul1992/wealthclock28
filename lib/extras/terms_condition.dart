@@ -14,11 +14,12 @@ class TermsCondPage extends StatefulWidget {
 class _TermsCondPageState extends State<TermsCondPage> {
 
   Future<void> _launchURL() async {
-    const url = 'https://m.moneycontrol.com/';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
+    final Uri url = Uri.parse('https://m.moneycontrol.com/');
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw Exception('Could not launch $url');
     }
   }
 
@@ -127,25 +128,19 @@ class _TermsCondPageState extends State<TermsCondPage> {
                             ),
                           ),
                         ),
-                        Wrap(
-                          children: [
-                            Text(
-                              'Wealthclock privacy policy can be accessed at ',
-                              style: GoogleFonts.poppins(
-                                color: Color(0xFF0f625c),
-                                fontSize: 13,
-                                fontWeight: FontWeight.w400,
-                              ),
+                        RichText(
+                          text: TextSpan(
+                            style: GoogleFonts.poppins(
+                              color: Color(0xFF0f625c),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
                             ),
-                            InkWell(
-                              onTap: ()  {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => PrivacyPolicyPage()),
-                                );
-                              },
-                              child: Text(
-                                'www.wealthclockadviors.com/privacy-policy',
+                            children: [
+                              TextSpan(
+                                text: 'Wealthclock privacy policy can be accessed at ',
+                              ),
+                              TextSpan(
+                                text: 'privacy-policy',
                                 style: GoogleFonts.poppins(
                                   color: Colors.blue,
                                   fontSize: 13,
@@ -153,19 +148,21 @@ class _TermsCondPageState extends State<TermsCondPage> {
                                   decoration: TextDecoration.underline,
                                   decorationColor: Colors.blue,
                                 ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => PrivacyPolicyPage()),
+                                    );
+                                  },
                               ),
-                            ),
-                            Text(
-                              '. This privacy policy governs and explains the usage of your personal/technical and other data that Wealthclock has. You hereby agree with the Wealthclock privacy policy and give your consent to Wealthclock to use this data.',
-                              style: GoogleFonts.poppins(
-                                color: Color(0xFF0f625c),
-                                fontSize: 13,
-                                fontWeight: FontWeight.w400,
+                              TextSpan(
+                                text:
+                                '. This privacy policy governs and explains the usage of your personal/technical and other data that Wealthclock has. You hereby agree with the Wealthclock privacy policy and give your consent to Wealthclock to use this data.',
                               ),
-                            ),
-                          ],
-                        )
-                        ,
+                            ],
+                          ),
+                        ),
                         Text.rich(
                           TextSpan(
                             text:
