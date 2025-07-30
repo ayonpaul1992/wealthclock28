@@ -91,12 +91,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
         // Clear all session data after logout
         await prefs.clear();
 
-        // Navigate to the login screen after successful logout
-        // Navigator.pushReplacementNamed(context, '/login');
-
-        Navigator.pushReplacement(
-          context,
+        Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const LoginPage()),
+          (Route<dynamic> route) => false, // Remove all previous routes
         );
       } else if (response.statusCode == 401) {
         ScaffoldMessenger.of(context).showSnackBar(

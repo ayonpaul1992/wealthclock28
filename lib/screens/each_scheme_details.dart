@@ -1093,104 +1093,110 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.center,
                                                   children: [
-                                                    Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        SizedBox(
-                                                          height: 8,
-                                                        ),
-                                                        Padding(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  horizontal:
-                                                                      11,
-                                                                  vertical: 8),
-                                                          child: Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: Color(
-                                                                  0xFFdceffc), // Background color
-                                                              boxShadow: [
-                                                                BoxShadow(
-                                                                  color: Colors
-                                                                      .black
-                                                                      .withOpacity(
-                                                                          0.2), // Shadow color with opacity
-                                                                  spreadRadius:
-                                                                      2, // How much the shadow spreads
-                                                                  blurRadius:
-                                                                      5, // How soft the shadow is
-                                                                  offset: Offset(
-                                                                      0,
-                                                                      3), // Shadow position (x, y)
-                                                                ),
-                                                              ],
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          20), // Optional: Add rounded corners
-                                                            ),
-                                                            padding:
-                                                                EdgeInsets.only(
-                                                                    left: 15,
-                                                                    right: 15,
-                                                                    top: 2,
-                                                                    bottom:
-                                                                        2), // Add padding for better appearance
-                                                            child: Text(
-                                                              tdPurred[index]
-                                                                  .toUpperCase(),
-                                                              style: GoogleFonts
-                                                                  .poppins(
+                                                    Container(
+                                                      width: 96,
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          SizedBox(
+                                                            height: 8,
+                                                          ),
+                                                          Padding(
+                                                            padding: EdgeInsets
+                                                                .symmetric(
+                                                                    horizontal:
+                                                                        11,
+                                                                    vertical:
+                                                                        8),
+                                                            child: Container(
+                                                              decoration:
+                                                                  BoxDecoration(
                                                                 color: Color(
-                                                                    0xFF0f625c),
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
+                                                                    0xFFdceffc), // Background color
+                                                                boxShadow: [
+                                                                  BoxShadow(
+                                                                    color: Colors
+                                                                        .black
+                                                                        .withOpacity(
+                                                                            0.2), // Shadow color with opacity
+                                                                    spreadRadius:
+                                                                        2, // How much the shadow spreads
+                                                                    blurRadius:
+                                                                        5, // How soft the shadow is
+                                                                    offset: Offset(
+                                                                        0,
+                                                                        3), // Shadow position (x, y)
+                                                                  ),
+                                                                ],
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            20), // Optional: Add rounded corners
+                                                              ),
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      left: 15,
+                                                                      right: 15,
+                                                                      top: 2,
+                                                                      bottom:
+                                                                          2), // Add padding for better appearance
+                                                              child: Text(
+                                                                tdPurred[index]
+                                                                    .toUpperCase(),
+                                                                style:
+                                                                    GoogleFonts
+                                                                        .poppins(
+                                                                  color: Color(
+                                                                      0xFF0f625c),
+                                                                  fontSize: 14,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                ),
                                                               ),
                                                             ),
                                                           ),
-                                                        ),
-                                                        SizedBox(
-                                                          height: 15,
-                                                        ),
-                                                        Container(
-                                                          margin:
-                                                              EdgeInsets.only(
-                                                                  left: 20),
-                                                          child: Icon(
-                                                            Icons
-                                                                .calendar_month_outlined, // Calendar Icon
-                                                            color: Color(
-                                                                0xFF09a99d), // Change color as needed
-                                                            size:
-                                                                20, // Adjust size as needed
+                                                          SizedBox(
+                                                            height: 15,
                                                           ),
-                                                        ),
-                                                        SizedBox(
-                                                          height: 9,
-                                                        ),
-                                                        Container(
+                                                          Container(
                                                             margin:
                                                                 EdgeInsets.only(
                                                                     left: 20),
-                                                            child: Text(
-                                                                tdDate[index],
-                                                                style: GoogleFonts.poppins(
-                                                                    color: Color(
-                                                                        0xFF303131),
-                                                                    fontSize:
-                                                                        13,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500))),
-                                                        SizedBox(
-                                                          height: 18,
-                                                        ),
-                                                      ],
+                                                            child: Icon(
+                                                              Icons
+                                                                  .calendar_month_outlined, // Calendar Icon
+                                                              color: Color(
+                                                                  0xFF09a99d), // Change color as needed
+                                                              size:
+                                                                  20, // Adjust size as needed
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 9,
+                                                          ),
+                                                          Container(
+                                                              margin:
+                                                                  EdgeInsets.only(
+                                                                      left: 20),
+                                                              child: Text(
+                                                                  tdDate[index],
+                                                                  style: GoogleFonts.poppins(
+                                                                      color: Color(
+                                                                          0xFF303131),
+                                                                      fontSize:
+                                                                          13,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500))),
+                                                          SizedBox(
+                                                            height: 18,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      // Fixed width for the first column
                                                     ),
                                                     Padding(
                                                       padding: EdgeInsets.only(
@@ -1205,88 +1211,95 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
                                                         ),
                                                       ),
                                                     ),
-                                                    Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                              'Amount',
-                                                              style: GoogleFonts
-                                                                  .poppins(
-                                                                color: Color(
-                                                                    0xFF0f625c),
-                                                                fontSize: 13,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              NumberFormat.currency(
-                                                                      locale:
-                                                                          'en_IN',
-                                                                      symbol:
-                                                                          '₹ ')
-                                                                  .format(tdAmounts[
-                                                                      index]), // ✅ Using `index` to show the correct value
-                                                              style: GoogleFonts
-                                                                  .poppins(
-                                                                color: Color(
-                                                                    0xFF303131),
-                                                                fontSize: 13,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        SizedBox(
-                                                          height: 15,
-                                                        ),
-                                                        Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                              'Units',
-                                                              style: GoogleFonts.poppins(
+                                                    Container(
+                                                      width: 96,
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text(
+                                                                'Amount',
+                                                                style:
+                                                                    GoogleFonts
+                                                                        .poppins(
                                                                   color: Color(
                                                                       0xFF0f625c),
                                                                   fontSize: 13,
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .w500),
-                                                            ),
-                                                            Text(
-                                                              NumberFormat.currency(
-                                                                      locale:
-                                                                          'en_IN',
-                                                                      symbol:
-                                                                          '')
-                                                                  .format(tdUnits[
-                                                                      index]),
-                                                              style: GoogleFonts.poppins(
+                                                                          .w500,
+                                                                ),
+                                                              ),
+                                                              Text(
+                                                                NumberFormat.currency(
+                                                                        locale:
+                                                                            'en_IN',
+                                                                        symbol:
+                                                                            '₹ ')
+                                                                    .format(tdAmounts[
+                                                                        index]), // ✅ Using `index` to show the correct value
+                                                                style:
+                                                                    GoogleFonts
+                                                                        .poppins(
                                                                   color: Color(
                                                                       0xFF303131),
                                                                   fontSize: 13,
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .w500),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        SizedBox(
-                                                          height: 10,
-                                                        ),
-                                                      ],
+                                                                          .w500,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                            height: 15,
+                                                          ),
+                                                          Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text(
+                                                                'Units',
+                                                                style: GoogleFonts.poppins(
+                                                                    color: Color(
+                                                                        0xFF0f625c),
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500),
+                                                              ),
+                                                              Text(
+                                                                NumberFormat.currency(
+                                                                        locale:
+                                                                            'en_IN',
+                                                                        symbol:
+                                                                            '')
+                                                                    .format(tdUnits[
+                                                                        index]),
+                                                                style: GoogleFonts.poppins(
+                                                                    color: Color(
+                                                                        0xFF303131),
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                     Padding(
                                                       padding: EdgeInsets.only(

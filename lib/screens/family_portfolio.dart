@@ -92,6 +92,7 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
 
         if (data is Map<String, dynamic>) {
           schemesArr = List<Map<String, dynamic>>.from(data["allMember"] ?? []);
+          debugPrint('Schemes Array: $schemesArr');
           final fetchedName =
               data["allMember"][0]["member_name"] ?? "No Name Found";
           final List<dynamic>? schemesList = data["allMember"];
@@ -139,47 +140,57 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
             });
             return;
           }
+          debugPrint('Schemes loaded old: $schemes');
 
-          setState(() {
-            _isLoading = false;
-            userName = fetchedName;
-            cumulativeXirrValue = cumulativeXirr;
-            absoluteReturnValue = absoluteReturn;
-            schemeName = fetchedSchemeName;
-            userCurrentValue = NumberFormat.currency(
-                    locale: 'en_IN',
-                    symbol: '', // No currency symbol
-                    decimalDigits: 2)
-                .format(currentValue)
-                .trim();
-            schemes = schemesArr;
+          try {
+            setState(() {
+              _isLoading = false;
+              userName = fetchedName;
+              cumulativeXirrValue = cumulativeXirr
+                  .toString(); // Ensure cumulativeXirr is a string
+              absoluteReturnValue = absoluteReturn
+                  .toString(); // Ensure absoluteReturn is a string
+              schemeName = fetchedSchemeName;
+              userCurrentValue = NumberFormat.currency(
+                      locale: 'en_IN',
+                      symbol: '', // No currency symbol
+                      decimalDigits: 2)
+                  .format(currentValue)
+                  .trim();
+              schemes = schemesArr;
 
-            userTotalGain = NumberFormat.currency(
-                    locale: 'en_IN',
-                    symbol: '', // No currency symbol
-                    decimalDigits: 2)
-                .format(totalGain);
-            // ✅ Format & Assign `equityPercentage` & `equityAmount`
-            equityPercentage = equityPercent.toStringAsFixed(2);
-            equityAmount = NumberFormat.currency(
-                    locale: 'en_IN', symbol: '₹', decimalDigits: 2)
-                .format(equityValue);
-            // ✅ Format & Assign `debtPercentage` & `debtAmount`
-            debtPercentage = debtPercent.toStringAsFixed(2);
-            debtAmount = NumberFormat.currency(
-                    locale: 'en_IN', symbol: '₹', decimalDigits: 2)
-                .format(debtValue);
-            // ✅ Format & Assign `otherPercentage` & `otherAmount`
-            otherPercentage = otherPercent.toStringAsFixed(2);
-            otherAmount = NumberFormat.currency(
-                    locale: 'en_IN', symbol: '₹', decimalDigits: 2)
-                .format(otherValue);
-            // ✅ Format & Assign `hybridPercentage` & `hybridAmount`
-            hybridPercentage = hybridPercent.toStringAsFixed(2);
-            hybridAmount = NumberFormat.currency(
-                    locale: 'en_IN', symbol: '₹', decimalDigits: 2)
-                .format(hybridValue);
-          });
+              userTotalGain = NumberFormat.currency(
+                      locale: 'en_IN',
+                      symbol: '', // No currency symbol
+                      decimalDigits: 2)
+                  .format(totalGain);
+              // ✅ Format & Assign `equityPercentage` & `equityAmount`
+              equityPercentage = equityPercent.toStringAsFixed(2);
+              equityAmount = NumberFormat.currency(
+                      locale: 'en_IN', symbol: '₹', decimalDigits: 2)
+                  .format(equityValue);
+              // ✅ Format & Assign `debtPercentage` & `debtAmount`
+              debtPercentage = debtPercent.toStringAsFixed(2);
+              debtAmount = NumberFormat.currency(
+                      locale: 'en_IN', symbol: '₹', decimalDigits: 2)
+                  .format(debtValue);
+              // ✅ Format & Assign `otherPercentage` & `otherAmount`
+              otherPercentage = otherPercent.toStringAsFixed(2);
+              otherAmount = NumberFormat.currency(
+                      locale: 'en_IN', symbol: '₹', decimalDigits: 2)
+                  .format(otherValue);
+              // ✅ Format & Assign `hybridPercentage` & `hybridAmount`
+              hybridPercentage = hybridPercent.toStringAsFixed(2);
+              hybridAmount = NumberFormat.currency(
+                      locale: 'en_IN', symbol: '₹', decimalDigits: 2)
+                  .format(hybridValue);
+
+              // Print after setState to ensure latest values
+            });
+            debugPrint('Schemes loaded: $schemes');
+          } catch (e) {
+            debugPrint('Error setting state: $e');
+          }
         } else {
           setState(() {
             _isLoading = false;
@@ -533,11 +544,14 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                       child: Builder(
                         builder: (context) {
                           // Filter valid schemes
-                          final validSchemes = schemes.where((scheme) =>
-                          (scheme['current_val'] != null &&
-                              scheme['current_val'].toString() != '0') ||
-                              (scheme['Invested_val'] != null &&
-                                  scheme['Invested_val'].toString() != '0')).toList();
+                          final validSchemes = schemesArr
+                              .where((scheme) =>
+                                  (scheme['current_val'] != null &&
+                                      scheme['current_val'].toString() !=
+                                          '0') ||
+                                  (scheme['Invested_val'] != null &&
+                                      scheme['Invested_val'].toString() != '0'))
+                              .toList();
 
                           // If still loading
                           if (_isLoading) {
@@ -547,6 +561,9 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                               ),
                             );
                           }
+
+                          // print('Valid Schemes: $validSchemes');
+                          // print('Schemes: $schemes');
 
                           // If no valid schemes found
                           if (validSchemes.isEmpty) {
@@ -570,7 +587,8 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                             itemBuilder: (context, index) {
                               final scheme = validSchemes[index];
                               return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     elevation: 3,
@@ -584,8 +602,10 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => IndividualPortfolioPage(
-                                          memberPan: scheme['member_pan'] ?? scheme['member_code'],
+                                        builder: (context) =>
+                                            IndividualPortfolioPage(
+                                          memberPan: scheme['member_pan'] ??
+                                              scheme['member_code'],
                                         ),
                                       ),
                                     );
@@ -598,15 +618,19 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                                       color: Colors.white,
                                     ),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         // Member Name
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             Expanded(
                                               child: Text(
-                                                scheme['member_name']?.toString() ?? 'N/A',
+                                                scheme['member_name']
+                                                        ?.toString() ??
+                                                    'N/A',
                                                 style: GoogleFonts.poppins(
                                                   color: Color(0xFF0f625c),
                                                   fontSize: 17,
@@ -615,7 +639,8 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                                               ),
                                             ),
                                             const Icon(Icons.arrow_forward_ios,
-                                                color: Color(0xFF0d958b), size: 18),
+                                                color: Color(0xFF0d958b),
+                                                size: 18),
                                           ],
                                         ),
                                         const SizedBox(height: 10),
@@ -627,10 +652,11 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                                             symbol: '₹ ',
                                             decimalDigits: 2,
                                           ).format(double.tryParse(
-                                              scheme['current_val']
-                                                  ?.toString()
-                                                  .replaceAll(',', '') ??
-                                                  '0') ??
+                                                  scheme['current_val']
+                                                          ?.toString()
+                                                          .replaceAll(
+                                                              ',', '') ??
+                                                      '0') ??
                                               0.0),
                                           style: GoogleFonts.poppins(
                                             color: Color(0xFF0f625c),
@@ -642,25 +668,30 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
 
                                         // Cost Amount, Folio No., Gain/Loss
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             Column(
                                               children: [
                                                 Text('Cost Amount',
                                                     style: GoogleFonts.poppins(
-                                                        color: Color(0xFF8c8c8c),
+                                                        color:
+                                                            Color(0xFF8c8c8c),
                                                         fontSize: 14,
-                                                        fontWeight: FontWeight.w500)),
+                                                        fontWeight:
+                                                            FontWeight.w500)),
                                                 Text(
                                                   NumberFormat.currency(
                                                     locale: 'en_IN',
                                                     symbol: '₹ ',
                                                     decimalDigits: 2,
                                                   ).format(double.tryParse(
-                                                      scheme['Invested_val']
-                                                          ?.toString()
-                                                          .replaceAll(',', '') ??
-                                                          '0') ??
+                                                          scheme['Invested_val']
+                                                                  ?.toString()
+                                                                  .replaceAll(
+                                                                      ',',
+                                                                      '') ??
+                                                              '0') ??
                                                       0.0),
                                                   style: GoogleFonts.poppins(
                                                     color: Color(0xFF303131),
@@ -674,9 +705,11 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                                               children: [
                                                 Text('Folio No.',
                                                     style: GoogleFonts.poppins(
-                                                        color: Color(0xFF8c8c8c),
+                                                        color:
+                                                            Color(0xFF8c8c8c),
                                                         fontSize: 14,
-                                                        fontWeight: FontWeight.w500)),
+                                                        fontWeight:
+                                                            FontWeight.w500)),
                                                 Text(
                                                   'N/A', // Replace with actual folio if available
                                                   style: GoogleFonts.poppins(
@@ -691,21 +724,26 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                                               children: [
                                                 Text('Gain/Loss',
                                                     style: GoogleFonts.poppins(
-                                                        color: Color(0xFF8c8c8c),
+                                                        color:
+                                                            Color(0xFF8c8c8c),
                                                         fontSize: 14,
-                                                        fontWeight: FontWeight.w500)),
+                                                        fontWeight:
+                                                            FontWeight.w500)),
                                                 Builder(builder: (context) {
                                                   double gainLoss = double.tryParse(
-                                                      calculateGainLoss(
-                                                          scheme['current_val'],
-                                                          scheme['Invested_val'])) ??
+                                                          calculateGainLoss(
+                                                              scheme[
+                                                                  'current_val'],
+                                                              scheme[
+                                                                  'Invested_val'])) ??
                                                       0.0;
                                                   return Row(
                                                     children: [
                                                       Icon(
                                                         gainLoss >= 0
                                                             ? Icons.arrow_upward
-                                                            : Icons.arrow_downward,
+                                                            : Icons
+                                                                .arrow_downward,
                                                         color: gainLoss >= 0
                                                             ? Color(0xFF09a99d)
                                                             : Color(0xFFD32F2F),
@@ -717,12 +755,16 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                                                           symbol: '₹ ',
                                                           decimalDigits: 2,
                                                         ).format(gainLoss),
-                                                        style: GoogleFonts.poppins(
+                                                        style:
+                                                            GoogleFonts.poppins(
                                                           color: gainLoss >= 0
-                                                              ? Color(0xFF09a99d)
-                                                              : Color(0xFFD32F2F),
+                                                              ? Color(
+                                                                  0xFF09a99d)
+                                                              : Color(
+                                                                  0xFFD32F2F),
                                                           fontSize: 14,
-                                                          fontWeight: FontWeight.w600,
+                                                          fontWeight:
+                                                              FontWeight.w600,
                                                         ),
                                                       ),
                                                     ],
@@ -733,12 +775,15 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                                           ],
                                         ),
                                         const SizedBox(height: 18),
-                                        const Divider(color: Color(0xFFd7d7d7), height: 1),
+                                        const Divider(
+                                            color: Color(0xFFd7d7d7),
+                                            height: 1),
                                         const SizedBox(height: 18),
 
                                         // Abs Return & XIRR
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             Row(
                                               children: [
@@ -746,7 +791,8 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                                                     style: GoogleFonts.poppins(
                                                       color: Color(0xFF0f625c),
                                                       fontSize: 15,
-                                                      fontWeight: FontWeight.w400,
+                                                      fontWeight:
+                                                          FontWeight.w400,
                                                     )),
                                                 Text(
                                                   '${scheme['abs_return']?.toString() ?? '0'}%',
@@ -765,7 +811,8 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                                                     style: GoogleFonts.poppins(
                                                       color: Color(0xFF0f625c),
                                                       fontSize: 15,
-                                                      fontWeight: FontWeight.w400,
+                                                      fontWeight:
+                                                          FontWeight.w400,
                                                     )),
                                                 Text(
                                                   '${scheme['xirr']?.toString() ?? '0'}%',
