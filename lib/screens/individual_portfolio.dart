@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:wealthclock28/screens/login.dart';
 
 class IndividualPortfolioPage extends StatefulWidget {
   final String memberPan;
@@ -213,8 +214,23 @@ class _IndividualPortfolioPageState extends State<IndividualPortfolioPage> {
         });
       }
     } catch (e) {
-      //print('Error: $e');
-      //print('StackTrace: $stackTrace');
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Session expired. Please login again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+          (route) => false,
+        );
+      }
+
+      print('Error: $e');
+      // print('StackTrace: $stackTrace');
       setState(() {
         userName = "Error fetching data!";
         cumulativeXirrValue = "0.00";

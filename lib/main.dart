@@ -10,6 +10,9 @@ void main() async {
   String? userId = await getUserId(); // Retrieve stored userId
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? authToken = prefs.getString('auth_token');
+  print('User ID: $userId');
+  print('Auth Token: $authToken');
+
   runApp(
     MyApp(userId: userId, authToken: authToken),
   );

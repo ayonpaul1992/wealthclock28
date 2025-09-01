@@ -13,6 +13,7 @@ import 'package:wealthclock28/screens/individual_portfolio.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:wealthclock28/screens/login.dart';
 
 class FamilyPortfolioPage extends StatefulWidget {
   final String memberName; // Store the memberName
@@ -229,6 +230,20 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
         });
       }
     } catch (e) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Session expired. Please login again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+          (route) => false,
+        );
+      }
       //print('Error: $e');
       //print('StackTrace: $stackTrace');
       setState(() {

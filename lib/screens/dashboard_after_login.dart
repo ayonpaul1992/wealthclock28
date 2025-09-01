@@ -10,6 +10,7 @@ import 'package:wealthclock28/components/custom_drawer.dart';
 import 'package:wealthclock28/components/legend_item.dart';
 import 'package:wealthclock28/components/pie_chart_section.dart';
 import 'package:wealthclock28/components/custom_bottom_nav_bar.dart';
+import 'package:wealthclock28/screens/login.dart';
 
 import 'individual_portfolio.dart';
 import 'family_portfolio.dart';
@@ -194,6 +195,20 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
         });
       }
     } catch (e) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Session expired. Please login again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+          (route) => false,
+        );
+      }
       //print('Error: $e');
       //print('StackTrace: $stackTrace');
       setState(() {
@@ -428,7 +443,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(width:15),
+                                  SizedBox(width: 15),
 
                                   // Right Section: Pie Chart
                                   SizedBox(

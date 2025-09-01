@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wealthclock28/components/custom_app_bar.dart';
 import 'package:wealthclock28/components/custom_bottom_nav_bar.dart';
 import 'package:wealthclock28/components/custom_drawer.dart';
+import 'package:wealthclock28/screens/login.dart';
 
 class eachSchemeDetails extends StatefulWidget {
   final Map<String, dynamic> scheme; // ✅ Define scheme as a property
@@ -288,6 +289,20 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
         });
       }
     } catch (e) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Session expired. Please login again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+          (route) => false,
+        );
+      }
       // //print('Error: $e');
       // //print('StackTrace: $stackTrace');
       setState(() {
