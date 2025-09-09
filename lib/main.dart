@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wealthclock28/biometric_auth.dart';
 import 'screens/login.dart';
 import 'screens/dashboard_after_login.dart';
 
 void main() async {
-  WidgetsFlutterBinding
-      .ensureInitialized(); // Ensures async operations work before runApp
-  String? userId = await getUserId(); // Retrieve stored userId
+  WidgetsFlutterBinding.ensureInitialized();
+
+  String? userId = await getUserId();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? authToken = prefs.getString('auth_token');
-  print('User ID: $userId');
-  print('Auth Token: $authToken');
 
   runApp(
     MyApp(userId: userId, authToken: authToken),
@@ -20,7 +19,7 @@ void main() async {
 
 Future<String?> getUserId() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('user_id'); // Returns userId if stored, else null
+  return prefs.getString('user_id');
 }
 
 class MyApp extends StatelessWidget {
@@ -31,26 +30,116 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isLoggedIn = userId != null && authToken != null;
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(),
       ),
-      home:
-          isLoggedIn ? dashboardAfterLogin(userId: userId!) : const LoginPage(),
-      // onUnknownRoute: (settings) {
-      //   return MaterialPageRoute(
-      //     builder: (context) => userId == null
-      //         ? const LoginPage()
-      //         : dashboardAfterLogin(userId: userId!),
-      //   );
-      //   // return null;
-      // },
-      // home: userId == null
-      //     ? const LoginPage()
-      //     : dashboardAfterLogin(userId: userId!),
+      home: SplashScreen(userId: userId, authToken: authToken),
     );
   }
 }
+
+class SplashScreen extends StatefulWidget {
+  final String? userId;
+  final String? authToken;
+
+  const SplashScreen({super.key, this.userId, this.authToken});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  final biometric = BiometricAuth();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _decideStartScreen();
+    });
+  }
+
+  Future<void> _decideStartScreen() async {
+    final loggedIn = widget.userId != null && widget.authToken != null;
+
+    if (!loggedIn) {
+      _goTo(const LoginPage());
+      return;
+    }
+
+    final bioEnabled = await biometric.isBiometricEnabled();
+
+    if (bioEnabled) {
+      final authenticated = await biometric.checkBiometric();
+      if (authenticated) {
+        _goTo(dashboardAfterLogin(userId: widget.userId!));
+      } else {
+        _goTo(const LoginPage());
+      }
+    } else {
+      _goTo(dashboardAfterLogin(userId: widget.userId!));
+    }
+  }
+
+  void _goTo(Widget screen) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => screen),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
+    );
+  }
+}
+
+// class _SplashScreenState extends State<SplashScreen> {
+//   final biometric = BiometricAuth();
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _decideStartScreen();
+//   }
+
+//   Future<void> _decideStartScreen() async {
+//     final loggedIn = widget.userId != null && widget.authToken != null;
+
+//     if (!loggedIn) {
+//       _goTo(const LoginPage());
+//       return;
+//     }
+
+//     final bioEnabled = await biometric.isBiometricEnabled();
+
+//     if (bioEnabled) {
+//       final authenticated = await biometric.checkBiometric();
+//       if (authenticated) {
+//         _goTo(dashboardAfterLogin(userId: widget.userId!));
+//       } else {
+//         _goTo(const LoginPage());
+//       }
+//     } else {
+//       _goTo(dashboardAfterLogin(userId: widget.userId!));
+//     }
+//   }
+
+//   void _goTo(Widget screen) {
+//     Navigator.pushReplacement(
+//       context,
+//       MaterialPageRoute(builder: (_) => screen),
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Scaffold(
+//       body: Center(child: CircularProgressIndicator()),
+//     );
+//   }
+// }

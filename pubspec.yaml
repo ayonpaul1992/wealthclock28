@@ -45,12 +45,15 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   syncfusion_flutter_datepicker: ^29.1.33
   jwt_decoder: ^2.0.1
+  local_auth: ^2.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.13.1
   flutter_lints: ^5.0.0
+  integration_test:
+    sdk: flutter
 
 flutter_icons:
   android: true

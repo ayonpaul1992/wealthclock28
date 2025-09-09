@@ -66,10 +66,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
     }
 
     try {
-      // print('Attempting to log out...');
-      // print('API URL: $apiUrl');
-      // print('Authorization Token: $authToken');
-
       // Sending the GET request to the logout API
       final response = await http.get(
         Uri.parse('$apiUrl?logout=true'),
@@ -78,9 +74,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
           'Content-Type': 'application/json',
         },
       );
-
-      // print('Response status: ${response.statusCode}');
-      // print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         // Successfully logged out
@@ -100,9 +93,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
           const SnackBar(content: Text('Unauthorized')),
         );
       } else {
-        // Handle API error response
-        // print('Error during logout. Status code: ${response.statusCode}');
-        // print('Error body: ${response.body}');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Unable to logout. Please try again.'),
@@ -110,8 +100,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
         );
       }
     } catch (e) {
-      // Handle network or other errors
-      // print('Error during logout: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: Unable to log out. $e'),
@@ -119,49 +107,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
       );
     }
   }
-
-  // Widget _buildDrawerTile({
-  //   required String title,
-  //   required IconData icon,
-  // }) {
-  //   bool isActive = activeTile == title;
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //       border:
-  //           Border(bottom: BorderSide(color: Colors.grey.shade400, width: 1.0)),
-  //     ),
-  //     child: ElevatedButton(
-  //       style: ElevatedButton.styleFrom(
-  //         padding: EdgeInsets.zero,
-  //         backgroundColor: isActive ? Color(0xFFfee0be) : Colors.transparent,
-  //         elevation: isActive ? 5 : 0,
-  //         shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-  //       ),
-  //       onPressed: () {
-  //         setState(() {
-  //           activeTile = title;
-  //         });
-  //         widget.onTileTap(title);
-  //         Navigator.pop(context); // Close drawer
-  //       },
-  //       child: ListTile(
-  //         leading: Icon(
-  //           icon,
-  //           color: isActive ? Color(0xFF0f625c) : Color(0xFF303131),
-  //           size: 20,
-  //         ),
-  //         title: Text(
-  //           title,
-  //           style: TextStyle(
-  //             color: isActive ? Color(0xFF0f625c) : Color(0xFF303131),
-  //             fontSize: 15,
-  //             fontWeight: FontWeight.w600,
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget _buildDrawerTile({
     required String title,
@@ -313,7 +258,30 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   Padding(
                     padding: const EdgeInsets.only(left: 20),
                     child: ElevatedButton(
-                      onPressed: () => _logout(context),
+                      onPressed: () async {
+                        final shouldLogout = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Confirm Logout'),
+                            content: Text('Are you sure you want to log out?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                child: Text('OK'),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (shouldLogout == true) {
+                          _logout(context);
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFfef1e2),
                         elevation: 5,

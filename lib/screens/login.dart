@@ -1,9 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:wealthclock28/biometric_auth.dart';
 // Make sure to import this for JSON handling
 import 'forgot_password.dart';
 import '../extras/terms_condition.dart';
@@ -101,47 +104,63 @@ class _LoginPageState extends State<LoginPage> {
       //print("Response status code: ${response.statusCode}");
       //print("Response body: ${response.body}");
 
+      // if (response.statusCode == 200) {
+      //   final Map<String, dynamic> responseData = json.decode(response.body);
+
+      //   if (responseData.containsKey('token') &&
+      //       responseData.containsKey('userId')) {
+      //     String token = responseData['token'];
+      //     String userId = responseData['userId'].toString();
+      //     String userName = responseData['userName'].toString();
+      //     String? expiresAt = responseData['expiresAt'];
+
+      //     SharedPreferences prefs = await SharedPreferences.getInstance();
+      //     await prefs.setString('auth_token', token);
+      //     await prefs.setString('user_id', userId);
+      //     await prefs.setString('user_name', userName);
+      //     if (expiresAt != null) {
+      //       await prefs.setString('expires_at', expiresAt);
+      //     }
+
+      //     // Additional check before navigating
+      //     if (prefs.getString('auth_token') == null ||
+      //         prefs.getString('user_id') == null) {
+      //       _showMessage("Something went wrong while saving login data.");
+      //       return;
+      //     }
+
+      //     _showMessage("Login successful.");
+
+      //     Navigator.pushReplacement(
+      //       // ignore: use_build_context_synchronously
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => dashboardAfterLogin(userId: userId),
+      //       ),
+      //     );
+      //   } else {
+      //     //print("Unexpected response structure.");
+      //     _showMessage("Unexpected response from server.");
+      //   }
+      // }
+
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
 
-        // if (responseData.containsKey('token')) {
-        //   String token = responseData['token'];
-        //   String userId = responseData['userId'].toString();
-        //   String userName = responseData['userName'].toString();
-
-        //   // print("Login successful. Token: $token, User ID: $userId");
-
-        //   // Store user data in SharedPreferences asynchronously
-        //   SharedPreferences prefs = await SharedPreferences.getInstance();
-        //   await prefs.setString('auth_token', token);
-        //   await prefs.setString('user_id', userId);
-        //   await prefs.setString('user_name', userName);
-
-        //   await secureStorage.write(key: 'saved_email', value: uEmail);
-        //   await secureStorage.write(key: 'saved_password', value: uPass);
-        //   await secureStorage.write(key: 'saved_pan', value: uPan);
-
-        //   _showMessage("Login successful.");
-
-        //   // Navigate to dashboard
-        //   Navigator.pushReplacement(
-        //     // ignore: use_build_context_synchronously
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => dashboardAfterLogin(userId: userId),
-        //     ),
-        //   );
-        // }
         if (responseData.containsKey('token') &&
             responseData.containsKey('userId')) {
           String token = responseData['token'];
           String userId = responseData['userId'].toString();
           String userName = responseData['userName'].toString();
+          String? expiresAt = responseData['expiresAt'];
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('auth_token', token);
           await prefs.setString('user_id', userId);
           await prefs.setString('user_name', userName);
+          if (expiresAt != null) {
+            await prefs.setString('expires_at', expiresAt);
+          }
 
           // Additional check before navigating
           if (prefs.getString('auth_token') == null ||
@@ -152,15 +171,102 @@ class _LoginPageState extends State<LoginPage> {
 
           _showMessage("Login successful.");
 
+          // 🔐 Ask user if they want to enable biometrics
+          // final enableBiometric = await showDialog<bool>(
+          //   context: context,
+          //   builder: (ctx) => AlertDialog(
+          //     title: const Text("Enable Biometric Login?"),
+          //     content: const Text(
+          //       "Would you like to use fingerprint/face ID to quickly login next time?",
+          //     ),
+          //     actions: [
+          //       TextButton(
+          //         onPressed: () => Navigator.pop(ctx, false),
+          //         child: const Text("No"),
+          //       ),
+          //       ElevatedButton(
+          //         onPressed: () => Navigator.pop(ctx, true),
+          //         child: const Text("Yes"),
+          //       ),
+          //     ],
+          //   ),
+          // );
+
+          // if (enableBiometric == true) {
+          //   final biometric = BiometricAuth();
+          //   final success = await biometric.checkBiometric(setupMode: true);
+
+          //   if (success) {
+          //     Navigator.pushReplacement(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => dashboardAfterLogin(userId: userId),
+          //       ),
+          //     );
+          //   } else {
+          //     _showMessage("Biometric setup failed, continuing without it.");
+
+          //     Navigator.pushReplacement(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => dashboardAfterLogin(userId: userId),
+          //       ),
+          //     );
+          //   }
+          // } else {
+          //   // User skipped biometrics → just continue
+          //   Navigator.pushReplacement(
+          //     context,
+          //     MaterialPageRoute(
+          //       builder: (context) => dashboardAfterLogin(userId: userId),
+          //     ),
+          //   );
+          // }
+
+          // Check if biometric setup prompt was already shown
+          bool setupDone = prefs.getBool('biometric_setup_done') ?? false;
+
+          // Only show prompt if it has never been shown
+          if (!setupDone) {
+            final enableBiometric = await showDialog<bool>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: const Text("Enable Biometric Login?"),
+                content: const Text(
+                    "Would you like to use fingerprint/face ID to quickly login next time?"),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx, false),
+                    child: const Text("No"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(ctx, true),
+                    child: const Text("Yes"),
+                  ),
+                ],
+              ),
+            );
+
+            if (enableBiometric == true) {
+              final biometric = BiometricAuth();
+              final success = await biometric.checkBiometric(setupMode: true);
+
+              if (success) {
+                await prefs.setBool('isBiometricEnabled', true);
+              }
+            }
+
+            // Mark that the prompt was shown, regardless of user choice
+            await prefs.setBool('biometric_setup_done', true);
+          }
+
+          // Navigate to dashboard
           Navigator.pushReplacement(
-            // ignore: use_build_context_synchronously
             context,
             MaterialPageRoute(
-              builder: (context) => dashboardAfterLogin(userId: userId),
-            ),
+                builder: (context) => dashboardAfterLogin(userId: userId)),
           );
         } else {
-          //print("Unexpected response structure.");
           _showMessage("Unexpected response from server.");
         }
       } else {
