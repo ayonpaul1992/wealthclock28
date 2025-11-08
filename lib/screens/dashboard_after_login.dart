@@ -195,6 +195,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
         });
       }
     } catch (e) {
+      // print('Exception caught: $e');
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
       if (mounted) {
@@ -237,7 +238,9 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
       appBar: CustomAppBar(
         scaffoldKey: _scaffoldKey,
         userId: '',
+        prflId: '',
         showLeading: false,
+        rqsrvcId: '',
       ),
       drawer: CustomDrawer(
         activeTile: 'Home',
@@ -541,6 +544,7 @@ class _dashboardAfterLoginState extends State<dashboardAfterLogin> {
                           MaterialPageRoute(
                             builder: (context) => const IndividualPortfolioPage(
                               memberPan: '',
+                              userId: '',
                             ),
                           ),
                         );

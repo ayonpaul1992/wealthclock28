@@ -548,7 +548,12 @@ class _eachSchemeDetailsState extends State<eachSchemeDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBar(scaffoldKey: _scaffoldKey, userId: ''),
+      appBar: CustomAppBar(
+        scaffoldKey: _scaffoldKey,
+        userId: '',
+        prflId: '',
+        rqsrvcId: '',
+      ),
       drawer: CustomDrawer(
         activeTile: '',
         onTileTap: (selectedTile) {

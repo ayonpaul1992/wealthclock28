@@ -1,13 +1,16 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, deprecated_member_use, use_build_context_synchronously
+
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wealthclock28/screens/dashboard_after_login.dart';
 import '../screens/login.dart';
 import 'signupAds.dart';
 import 'signupPds.dart';
-import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:http/http.dart' as http;
 
 class SignupPdsFirst extends StatefulWidget {
   const SignupPdsFirst({super.key});
@@ -17,6 +20,8 @@ class SignupPdsFirst extends StatefulWidget {
 }
 
 class _SignupPdsFirstState extends State<SignupPdsFirst> {
+  final fnameText = TextEditingController();
+  final lnameText = TextEditingController();
   final emailText = TextEditingController();
   final passText = TextEditingController();
   final repassText = TextEditingController();
@@ -30,16 +35,14 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
   bool isLoading = false;
   bool _isPanVisible = false; // For showing a loading spinner
   bool _isrePasVisible = false; // For showing a loading spinner
+  String _fnameError = '';
+  String _lnameError = '';
   String _emailError = '';
   String _phoneError = '';
   String _passError = '';
   String _repassError = '';
+  String _panError = '';
   // Function to show the error or success messages
-
-  void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
-  }
 
   @override
   void initState() {
@@ -95,6 +98,24 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
     }
   }
 
+  String _validateFirstName(String value) {
+    final trimmedFName = value.trim();
+    if (trimmedFName.isEmpty) {
+      return 'Please enter your first name.';
+    }
+
+    return '';
+  }
+
+  String _validateLastName(String value) {
+    final trimmedLName = value.trim();
+    if (trimmedLName.isEmpty) {
+      return 'Please enter your last name.';
+    }
+
+    return '';
+  }
+
   String _validateEmail(String value) {
     final trimmed = value.trim();
     if (trimmed.isEmpty) {
@@ -131,6 +152,14 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
     if (value.trim() != passText.text.trim()) {
       return 'Passwords do not match.';
     }
+    return '';
+  }
+
+  String _validatePan(String value) {
+    if (value.trim().isEmpty) {
+      return 'Please enter your PAN No.';
+    }
+
     return '';
   }
 
@@ -212,333 +241,532 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                   ),
                 ),
               ),
-              Container(
-                child: Wrap(
-                  spacing: 10, // Space between text fields
+              Wrap(
+                spacing: 10, // Space between text fields
 
-                  runSpacing: 15,
+                runSpacing: 15,
 
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: 10,
+                        ),
+                        child: Text(
+                          'First Name',
+                          style: GoogleFonts.poppins(
+                            color: Color(0xFF6E7B7A),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  Colors.black.withOpacity(0.1), // Shadow color
+
+                              blurRadius: 15, // Blur effect
+
+                              spreadRadius: 0, // Spread effect
+
+                              offset: Offset(0, 3), // Position of shadow
+                            ),
+                          ],
+                        ),
+                        child: SizedBox(
+                          width: 171,
+                          child: TextField(
+                            controller: fnameText,
+                            decoration: _inputDecoration(''),
+                            style: const TextStyle(
+                              color: Color(0xFF648683),
+                              fontSize: 14,
+                            ),
+                            autofillHints: [AutofillHints.name],
+                            onChanged: (value) {
+                              setState(() {
+                                _fnameError = _validateFirstName(value);
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      if (_fnameError.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 10.0,
+                            top: 5.0,
                           ),
                           child: Text(
-                            'Email Id',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF6E7B7A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
+                            _fnameError,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 12,
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 10,
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: 10,
                         ),
-                        Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black
-                                    .withOpacity(0.1), // Shadow color
-
-                                blurRadius: 15, // Blur effect
-
-                                spreadRadius: 0, // Spread effect
-
-                                offset: Offset(0, 3), // Position of shadow
-                              ),
-                            ],
-                          ),
-                          child: SizedBox(
-                            width: 171,
-                            child: TextField(
-                              controller: emailText,
-                              decoration: _inputDecoration(''),
-                              style: const TextStyle(
-                                color: Color(0xFF648683),
-                                fontSize: 14,
-                              ),
-                              autofillHints: [AutofillHints.email],
-                              onChanged: (value) {
-                                setState(() {
-                                  _emailError = _validateEmail(value);
-                                });
-                              },
-                            ),
+                        child: Text(
+                          'Last Name',
+                          style: GoogleFonts.poppins(
+                            color: Color(0xFF6E7B7A),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
-                        if (_emailError.isNotEmpty)
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 10.0, top: 5.0),
-                            child: Text(
-                              _emailError,
-                              style: const TextStyle(
-                                  color: Colors.red, fontSize: 12),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  Colors.black.withOpacity(0.1), // Shadow color
+
+                              blurRadius: 15, // Blur effect
+
+                              spreadRadius: 0, // Spread effect
+
+                              offset: Offset(0, 3), // Position of shadow
                             ),
+                          ],
+                        ),
+                        child: SizedBox(
+                          width: 171,
+                          child: TextField(
+                            controller: lnameText,
+                            decoration: _inputDecoration(''),
+                            style: const TextStyle(
+                              color: Color(0xFF648683),
+                              fontSize: 14,
+                            ),
+                            autofillHints: [AutofillHints.name],
+                            onChanged: (value) {
+                              setState(() {
+                                _lnameError = _validateLastName(value);
+                              });
+                            },
                           ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
+                        ),
+                      ),
+                      if (_lnameError.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0, top: 5.0),
                           child: Text(
-                            'Phone',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF6E7B7A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
+                            _lnameError,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 12,
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 10,
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: 10,
                         ),
-                        Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 15,
-                                spreadRadius: 0,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
+                        child: Text(
+                          'Email Id',
+                          style: GoogleFonts.poppins(
+                            color: Color(0xFF6E7B7A),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
                           ),
-                          child: SizedBox(
-                            width: 171,
-                            child: TextField(
-                              controller: phoneText,
-                              keyboardType: TextInputType.phone,
-                              decoration: _inputDecoration(''),
-                              style: const TextStyle(
-                                color: Color(0xFF648683),
-                                fontSize: 14,
-                              ),
-                              inputFormatters: [
-                                FilteringTextInputFormatter
-                                    .digitsOnly, // Allow only digits
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  Colors.black.withOpacity(0.1), // Shadow color
 
-                                LengthLimitingTextInputFormatter(
-                                    10), // Limit to 10 characters
-                              ],
-                              onChanged: (value) {
-                                setState(() {
-                                  _phoneError = _validatePhone(value);
-                                });
-                              },
+                              blurRadius: 15, // Blur effect
+
+                              spreadRadius: 0, // Spread effect
+
+                              offset: Offset(0, 3), // Position of shadow
                             ),
+                          ],
+                        ),
+                        child: SizedBox(
+                          width: 171,
+                          child: TextField(
+                            controller: emailText,
+                            decoration: _inputDecoration(''),
+                            style: const TextStyle(
+                              color: Color(0xFF648683),
+                              fontSize: 14,
+                            ),
+                            autofillHints: [AutofillHints.email],
+                            onChanged: (value) {
+                              setState(() {
+                                _emailError = _validateEmail(value);
+                              });
+                            },
                           ),
                         ),
-                        if (_phoneError.isNotEmpty)
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 10.0, top: 5.0),
-                            child: Text(
-                              _phoneError,
-                              style: const TextStyle(
-                                  color: Colors.red, fontSize: 12),
-                            ),
-                          ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
+                      ),
+                      if (_emailError.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0, top: 5.0),
                           child: Text(
-                            'Password',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF6E7B7A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
+                            _emailError,
+                            style: const TextStyle(
+                                color: Colors.red, fontSize: 12),
+                          ),
+                        ),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: 10,
+                        ),
+                        child: Text(
+                          'Mobile Number',
+                          style: GoogleFonts.poppins(
+                            color: Color(0xFF6E7B7A),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 15,
+                              spreadRadius: 0,
+                              offset: Offset(0, 3),
                             ),
-                          ),
+                          ],
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black
-                                    .withOpacity(0.1), // Shadow color
+                        child: SizedBox(
+                          width: 171,
+                          child: TextField(
+                            controller: phoneText,
+                            keyboardType: TextInputType.phone,
+                            decoration: _inputDecoration(''),
+                            style: const TextStyle(
+                              color: Color(0xFF648683),
+                              fontSize: 14,
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter
+                                  .digitsOnly, // Allow only digits
 
-                                blurRadius: 15, // Blur effect
-
-                                spreadRadius: 0, // Spread effect
-
-                                offset: Offset(0, 3), // Position of shadow
-                              ),
+                              LengthLimitingTextInputFormatter(
+                                  10), // Limit to 10 characters
                             ],
+                            onChanged: (value) {
+                              setState(() {
+                                _phoneError = _validatePhone(value);
+                              });
+                            },
                           ),
-                          child: SizedBox(
-                            width: 171,
-                            child: TextField(
-                              controller: passText,
+                        ),
+                      ),
+                      if (_phoneError.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0, top: 5.0),
+                          child: Text(
+                            _phoneError,
+                            style: const TextStyle(
+                                color: Colors.red, fontSize: 12),
+                          ),
+                        ),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: 10,
+                        ),
+                        child: Text(
+                          'Password',
+                          style: GoogleFonts.poppins(
+                            color: Color(0xFF6E7B7A),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  Colors.black.withOpacity(0.1), // Shadow color
 
-                              obscureText:
-                                  !_isPanVisible, // Toggle text visibility
+                              blurRadius: 15, // Blur effect
 
-                              decoration:
-                                  _inputDecoration('**********').copyWith(
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _isPanVisible
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                    color: const Color(0xFF648683),
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _isPanVisible =
-                                          !_isPanVisible; // Toggle visibility
-                                    });
-                                  },
+                              spreadRadius: 0, // Spread effect
+
+                              offset: Offset(0, 3), // Position of shadow
+                            ),
+                          ],
+                        ),
+                        child: SizedBox(
+                          width: 171,
+                          child: TextField(
+                            controller: passText,
+
+                            obscureText:
+                                !_isPanVisible, // Toggle text visibility
+
+                            decoration: _inputDecoration('**********').copyWith(
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _isPanVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: const Color(0xFF648683),
                                 ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isPanVisible =
+                                        !_isPanVisible; // Toggle visibility
+                                  });
+                                },
                               ),
-
-                              style: const TextStyle(
-                                  color: Color(0xFF648683), fontSize: 15),
-
-                              autofillHints: const [AutofillHints.password],
-                              onChanged: (value) {
-                                setState(() {
-                                  _passError = _validatePassword(value);
-                                  _repassError =
-                                      _validateRePassword(repassText.text);
-                                });
-                              },
                             ),
+
+                            style: const TextStyle(
+                                color: Color(0xFF648683), fontSize: 15),
+
+                            autofillHints: const [AutofillHints.password],
+                            onChanged: (value) {
+                              setState(() {
+                                _passError = _validatePassword(value);
+                                _repassError =
+                                    _validateRePassword(repassText.text);
+                              });
+                            },
                           ),
                         ),
-                        if (_passError.isNotEmpty)
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 10.0, top: 5.0),
-                            child: Text(
-                              _passError,
-                              style: const TextStyle(
-                                  color: Colors.red, fontSize: 12),
-                            ),
-                          ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
+                      ),
+                      if (_passError.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0, top: 5.0),
                           child: Text(
-                            'Re-Password',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF6E7B7A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
+                            _passError,
+                            style: const TextStyle(
+                                color: Colors.red, fontSize: 12),
+                          ),
+                        ),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: 10,
+                        ),
+                        child: Text(
+                          'Confirm Password',
+                          style: GoogleFonts.poppins(
+                            color: Color(0xFF6E7B7A),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  Colors.black.withOpacity(0.1), // Shadow color
+
+                              blurRadius: 15, // Blur effect
+
+                              spreadRadius: 0, // Spread effect
+
+                              offset: Offset(0, 3), // Position of shadow
                             ),
-                          ),
+                          ],
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black
-                                    .withOpacity(0.1), // Shadow color
+                        child: SizedBox(
+                          width: 171,
+                          child: TextField(
+                            controller: repassText,
 
-                                blurRadius: 15, // Blur effect
+                            obscureText:
+                                !_isrePasVisible, // Toggle text visibility
 
-                                spreadRadius: 0, // Spread effect
-
-                                offset: Offset(0, 3), // Position of shadow
-                              ),
-                            ],
-                          ),
-                          child: SizedBox(
-                            width: 171,
-                            child: TextField(
-                              controller: repassText,
-
-                              obscureText:
-                                  !_isrePasVisible, // Toggle text visibility
-
-                              decoration:
-                                  _inputDecoration('**********').copyWith(
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _isrePasVisible
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                    color: const Color(0xFF648683),
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _isrePasVisible =
-                                          !_isrePasVisible; // Toggle visibility
-                                    });
-                                  },
+                            decoration: _inputDecoration('**********').copyWith(
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _isrePasVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: const Color(0xFF648683),
                                 ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isrePasVisible =
+                                        !_isrePasVisible; // Toggle visibility
+                                  });
+                                },
                               ),
-
-                              style: const TextStyle(
-                                  color: Color(0xFF648683), fontSize: 15),
-
-                              autofillHints: const [AutofillHints.password],
-                              onChanged: (value) {
-                                setState(() {
-                                  _repassError = _validateRePassword(value);
-                                });
-                              },
                             ),
+
+                            style: const TextStyle(
+                                color: Color(0xFF648683), fontSize: 15),
+
+                            autofillHints: const [AutofillHints.password],
+                            onChanged: (value) {
+                              setState(() {
+                                _repassError = _validateRePassword(value);
+                              });
+                            },
                           ),
                         ),
-                        if (_repassError.isNotEmpty)
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 10.0, top: 5.0),
-                            child: Text(
-                              _repassError,
-                              style: const TextStyle(
-                                  color: Colors.red, fontSize: 12),
-                            ),
+                      ),
+                      if (_repassError.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0, top: 5.0),
+                          child: Text(
+                            _repassError,
+                            style: const TextStyle(
+                                color: Colors.red, fontSize: 12),
                           ),
-                      ],
-                    ),
-                  ],
-                ),
+                        ),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: 10,
+                        ),
+                        child: Text(
+                          'Investor PAN',
+                          style: GoogleFonts.poppins(
+                            color: Color(0xFF6E7B7A),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  Colors.black.withOpacity(0.1), // Shadow color
+
+                              blurRadius: 15, // Blur effect
+
+                              spreadRadius: 0, // Spread effect
+
+                              offset: Offset(0, 3), // Position of shadow
+                            ),
+                          ],
+                        ),
+                        child: SizedBox(
+                          width: 171,
+                          child: TextField(
+                            // controller: ,
+
+                            // obscureText:
+                            //     !_isrePasVisible, // Toggle text visibility
+
+                            decoration: _inputDecoration('PAN Number'),
+                            controller: othersController,
+
+                            style: const TextStyle(
+                                color: Color(0xFF648683), fontSize: 15),
+
+                            autofillHints: const [AutofillHints.password],
+                            onChanged: (value) {
+                              setState(() {
+                                _panError = _validatePan(value);
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      if (_panError.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0, top: 5.0),
+                          child: Text(
+                            _panError,
+                            style: const TextStyle(
+                                color: Colors.red, fontSize: 12),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       // Run all validators and update the UI
                       setState(() {
+                        _fnameError = _validateFirstName(fnameText.text);
+                        _lnameError = _validateLastName(lnameText.text);
                         _emailError = _validateEmail(emailText.text);
                         _phoneError = _validatePhone(phoneText.text);
                         _passError = _validatePassword(passText.text);
                         _repassError = _validateRePassword(repassText.text);
+                        _panError = _validatePan(othersController.text);
                       });
 
                       // Check if any validation failed
@@ -550,10 +778,10 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                         final firstError = _emailError.isNotEmpty
                             ? _emailError
                             : _phoneError.isNotEmpty
-                            ? _phoneError
-                            : _passError.isNotEmpty
-                            ? _passError
-                            : _repassError;
+                                ? _phoneError
+                                : _passError.isNotEmpty
+                                    ? _passError
+                                    : _repassError;
 
                         // ScaffoldMessenger.of(context).showSnackBar(
                         //   SnackBar(content: Text(firstError)),
@@ -566,9 +794,13 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                       final pass = passText.text.trim();
                       final repass = repassText.text.trim();
 
-                      if (phone.length != 10 || !RegExp(r'^\d{10}$').hasMatch(phone)) {
+                      if (phone.length != 10 ||
+                          !RegExp(r'^\d{10}$').hasMatch(phone)) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Phone number must be exactly 10 digits.')),
+                          SnackBar(
+                            content:
+                                Text('Phone number must be exactly 10 digits.'),
+                          ),
                         );
                         return;
                       }
@@ -581,35 +813,248 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                       }
 
                       // ✅ All validations passed, move to next page
-                      Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          transitionDuration: const Duration(milliseconds: 500),
-                          pageBuilder: (context, animation, secondaryAnimation) =>
-                          const SignupPdsPage(),
-                          transitionsBuilder:
-                              (context, animation, secondaryAnimation, child) {
-                            const begin = Offset(1.0, 0.0);
-                            const end = Offset.zero;
-                            const curve = Curves.easeInOut;
-                            var tween = Tween(begin: begin, end: end)
-                                .chain(CurveTween(curve: curve));
-                            var offsetAnimation = animation.drive(tween);
-                            return SlideTransition(
-                              position: offsetAnimation,
-                              child: child,
-                            );
-                          },
-                        ),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   PageRouteBuilder(
+                      //     transitionDuration: const Duration(milliseconds: 500),
+                      //     pageBuilder:
+                      //         (context, animation, secondaryAnimation) =>
+                      //             const SignupPdsPage(),
+                      //     transitionsBuilder:
+                      //         (context, animation, secondaryAnimation, child) {
+                      //       const begin = Offset(1.0, 0.0);
+                      //       const end = Offset.zero;
+                      //       const curve = Curves.easeInOut;
+                      //       var tween = Tween(begin: begin, end: end)
+                      //           .chain(CurveTween(curve: curve));
+                      //       var offsetAnimation = animation.drive(tween);
+                      //       return SlideTransition(
+                      //         position: offsetAnimation,
+                      //         child: child,
+                      //       );
+                      //     },
+                      //   ),
+                      // );
 
                       // (Optional) Print captured data for debug
+                      print("First Name: ${fnameText.text.trim()}");
+                      print("Last Name: ${lnameText.text.trim()}");
                       print("Email: ${emailText.text.trim()}");
                       print("Phone: $phone");
                       print("Password: $pass");
                       print("Re-Password: $repass");
                       print("Others: ${othersController.text.trim()}");
                       print("Address: ${pdsAddressController.text.trim()}");
+                      print("PAN: ${othersController.text.trim()}");
+
+                      try {
+                        final apiUrl =
+                            'https://wealthclockadvisors.com/api/signup';
+
+                        final response = await http.post(
+                          Uri.parse(apiUrl),
+                          headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                          },
+                          body: {
+                            "fname": fnameText.text.trim(),
+                            "lname": lnameText.text.trim(),
+                            "email": emailText.text.trim(),
+                            "mobile": phoneText.text.trim(),
+                            "password": passText.text.trim(),
+                            "c_password": repassText.text.trim(),
+                            "pan": othersController.text.trim(),
+                          },
+                        );
+
+                        print('Response status: ${response.statusCode}');
+                        print('Response body: ${response.body}');
+
+                        if (response.statusCode == 201) {
+                          final data = jsonDecode(response.body);
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Signup successful'),
+                            ),
+                          );
+
+                          final loginUrl =
+                              'https://wealthclockadvisors.com/api/client/login-with-pan';
+                          final loginResponse = await http.post(
+                            Uri.parse(loginUrl),
+                            headers: {
+                              'Content-Type':
+                                  'application/x-www-form-urlencoded'
+                            },
+                            body: {
+                              // "mobile": phoneText.text.trim(),
+                              // "password": passText.text.trim(),
+                              'email': emailText.text.trim(),
+                              'password': passText.text.trim(),
+                              'pan': othersController.text.trim()
+                            },
+                          );
+
+                          print(
+                              'Login Response status: ${loginResponse.statusCode}');
+                          print('Login Response body: ${loginResponse.body}');
+
+                          if (loginResponse.statusCode == 200) {
+                            final Map<String, dynamic> responseData =
+                                json.decode(loginResponse.body);
+
+                            if (responseData.containsKey('token') &&
+                                responseData.containsKey('userId')) {
+                              String token = responseData['token'];
+                              String userId = responseData['userId'].toString();
+                              String userName =
+                                  responseData['userName'].toString();
+                              String? expiresAt = responseData['expiresAt'];
+
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              await prefs.setString('auth_token', token);
+                              await prefs.setString('user_id', userId);
+                              await prefs.setString('user_name', userName);
+                              if (expiresAt != null) {
+                                await prefs.setString('expires_at', expiresAt);
+                              }
+
+                              // Additional check before navigating
+                              if (prefs.getString('auth_token') == null ||
+                                  prefs.getString('user_id') == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Something went wrong while saving login data.',
+                                    ),
+                                  ),
+                                );
+
+                                return;
+                              }
+
+                              // ScaffoldMessenger.of(context).showSnackBar(
+                              //   SnackBar(
+                              //     content: Text('Login successful'),
+                              //   ),
+                              // );
+
+                              // Check if biometric setup prompt was already shown
+                              // bool setupDone =
+                              //     prefs.getBool('biometric_setup_done') ??
+                              //         false;
+
+                              // // Only show prompt if it has never been shown
+                              // if (!setupDone) {
+                              //   final enableBiometric = await showDialog<bool>(
+                              //     context: context,
+                              //     builder: (ctx) => AlertDialog(
+                              //       title:
+                              //           const Text("Enable Biometric Login?"),
+                              //       content: const Text(
+                              //           "Would you like to use fingerprint/face ID to quickly login next time?"),
+                              //       actions: [
+                              //         TextButton(
+                              //           onPressed: () =>
+                              //               Navigator.pop(ctx, false),
+                              //           child: const Text("No"),
+                              //         ),
+                              //         ElevatedButton(
+                              //           onPressed: () =>
+                              //               Navigator.pop(ctx, true),
+                              //           child: const Text("Yes"),
+                              //         ),
+                              //       ],
+                              //     ),
+                              //   );
+
+                              //   if (enableBiometric == true) {
+                              //     final biometric = BiometricAuth();
+                              //     final success = await biometric
+                              //         .checkBiometric(setupMode: true);
+
+                              //     if (success) {
+                              //       await prefs.setBool(
+                              //           'isBiometricEnabled', true);
+                              //     }
+                              //   }
+
+                              //   // Mark that the prompt was shown, regardless of user choice
+                              //   await prefs.setBool(
+                              //       'biometric_setup_done', true);
+                              // }
+
+                              // Navigate to dashboard
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SignupPdsPage(),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content:
+                                      Text('Unexpected response from server.'),
+                                ),
+                              );
+                            }
+                          } else {
+                            // Handle different status codes with better error handling
+                            final Map<String, dynamic> errorResponse =
+                                json.decode(response.body);
+                            String errorMessage = errorResponse['message'] ??
+                                "Login failed. Please try again.";
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(errorMessage),
+                              ),
+                            );
+
+                            //print("Login error: $errorMessage");
+                          }
+
+                          // Navigator.push(
+                          //   context,
+                          //   PageRouteBuilder(
+                          //     transitionDuration:
+                          //         const Duration(milliseconds: 500),
+                          //     pageBuilder:
+                          //         (context, animation, secondaryAnimation) =>
+                          //             const SignupPdsPage(),
+                          //     transitionsBuilder: (context, animation,
+                          //         secondaryAnimation, child) {
+                          //       const begin = Offset(1.0, 0.0);
+                          //       const end = Offset.zero;
+                          //       const curve = Curves.easeInOut;
+                          //       var tween = Tween(begin: begin, end: end)
+                          //           .chain(CurveTween(curve: curve));
+                          //       var offsetAnimation = animation.drive(tween);
+                          //       return SlideTransition(
+                          //         position: offsetAnimation,
+                          //         child: child,
+                          //       );
+                          //     },
+                          //   ),
+                          // );
+                        } else {
+                          final data = jsonDecode(response.body);
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content:
+                                    Text('Signup failed: ${data['message']}')),
+                          );
+                        }
+
+                        // print(
+                        //     'Message: ${response.body['message']}'); // Debug request body
+                      } catch (e) {
+                        print("Error during signup: $e");
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFfdd1a0),
@@ -675,14 +1120,6 @@ class _SignupPdsFirstState extends State<SignupPdsFirst> {
                               child: Wrap(
                                 alignment: WrapAlignment.center,
                                 children: [
-                                  Text(
-                                    'Have an account?',
-                                    style: GoogleFonts.poppins(
-                                      color: const Color(0xFF0f625c),
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
                                   InkWell(
                                     onTap: () {
                                       print('Sign In clicked');

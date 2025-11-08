@@ -4,8 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+// import 'package:wealthclock28/extras/signupAddress.dart';
+// import 'package:wealthclock28/extras/signupAds.dart';
+// import 'package:wealthclock28/extras/signupNds.dart';
+// import 'package:wealthclock28/extras/signupPds.dart';
+// import 'package:wealthclock28/extras/signupPdsfirst.dart';
+import 'package:wealthclock28/screens/RequestService.dart';
 import 'package:wealthclock28/screens/dashboard_after_login.dart';
+import 'package:wealthclock28/screens/individual_portfolio.dart';
 import 'package:wealthclock28/screens/login.dart';
+
+import '../screens/ProfileAfterLogin.dart';
 
 class CustomDrawer extends StatefulWidget {
   final String activeTile;
@@ -187,7 +196,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 children: [
                   ClipOval(
                     child: Image.asset(
-                      'assets/images/menu_ppl.png',
+                      'assets/images/dash_user.png',
                       fit: BoxFit.cover,
                       width: 64,
                       height: 64,
@@ -231,11 +240,23 @@ class _CustomDrawerState extends State<CustomDrawer> {
             _buildDrawerTile(
               title: 'My Orders',
               icon: Icons.shopping_bag_outlined,
+              destinationScreen: const IndividualPortfolioPage(
+                userId: '',
+                memberPan: '',
+              ),
             ),
             _buildDrawerTile(
               title: 'My Profile',
-              icon: Icons.person_outline_sharp,
+              icon: Icons.person_pin_outlined,
+              destinationScreen: const ProfileAfterLogin(
+                prflId: '',
+                userId: '',
+              ),
             ),
+            // _buildDrawerTile(
+            //   title: 'My Profile',
+            //   icon: Icons.person_outline_sharp,
+            // ),
             _buildDrawerTile(
               title: 'Change Password',
               icon: Icons.lock_outline,
@@ -243,11 +264,40 @@ class _CustomDrawerState extends State<CustomDrawer> {
             _buildDrawerTile(
               title: 'Request a Service',
               icon: Icons.event_note_sharp,
+              destinationScreen: const RequestServicePage(
+                rqsrvcId: '',
+              ),
             ),
             _buildDrawerTile(
               title: 'Contact Us',
               icon: Icons.email_outlined,
             ),
+
+            // _buildDrawerTile(
+            //   title: 'SignupAds',
+            //   icon: Icons.email_outlined,
+            //   destinationScreen: SignupAdsPage(),
+            // ),
+            // _buildDrawerTile(
+            //   title: 'SignupPds',
+            //   icon: Icons.email_outlined,
+            //   destinationScreen: SignupPdsPage(),
+            // ),
+            // _buildDrawerTile(
+            //   title: 'SignupNds',
+            //   icon: Icons.email_outlined,
+            //   destinationScreen: SignupNdsPage(),
+            // ),
+            // _buildDrawerTile(
+            //   title: 'SignupPdsFirst',
+            //   icon: Icons.email_outlined,
+            //   destinationScreen: SignupPdsFirst(),
+            // ),
+            // _buildDrawerTile(
+            //   title: 'SignupAddress',
+            //   icon: Icons.email_outlined,
+            //   destinationScreen: SignupAddressPage(),
+            // ),
 
             // Logout Button
             Container(

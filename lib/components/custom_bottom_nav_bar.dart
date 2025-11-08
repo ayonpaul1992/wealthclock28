@@ -52,7 +52,10 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
           {
             'icon': 'assets/images/ftr_prtflo.png',
             'label': 'Portfolio',
-            'route': const IndividualPortfolioPage(memberPan: ''),
+            'route': const IndividualPortfolioPage(
+              memberPan: '',
+              userId: '',
+            ),
           },
           {
             'icon': 'assets/images/ftr_invst.png',
@@ -119,10 +122,9 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                         Text(
                           items[index]['label']!,
                           style: GoogleFonts.poppins(
-                            color:
-                                widget.selectedIndex == index
-                                    ? Colors.blue
-                                    : const Color(0xFF648683),
+                            color: widget.selectedIndex == index
+                                ? Colors.blue
+                                : const Color(0xFF648683),
                             fontSize: 13,
                             fontWeight: FontWeight.w400,
                           ),

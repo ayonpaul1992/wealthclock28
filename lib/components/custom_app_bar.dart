@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wealthclock28/screens/ProfileAfterLogin.dart';
 import '../screens/dashboard_after_login.dart'; // Adjust the path as needed
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -15,6 +16,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBackPressed,
     this.onTitleTapped,
     this.showLeading = true,
+    required String prflId, required String rqsrvcId,
   });
 
   @override
@@ -61,7 +63,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         const SizedBox(width: 10),
         TextButton(
           onPressed: () {
-            scaffoldKey.currentState?.openDrawer();
+            // scaffoldKey.currentState?.openDrawer();
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProfileAfterLogin(
+                  userId: userId,
+                  prflId: '',
+                ),
+              ),
+            );
           },
           style: TextButton.styleFrom(
             minimumSize: const Size(20, 20),

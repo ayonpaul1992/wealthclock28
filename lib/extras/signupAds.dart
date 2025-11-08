@@ -1,12 +1,19 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wealthclock28/screens/dashboard_after_login.dart';
 import '../screens/login.dart';
 import 'signupPds.dart';
 import 'signupNds.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:http/http.dart' as http;
 
 class SignupAdsPage extends StatefulWidget {
   const SignupAdsPage({super.key});
@@ -404,7 +411,8 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1), // Shadow color
+                                color: Colors.black
+                                    .withOpacity(0.1), // Shadow color
                                 blurRadius: 15, // Blur effect
                                 spreadRadius: 0, // Spread effect
                                 offset: Offset(0, 3), // Position of shadow
@@ -421,7 +429,8 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                 fontSize: 14,
                               ),
                               inputFormatters: [
-                                LengthLimitingTextInputFormatter(50), // Limit to 25 characters
+                                LengthLimitingTextInputFormatter(
+                                    50), // Limit to 25 characters
                               ],
                               onChanged: (value) {
                                 if (value.isNotEmpty && bankNameError != null) {
@@ -438,7 +447,8 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                             padding: const EdgeInsets.only(left: 8.0, top: 5),
                             child: Text(
                               bankNameError!,
-                              style: const TextStyle(color: Colors.red, fontSize: 12),
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
                             ),
                           ),
                       ],
@@ -469,7 +479,8 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                     if (isAcTypeDropdownOpen) {
                                       closeAcTypeDropdown();
                                     }
-                                    FocusManager.instance.primaryFocus?.unfocus();
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
                                   },
                                   child: Container(width: 171),
                                 ),
@@ -500,7 +511,8 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                             color: Color(0xFF648683),
                                             fontSize: 14,
                                           ),
-                                          contentPadding: const EdgeInsets.symmetric(
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
                                             vertical: 8,
                                             horizontal: 15,
                                           ),
@@ -511,13 +523,17 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                             color: Color(0xFF648683),
                                           ),
                                           enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(50),
-                                            borderSide: BorderSide(color: Colors.white, width: 1),
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            borderSide: BorderSide(
+                                                color: Colors.white, width: 1),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(50),
-                                            borderSide:
-                                            BorderSide(color: Color(0xFF0f625c), width: 1),
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            borderSide: BorderSide(
+                                                color: Color(0xFF0f625c),
+                                                width: 1),
                                           ),
                                         ),
                                         style: const TextStyle(
@@ -526,7 +542,8 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                           fontWeight: FontWeight.w500,
                                         ),
                                         onChanged: (value) {
-                                          if (value.isNotEmpty && acTypeError != null) {
+                                          if (value.isNotEmpty &&
+                                              acTypeError != null) {
                                             setState(() {
                                               acTypeError = null;
                                             });
@@ -540,7 +557,8 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                             ),
                             if (acTypeError != null)
                               Padding(
-                                padding: const EdgeInsets.only(left: 12.0, top: 5),
+                                padding:
+                                    const EdgeInsets.only(left: 12.0, top: 5),
                                 child: Container(
                                   width: 159,
                                   child: Text(
@@ -657,7 +675,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                           width: 10,
                         ),
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             bool hasError = false;
                             setState(() {
                               // Reset errors first
@@ -666,30 +684,30 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                       bankNameError = acTypeError = null;
 
                               // Validate each field
-                              if (ifscCodeText.text.trim().isEmpty){
-                                ifscError = 'IFSC code is required.';
-                                hasError = true;
-                              }
-                              if (micrCodeText.text.trim().isEmpty){
-                                micrError = 'MICR code is required.';
-                                hasError = true;
-                              }
-                              if (acNoText.text.trim().isEmpty){
-                                acNoError = 'Account number is required.';
-                                hasError = true;
-                              }
-                              if (branchNameText.text.trim().isEmpty){
-                                branchNameError = 'Branch name is required.';
-                                hasError = true;
-                              }
-                              if (bankNameText.text.trim().isEmpty){
-                                bankNameError = 'Bank name is required.';
-                                hasError = true;
-                              }
-                              if (acTypeText.text.trim().isEmpty){
-                                acTypeError = 'Please select account type.';
-                                hasError = true;
-                              }
+                              // if (ifscCodeText.text.trim().isEmpty) {
+                              //   ifscError = 'IFSC code is required.';
+                              //   hasError = true;
+                              // }
+                              // if (micrCodeText.text.trim().isEmpty) {
+                              //   micrError = 'MICR code is required.';
+                              //   hasError = true;
+                              // }
+                              // if (acNoText.text.trim().isEmpty) {
+                              //   acNoError = 'Account number is required.';
+                              //   hasError = true;
+                              // }
+                              // if (branchNameText.text.trim().isEmpty) {
+                              //   branchNameError = 'Branch name is required.';
+                              //   hasError = true;
+                              // }
+                              // if (bankNameText.text.trim().isEmpty) {
+                              //   bankNameError = 'Bank name is required.';
+                              //   hasError = true;
+                              // }
+                              // if (acTypeText.text.trim().isEmpty) {
+                              //   acTypeError = 'Please select account type.';
+                              //   hasError = true;
+                              // }
 
                               // Stop navigation if any errors
                               // if (ifscError != null ||
@@ -701,34 +719,109 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                               //   return;
                               // }
                             });
-                            if (hasError)
-                              return; // 🚫 Stop navigation if any error exists
+                            // if (hasError)
+                            //   return; // 🚫 Stop navigation if any error exists
 
-                            // ✅ Safe to navigate
-                            Navigator.push(
-                              context,
-                              PageRouteBuilder(
-                                transitionDuration: Duration(milliseconds: 500),
-                                pageBuilder:
-                                    (context, animation, secondaryAnimation) =>
-                                        SignupNdsPage(),
-                                transitionsBuilder: (context, animation,
-                                    secondaryAnimation, child) {
-                                  const begin = Offset(1.0, 0.0);
-                                  const end = Offset.zero;
-                                  const curve = Curves.easeInOut;
+                            try {
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              final userId = prefs.getString('user_id') ?? '';
+                              final apiUrl =
+                                  'https://wealthclockadvisors.com/api/signup/update-bank-details';
 
-                                  var tween = Tween(begin: begin, end: end)
-                                      .chain(CurveTween(curve: curve));
-                                  var offsetAnimation = animation.drive(tween);
-
-                                  return SlideTransition(
-                                    position: offsetAnimation,
-                                    child: child,
-                                  );
+                              final response = await http.post(
+                                Uri.parse(apiUrl),
+                                headers: {
+                                  'Content-Type':
+                                      'application/x-www-form-urlencoded'
                                 },
-                              ),
-                            );
+                                body: {
+                                  "clientId": userId,
+                                  "accountNo": acNoText.text.trim(),
+                                  "accountType": acTypeText.text.trim(),
+                                  "ifscCode": ifscCodeText.text.trim(),
+                                  "micrCode": micrCodeText.text.trim(),
+                                  "bankName": bankNameText.text.trim(),
+                                  "branchName": branchNameText.text.trim(),
+                                },
+                              );
+
+                              print('Response status: ${response.statusCode}');
+                              print('Response body: ${response.body}');
+
+                              if (response.statusCode == 200) {
+                                final responseData = json.decode(response.body);
+
+                                if (responseData['success'] == true) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Bank details submitted successfully.',
+                                      ),
+                                    ),
+                                  );
+
+                                  Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      transitionDuration:
+                                          Duration(milliseconds: 500),
+                                      pageBuilder: (context, animation,
+                                              secondaryAnimation) =>
+                                          dashboardAfterLogin(
+                                        userId: '',
+                                      ),
+                                      transitionsBuilder: (context, animation,
+                                          secondaryAnimation, child) {
+                                        const begin = Offset(1.0, 0.0);
+                                        const end = Offset.zero;
+                                        const curve = Curves.easeInOut;
+
+                                        var tween = Tween(
+                                                begin: begin, end: end)
+                                            .chain(CurveTween(curve: curve));
+                                        var offsetAnimation =
+                                            animation.drive(tween);
+
+                                        return SlideTransition(
+                                          position: offsetAnimation,
+                                          child: child,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Failed to submit data. Please try again.',
+                                      ),
+                                    ),
+                                  );
+
+                                  // _showMessage(
+                                  //     'Failed to submit data. Please try again.');
+                                }
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Server error. Please try again later.',
+                                    ),
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Error during form submission: $e',
+                                  ),
+                                ),
+                              );
+                              print('Error occurred: $e');
+                              // Handle any errors if necessary
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFfdd1a0),
@@ -798,14 +891,6 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                               child: Wrap(
                                 alignment: WrapAlignment.center,
                                 children: [
-                                  Text(
-                                    'Have an account?',
-                                    style: GoogleFonts.poppins(
-                                      color: const Color(0xFF0f625c),
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
                                   InkWell(
                                     onTap: () {
                                       print('Sign In clicked');
@@ -819,7 +904,9 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                                   500), // ✅ Smooth transition
                                           pageBuilder: (context, animation,
                                                   secondaryAnimation) =>
-                                              const LoginPage(),
+                                              const dashboardAfterLogin(
+                                            userId: '',
+                                          ),
                                           transitionsBuilder: (context,
                                               animation,
                                               secondaryAnimation,
@@ -846,7 +933,7 @@ class _SignupAdsPageState extends State<SignupAdsPage> {
                                       );
                                     },
                                     child: Text(
-                                      'Sign In',
+                                      'Skip to Dashboard',
                                       style: GoogleFonts.poppins(
                                         color: const Color(0xFF0da99e),
                                         fontSize: 17,

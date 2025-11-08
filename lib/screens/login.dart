@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:wealthclock28/biometric_auth.dart';
+import 'package:wealthclock28/extras/signupPdsfirst.dart';
 // Make sure to import this for JSON handling
 import 'forgot_password.dart';
 import '../extras/terms_condition.dart';
@@ -101,6 +102,132 @@ class _LoginPageState extends State<LoginPage> {
         isLoading = false;
       });
 
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+
+        if (responseData.containsKey('token') &&
+            responseData.containsKey('userId')) {
+          String token = responseData['token'];
+          String userId = responseData['userId'].toString();
+          String userName = responseData['userName'].toString();
+          String? expiresAt = responseData['expiresAt'];
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('auth_token', token);
+          await prefs.setString('user_id', userId);
+          await prefs.setString('user_name', userName);
+          if (expiresAt != null) {
+            await prefs.setString('expires_at', expiresAt);
+          }
+
+          // Additional check before navigating
+          if (prefs.getString('auth_token') == null ||
+              prefs.getString('user_id') == null) {
+            _showMessage("Something went wrong while saving login data.");
+            return;
+          }
+
+          _showMessage("Login successful.");
+
+          // Check if biometric setup prompt was already shown
+          bool setupDone = prefs.getBool('biometric_setup_done') ?? false;
+
+          if (!setupDone) {
+            final enableBiometric = await showDialog<bool>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: const Text("Enable Biometric Login?"),
+                content: const Text(
+                  "Would you like to use fingerprint or face ID to quickly log in next time?",
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx, false),
+                    child: const Text("No"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(ctx, true),
+                    child: const Text("Yes"),
+                  ),
+                ],
+              ),
+            );
+
+            final prefs = await SharedPreferences.getInstance();
+
+            if (enableBiometric == true) {
+              final biometric = BiometricAuth();
+              final success = await biometric.enableBiometricAuth();
+
+              if (success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("✅ Biometric login enabled")),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text("❌ Failed to enable biometric login")),
+                );
+              }
+            }
+
+            // Mark that the setup prompt was shown (regardless of user choice)
+            await prefs.setBool('biometric_setup_done', true);
+          }
+
+          // Only show prompt if it has never been shown
+          // if (!setupDone) {
+          //   final enableBiometric = await showDialog<bool>(
+          //     context: context,
+          //     builder: (ctx) => AlertDialog(
+          //       title: const Text("Enable Biometric Login?"),
+          //       content: const Text(
+          //           "Would you like to use fingerprint/face ID to quickly login next time?"),
+          //       actions: [
+          //         TextButton(
+          //           onPressed: () => Navigator.pop(ctx, false),
+          //           child: const Text("No"),
+          //         ),
+          //         ElevatedButton(
+          //           onPressed: () => Navigator.pop(ctx, true),
+          //           child: const Text("Yes"),
+          //         ),
+          //       ],
+          //     ),
+          //   );
+
+          //   if (enableBiometric == true) {
+          //     final biometric = BiometricAuth();
+          //     final success = await biometric.checkBiometric(setupMode: true);
+
+          //     if (success) {
+          //       await prefs.setBool('isBiometricEnabled', true);
+          //     }
+          //   }
+
+          //   // Mark that the prompt was shown, regardless of user choice
+          //   await prefs.setBool('biometric_setup_done', true);
+          // }
+
+          // Navigate to dashboard
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => dashboardAfterLogin(userId: userId)),
+          );
+        } else {
+          _showMessage("Unexpected response from server.");
+        }
+      } else {
+        // Handle different status codes with better error handling
+        final Map<String, dynamic> errorResponse = json.decode(response.body);
+        String errorMessage =
+            errorResponse['message'] ?? "Login failed. Please try again.";
+
+        //print("Login error: $errorMessage");
+        _showMessage(errorMessage);
+      }
+
       //print("Response status code: ${response.statusCode}");
       //print("Response body: ${response.body}");
 
@@ -143,141 +270,6 @@ class _LoginPageState extends State<LoginPage> {
       //     _showMessage("Unexpected response from server.");
       //   }
       // }
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-
-        if (responseData.containsKey('token') &&
-            responseData.containsKey('userId')) {
-          String token = responseData['token'];
-          String userId = responseData['userId'].toString();
-          String userName = responseData['userName'].toString();
-          String? expiresAt = responseData['expiresAt'];
-
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('auth_token', token);
-          await prefs.setString('user_id', userId);
-          await prefs.setString('user_name', userName);
-          if (expiresAt != null) {
-            await prefs.setString('expires_at', expiresAt);
-          }
-
-          // Additional check before navigating
-          if (prefs.getString('auth_token') == null ||
-              prefs.getString('user_id') == null) {
-            _showMessage("Something went wrong while saving login data.");
-            return;
-          }
-
-          _showMessage("Login successful.");
-
-          // 🔐 Ask user if they want to enable biometrics
-          // final enableBiometric = await showDialog<bool>(
-          //   context: context,
-          //   builder: (ctx) => AlertDialog(
-          //     title: const Text("Enable Biometric Login?"),
-          //     content: const Text(
-          //       "Would you like to use fingerprint/face ID to quickly login next time?",
-          //     ),
-          //     actions: [
-          //       TextButton(
-          //         onPressed: () => Navigator.pop(ctx, false),
-          //         child: const Text("No"),
-          //       ),
-          //       ElevatedButton(
-          //         onPressed: () => Navigator.pop(ctx, true),
-          //         child: const Text("Yes"),
-          //       ),
-          //     ],
-          //   ),
-          // );
-
-          // if (enableBiometric == true) {
-          //   final biometric = BiometricAuth();
-          //   final success = await biometric.checkBiometric(setupMode: true);
-
-          //   if (success) {
-          //     Navigator.pushReplacement(
-          //       context,
-          //       MaterialPageRoute(
-          //         builder: (context) => dashboardAfterLogin(userId: userId),
-          //       ),
-          //     );
-          //   } else {
-          //     _showMessage("Biometric setup failed, continuing without it.");
-
-          //     Navigator.pushReplacement(
-          //       context,
-          //       MaterialPageRoute(
-          //         builder: (context) => dashboardAfterLogin(userId: userId),
-          //       ),
-          //     );
-          //   }
-          // } else {
-          //   // User skipped biometrics → just continue
-          //   Navigator.pushReplacement(
-          //     context,
-          //     MaterialPageRoute(
-          //       builder: (context) => dashboardAfterLogin(userId: userId),
-          //     ),
-          //   );
-          // }
-
-          // Check if biometric setup prompt was already shown
-          bool setupDone = prefs.getBool('biometric_setup_done') ?? false;
-
-          // Only show prompt if it has never been shown
-          if (!setupDone) {
-            final enableBiometric = await showDialog<bool>(
-              context: context,
-              builder: (ctx) => AlertDialog(
-                title: const Text("Enable Biometric Login?"),
-                content: const Text(
-                    "Would you like to use fingerprint/face ID to quickly login next time?"),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(ctx, false),
-                    child: const Text("No"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => Navigator.pop(ctx, true),
-                    child: const Text("Yes"),
-                  ),
-                ],
-              ),
-            );
-
-            if (enableBiometric == true) {
-              final biometric = BiometricAuth();
-              final success = await biometric.checkBiometric(setupMode: true);
-
-              if (success) {
-                await prefs.setBool('isBiometricEnabled', true);
-              }
-            }
-
-            // Mark that the prompt was shown, regardless of user choice
-            await prefs.setBool('biometric_setup_done', true);
-          }
-
-          // Navigate to dashboard
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => dashboardAfterLogin(userId: userId)),
-          );
-        } else {
-          _showMessage("Unexpected response from server.");
-        }
-      } else {
-        // Handle different status codes with better error handling
-        final Map<String, dynamic> errorResponse = json.decode(response.body);
-        String errorMessage =
-            errorResponse['message'] ?? "Login failed. Please try again.";
-
-        //print("Login error: $errorMessage");
-        _showMessage(errorMessage);
-      }
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -388,34 +380,37 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
               ),
-              Container(
-                margin: const EdgeInsets.only(
-                  top: 10,
-                  bottom: 3,
-                ),
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ForgotPasswordPage(),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    'Forgot Password?',
-                    style: GoogleFonts.poppins(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF0f625c),
-                      decoration: TextDecoration.underline,
-                      decorationColor: const Color(0xFF0f625c),
-                      decorationThickness: 1.2,
-                      height: 0.5,
-                    ),
-                  ),
-                ),
-              ),
+              // Container(
+              //   margin: const EdgeInsets.only(
+              //     top: 10,
+              //     bottom: 3,
+              //   ),
+              //   child: TextButton(
+              //     onPressed: () {
+              //       Navigator.push(
+              //         context,
+              //         MaterialPageRoute(
+              //           builder: (context) => const ForgotPasswordPage(),
+              //         ),
+              //       );
+              //     },
+              //     child: Text(
+              //       'Forgot Password?',
+              //       style: GoogleFonts.poppins(
+              //         fontSize: 17,
+              //         fontWeight: FontWeight.w600,
+              //         color: const Color(0xFF0f625c),
+              //         decoration: TextDecoration.underline,
+              //         decorationColor: const Color(0xFF0f625c),
+              //         decorationThickness: 1.2,
+              //         height: 0.5,
+              //       ),
+              //     ),
+              //   ),
+              // ),
+
+              SizedBox(height: 10),
+
               Padding(
                 padding: const EdgeInsets.only(),
                 child: Column(
@@ -544,6 +539,91 @@ class _LoginPageState extends State<LoginPage> {
                     //     ],
                     //   ),
                     // ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Stack(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 40, bottom: 30),
+                          width: double.infinity,
+                          height: 1,
+                          color: const Color(0xFFc7d2d0),
+                        ),
+                        Positioned(
+                          top: 22,
+                          left: 160,
+                          child: Container(
+                            width: 33,
+                            height: 33,
+                            decoration: BoxDecoration(
+                              color: Colors.white, // Optional background color
+                              borderRadius:
+                                  BorderRadius.circular(100), // Rounded corners
+                            ),
+                            child: Center(
+                              child: Text(
+                                'or',
+                                style: GoogleFonts.poppins(
+                                  color: const Color(0xFF648683),
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 400,
+                              margin: const EdgeInsets.only(top: 70),
+                              child: Wrap(
+                                alignment: WrapAlignment.center,
+                                children: [
+                                  Text(
+                                    'Don\'t have an account? ',
+                                    style: GoogleFonts.poppins(
+                                      color: const Color(0xFF0f625c),
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      // Handle the link click here
+                                      //print('Sign up clicked');
+                                      // Navigate to the Terms and Conditions page if needed
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const SignupPdsFirst(),
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      'Sign Up',
+                                      style: GoogleFonts.poppins(
+                                        color: const Color(0xFF0da99e),
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),

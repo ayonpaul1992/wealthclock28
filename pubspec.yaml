@@ -46,6 +46,8 @@ dependencies:
   syncfusion_flutter_datepicker: ^29.1.33
   jwt_decoder: ^2.0.1
   local_auth: ^2.3.0
+  flutter_gcaptcha_v3: ^2.1.1
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

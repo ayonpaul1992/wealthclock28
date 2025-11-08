@@ -15,7 +15,8 @@ import 'package:wealthclock28/screens/login.dart';
 
 class IndividualPortfolioPage extends StatefulWidget {
   final String memberPan;
-  const IndividualPortfolioPage({super.key, required this.memberPan});
+  const IndividualPortfolioPage(
+      {super.key, required this.memberPan, required String userId});
 
   @override
   State<IndividualPortfolioPage> createState() =>
@@ -253,7 +254,12 @@ class _IndividualPortfolioPageState extends State<IndividualPortfolioPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBar(scaffoldKey: _scaffoldKey, userId: ''),
+      appBar: CustomAppBar(
+        scaffoldKey: _scaffoldKey,
+        userId: '',
+        prflId: '',
+        rqsrvcId: '',
+      ),
       drawer: CustomDrawer(
         activeTile: '',
         onTileTap: (selectedTile) {
@@ -547,10 +553,30 @@ class _IndividualPortfolioPageState extends State<IndividualPortfolioPage> {
                               schemes: schemes, // List of schemes
                               userName: userName, // Pass the user name
                             )
-                          : Center(
-                              child: CircularProgressIndicator(
-                                color: Color(0xFF0f625c),
+                          : FutureBuilder(
+                              future: Future.delayed(
+                                Duration(seconds: 3),
                               ),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      color: Color(0xFF0f625c),
+                                    ),
+                                  );
+                                } else {
+                                  return Center(
+                                    child: Text(
+                                      'No schemes found',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                        color: Color(0xFF0f625c),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
                             ),
                     ),
 

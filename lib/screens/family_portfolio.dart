@@ -269,7 +269,12 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBar(scaffoldKey: _scaffoldKey, userId: ''),
+      appBar: CustomAppBar(
+        scaffoldKey: _scaffoldKey,
+        userId: '',
+        prflId: '',
+        rqsrvcId: '',
+      ),
       drawer: CustomDrawer(
         activeTile: '',
         onTileTap: (selectedTile) {
@@ -621,6 +626,7 @@ class _FamilyPortfolioPageState extends State<FamilyPortfolioPage> {
                                             IndividualPortfolioPage(
                                           memberPan: scheme['member_pan'] ??
                                               scheme['member_code'],
+                                          userId: '',
                                         ),
                                       ),
                                     );

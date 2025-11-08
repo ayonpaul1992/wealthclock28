@@ -1,13 +1,17 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, use_build_context_synchronously
+
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../screens/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wealthclock28/extras/signupAddress.dart';
+import 'package:wealthclock28/screens/dashboard_after_login.dart';
 import 'signupAds.dart';
 import 'signupPdsfirst.dart';
-import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:http/http.dart' as http;
 
 class SignupPdsPage extends StatefulWidget {
   const SignupPdsPage({super.key});
@@ -358,313 +362,314 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                   spacing: 10, // Space between text fields
                   runSpacing: 15,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
-                          child: Text(
-                            'First Name',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF6E7B7A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black
-                                    .withOpacity(0.1), // Shadow color
-                                blurRadius: 15, // Blur effect
-                                spreadRadius: 0, // Spread effect
-                                offset: Offset(0, 3), // Position of shadow
-                              ),
-                            ],
-                          ),
-                          child: SizedBox(
-                            width: 171,
-                            child: TextField(
-                              controller: firstNameText,
-                              decoration: _inputDecoration(''),
-                              style: const TextStyle(
-                                color: Color(0xFF648683),
-                                fontSize: 14,
-                              ),
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(
-                                    25), // Limit to 25 characters
-                              ],
-                              onChanged: (value) {
-                                if (value.isNotEmpty &&
-                                    firstNameError != null) {
-                                  setState(() {
-                                    firstNameError =
-                                        null; // clear error on user input
-                                  });
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                        if (firstNameError != null)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 12.0, top: 5),
-                            child: Text(
-                              firstNameError!,
-                              style: const TextStyle(
-                                color: Colors.red,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
-                          child: Text(
-                            'Last Name',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF6E7B7A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black
-                                    .withOpacity(0.1), // Shadow color
-                                blurRadius: 15, // Blur effect
-                                spreadRadius: 0, // Spread effect
-                                offset: Offset(0, 3), // Position of shadow
-                              ),
-                            ],
-                          ),
-                          child: SizedBox(
-                            width: 171,
-                            child: TextField(
-                              controller: lastNameText,
-                              decoration: _inputDecoration(''),
-                              style: const TextStyle(
-                                color: Color(0xFF648683),
-                                fontSize: 14,
-                              ),
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(
-                                    25), // Limit to 25 characters
-                              ],
-                              onChanged: (value) {
-                                if (value.isNotEmpty && lastNameError != null) {
-                                  setState(() {
-                                    lastNameError = null;
-                                  });
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                        if (lastNameError != null)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0, top: 5),
-                            child: Text(
-                              lastNameError!,
-                              style: const TextStyle(
-                                  color: Colors.red, fontSize: 12),
-                            ),
-                          ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(left: 10),
-                          child: Text(
-                            'Holding Nature',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF6E7B7A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
+                    // Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: [
+                    //     Container(
+                    //       margin: EdgeInsets.only(
+                    //         left: 10,
+                    //       ),
+                    //       child: Text(
+                    //         'First Name',
+                    //         style: GoogleFonts.poppins(
+                    //           color: Color(0xFF6E7B7A),
+                    //           fontSize: 15,
+                    //           fontWeight: FontWeight.w400,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     SizedBox(
+                    //       height: 10,
+                    //     ),
+                    //     Container(
+                    //       decoration: BoxDecoration(
+                    //         boxShadow: [
+                    //           BoxShadow(
+                    //             color: Colors.black
+                    //                 .withOpacity(0.1), // Shadow color
+                    //             blurRadius: 15, // Blur effect
+                    //             spreadRadius: 0, // Spread effect
+                    //             offset: Offset(0, 3), // Position of shadow
+                    //           ),
+                    //         ],
+                    //       ),
+                    //       child: SizedBox(
+                    //         width: 171,
+                    //         child: TextField(
+                    //           controller: firstNameText,
+                    //           decoration: _inputDecoration(''),
+                    //           style: const TextStyle(
+                    //             color: Color(0xFF648683),
+                    //             fontSize: 14,
+                    //           ),
+                    //           inputFormatters: [
+                    //             LengthLimitingTextInputFormatter(
+                    //                 25), // Limit to 25 characters
+                    //           ],
+                    //           onChanged: (value) {
+                    //             if (value.isNotEmpty &&
+                    //                 firstNameError != null) {
+                    //               setState(() {
+                    //                 firstNameError =
+                    //                     null; // clear error on user input
+                    //               });
+                    //             }
+                    //           },
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     if (firstNameError != null)
+                    //       Padding(
+                    //         padding: const EdgeInsets.only(left: 12.0, top: 5),
+                    //         child: Text(
+                    //           firstNameError!,
+                    //           style: const TextStyle(
+                    //             color: Colors.red,
+                    //             fontSize: 12,
+                    //           ),
+                    //         ),
+                    //       ),
+                    //   ],
+                    // ),
+                    // Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: [
+                    //     Container(
+                    //       margin: EdgeInsets.only(
+                    //         left: 10,
+                    //       ),
+                    //       child: Text(
+                    //         'Last Name',
+                    //         style: GoogleFonts.poppins(
+                    //           color: Color(0xFF6E7B7A),
+                    //           fontSize: 15,
+                    //           fontWeight: FontWeight.w400,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     SizedBox(
+                    //       height: 10,
+                    //     ),
+                    //     Container(
+                    //       decoration: BoxDecoration(
+                    //         boxShadow: [
+                    //           BoxShadow(
+                    //             color: Colors.black
+                    //                 .withOpacity(0.1), // Shadow color
+                    //             blurRadius: 15, // Blur effect
+                    //             spreadRadius: 0, // Spread effect
+                    //             offset: Offset(0, 3), // Position of shadow
+                    //           ),
+                    //         ],
+                    //       ),
+                    //       child: SizedBox(
+                    //         width: 171,
+                    //         child: TextField(
+                    //           controller: lastNameText,
+                    //           decoration: _inputDecoration(''),
+                    //           style: const TextStyle(
+                    //             color: Color(0xFF648683),
+                    //             fontSize: 14,
+                    //           ),
+                    //           inputFormatters: [
+                    //             LengthLimitingTextInputFormatter(
+                    //                 25), // Limit to 25 characters
+                    //           ],
+                    //           onChanged: (value) {
+                    //             if (value.isNotEmpty && lastNameError != null) {
+                    //               setState(() {
+                    //                 lastNameError = null;
+                    //               });
+                    //             }
+                    //           },
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     if (lastNameError != null)
+                    //       Padding(
+                    //         padding: const EdgeInsets.only(left: 8.0, top: 5),
+                    //         child: Text(
+                    //           lastNameError!,
+                    //           style: const TextStyle(
+                    //               color: Colors.red, fontSize: 12),
+                    //         ),
+                    //       ),
+                    //   ],
+                    // ),
+                    // Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: [
+                    //     Container(
+                    //       margin: const EdgeInsets.only(left: 10),
+                    //       child: Text(
+                    //         'Holding Nature',
+                    //         style: GoogleFonts.poppins(
+                    //           color: Color(0xFF6E7B7A),
+                    //           fontSize: 15,
+                    //           fontWeight: FontWeight.w400,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     const SizedBox(height: 10),
 
-                        // Dropdown with shadow & styling
-                        CompositedTransformTarget(
-                          link: _layerLink,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(50),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 15,
-                                  spreadRadius: 0,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: SizedBox(
-                              width: 171,
-                              child: TextField(
-                                controller: holdingNtrText,
-                                readOnly: true,
-                                onTap: toggleDropdown,
-                                decoration: InputDecoration(
-                                  hintText: 'Select',
-                                  hintStyle: GoogleFonts.poppins(
-                                    color: Color(0xFF648683),
-                                    fontSize: 14,
-                                  ),
-                                  contentPadding:
-                                  const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-                                  suffixIcon: Icon(
-                                    isDropdownOpen
-                                        ? Icons.keyboard_arrow_up
-                                        : Icons.keyboard_arrow_down,
-                                    color: Color(0xFF648683),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(50),
-                                    borderSide: const BorderSide(color: Colors.white, width: 1),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(50),
-                                    borderSide: const BorderSide(color: Color(0xFF0f625c), width: 1),
-                                  ),
-                                ),
-                                style: const TextStyle(
-                                  color: Color(0xFF648683),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                    //     // Dropdown with shadow & styling
+                    //     CompositedTransformTarget(
+                    //       link: _layerLink,
+                    //       child: Container(
+                    //         decoration: BoxDecoration(
+                    //           color: Colors.white,
+                    //           borderRadius: BorderRadius.circular(50),
+                    //           boxShadow: [
+                    //             BoxShadow(
+                    //               color: Colors.black.withOpacity(0.1),
+                    //               blurRadius: 15,
+                    //               spreadRadius: 0,
+                    //               offset: Offset(0, 3),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //         child: SizedBox(
+                    //           width: 171,
+                    //           child: TextField(
+                    //             controller: holdingNtrText,
+                    //             readOnly: true,
+                    //             onTap: toggleDropdown,
+                    //             decoration: InputDecoration(
+                    //               hintText: 'Select',
+                    //               hintStyle: GoogleFonts.poppins(
+                    //                 color: Color(0xFF648683),
+                    //                 fontSize: 14,
+                    //               ),
+                    //               contentPadding:
+                    //               const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                    //               suffixIcon: Icon(
+                    //                 isDropdownOpen
+                    //                     ? Icons.keyboard_arrow_up
+                    //                     : Icons.keyboard_arrow_down,
+                    //                 color: Color(0xFF648683),
+                    //               ),
+                    //               enabledBorder: OutlineInputBorder(
+                    //                 borderRadius: BorderRadius.circular(50),
+                    //                 borderSide: const BorderSide(color: Colors.white, width: 1),
+                    //               ),
+                    //               focusedBorder: OutlineInputBorder(
+                    //                 borderRadius: BorderRadius.circular(50),
+                    //                 borderSide: const BorderSide(color: Color(0xFF0f625c), width: 1),
+                    //               ),
+                    //             ),
+                    //             style: const TextStyle(
+                    //               color: Color(0xFF648683),
+                    //               fontSize: 14,
+                    //               fontWeight: FontWeight.w500,
+                    //             ),
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ),
 
-                        // ✅ Show error below the field — NOT inside Stack
-                        if (holdingNtrError != null)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 12.0, top: 6),
-                            child: Text(
-                              holdingNtrError!,
-                              style: const TextStyle(
-                                color: Colors.red,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            left: 10,
-                          ),
-                          child: Text(
-                            'PAN No.',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF6E7B7A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black
-                                    .withOpacity(0.1), // Shadow color
-                                blurRadius: 15, // Blur effect
-                                spreadRadius: 0, // Spread effect
-                                offset: Offset(0, 3), // Position of shadow
-                              ),
-                            ],
-                          ),
-                          child: SizedBox(
-                            width: 171,
-                            child: TextField(
-                              controller: panNoText,
-                              decoration: _inputDecoration(''),
-                              style: const TextStyle(
-                                color: Color(0xFF648683),
-                                fontSize: 14,
-                              ),
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'[a-zA-Z0-9]')),
-                                LengthLimitingTextInputFormatter(
-                                    10), // Limit to 10 characters
-                              ],
-                              onChanged: (value) {
-                                if (value.length == 10 && panError != null) {
-                                  setState(() {
-                                    panError = null;
-                                  });
-                                }
-                              },
-                            ),
-                            // child: TextField(
-                            //   controller: repassText,
-                            //   obscureText: !_isPanVisible, // Toggle text visibility
-                            //   decoration: _inputDecoration('').copyWith(
-                            //     suffixIcon: IconButton(
-                            //       icon: Icon(
-                            //         _isPanVisible ? Icons.visibility : Icons.visibility_off,
-                            //         color: Color(0xFF648683),
-                            //       ),
-                            //       onPressed: () {
-                            //         setState(() {
-                            //           _isPanVisible = !_isPanVisible; // Toggle visibility
-                            //         });
-                            //       },
-                            //     ),
-                            //   ),
-                            //   style: const TextStyle(
-                            //     color: Color(0xFF648683),
-                            //     fontSize: 15,
-                            //   ),
-                            // ),
-                          ),
-                        ),
-                        if (panError != null)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0, top: 5),
-                            child: Text(
-                              panError!,
-                              style: const TextStyle(
-                                  color: Colors.red, fontSize: 12),
-                            ),
-                          ),
-                      ],
-                    ),
+                    //     // ✅ Show error below the field — NOT inside Stack
+                    //     if (holdingNtrError != null)
+                    //       Padding(
+                    //         padding: const EdgeInsets.only(left: 12.0, top: 6),
+                    //         child: Text(
+                    //           holdingNtrError!,
+                    //           style: const TextStyle(
+                    //             color: Colors.red,
+                    //             fontSize: 12,
+                    //           ),
+                    //         ),
+                    //       ),
+                    //   ],
+                    // ),
+                    // Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: [
+                    //     Container(
+                    //       margin: EdgeInsets.only(
+                    //         left: 10,
+                    //       ),
+                    //       child: Text(
+                    //         'PAN No.',
+                    //         style: GoogleFonts.poppins(
+                    //           color: Color(0xFF6E7B7A),
+                    //           fontSize: 15,
+                    //           fontWeight: FontWeight.w400,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     SizedBox(
+                    //       height: 10,
+                    //     ),
+                    //     Container(
+                    //       decoration: BoxDecoration(
+                    //         boxShadow: [
+                    //           BoxShadow(
+                    //             color: Colors.black
+                    //                 .withOpacity(0.1), // Shadow color
+                    //             blurRadius: 15, // Blur effect
+                    //             spreadRadius: 0, // Spread effect
+                    //             offset: Offset(0, 3), // Position of shadow
+                    //           ),
+                    //         ],
+                    //       ),
+                    //       child: SizedBox(
+                    //         width: 171,
+                    //         child: TextField(
+                    //           controller: panNoText,
+                    //           decoration: _inputDecoration(''),
+                    //           style: const TextStyle(
+                    //             color: Color(0xFF648683),
+                    //             fontSize: 14,
+                    //           ),
+                    //           inputFormatters: [
+                    //             FilteringTextInputFormatter.allow(
+                    //                 RegExp(r'[a-zA-Z0-9]')),
+                    //             LengthLimitingTextInputFormatter(
+                    //                 10), // Limit to 10 characters
+                    //           ],
+                    //           onChanged: (value) {
+                    //             if (value.length == 10 && panError != null) {
+                    //               setState(() {
+                    //                 panError = null;
+                    //               });
+                    //             }
+                    //           },
+                    //         ),
+                    //         // child: TextField(
+                    //         //   controller: repassText,
+                    //         //   obscureText: !_isPanVisible, // Toggle text visibility
+                    //         //   decoration: _inputDecoration('').copyWith(
+                    //         //     suffixIcon: IconButton(
+                    //         //       icon: Icon(
+                    //         //         _isPanVisible ? Icons.visibility : Icons.visibility_off,
+                    //         //         color: Color(0xFF648683),
+                    //         //       ),
+                    //         //       onPressed: () {
+                    //         //         setState(() {
+                    //         //           _isPanVisible = !_isPanVisible; // Toggle visibility
+                    //         //         });
+                    //         //       },
+                    //         //     ),
+                    //         //   ),
+                    //         //   style: const TextStyle(
+                    //         //     color: Color(0xFF648683),
+                    //         //     fontSize: 15,
+                    //         //   ),
+                    //         // ),
+                    //       ),
+                    //     ),
+                    //     if (panError != null)
+                    //       Padding(
+                    //         padding: const EdgeInsets.only(left: 8.0, top: 5),
+                    //         child: Text(
+                    //           panError!,
+                    //           style: const TextStyle(
+                    //               color: Colors.red, fontSize: 12),
+                    //         ),
+                    //       ),
+                    //   ],
+                    // ),
+
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -709,8 +714,8 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                     color: Color(0xFF648683),
                                     fontSize: 14,
                                   ),
-                                  contentPadding:
-                                  const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 15),
                                   suffixIcon: Icon(
                                     isOcptnDropdownOpen
                                         ? Icons.keyboard_arrow_up
@@ -719,13 +724,13 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(50),
-                                    borderSide:
-                                    const BorderSide(color: Colors.white, width: 1),
+                                    borderSide: const BorderSide(
+                                        color: Colors.white, width: 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(50),
-                                    borderSide:
-                                    const BorderSide(color: Color(0xFF0f625c), width: 1),
+                                    borderSide: const BorderSide(
+                                        color: Color(0xFF0f625c), width: 1),
                                   ),
                                 ),
                                 style: const TextStyle(
@@ -739,8 +744,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         ),
 
                         // ✅ Error message below field
-                        if (occupationError != null)
-                          const SizedBox(height: 6),
+                        if (occupationError != null) const SizedBox(height: 6),
                         if (occupationError != null)
                           Padding(
                             padding: const EdgeInsets.only(left: 12.0),
@@ -930,82 +934,84 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                         ]
                       ],
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(left: 10),
-                          child: Text(
-                            'Address',
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF6E7B7A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(50),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 15,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: TextField(
-                              controller: pdsAddressController,
-                              maxLines: 4,
-                              decoration: _inputDecoration('').copyWith(
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 12),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide:
-                                      BorderSide(color: Colors.white, width: 1),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide:
-                                      BorderSide(color: Colors.white, width: 1),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                      color: Color(0xFF0f625c), width: 1),
-                                ),
-                              ),
-                              style: const TextStyle(
-                                color: Color(0xFF648683),
-                                fontSize: 14,
-                              ),
-                              onChanged: (value) {
-                                if (value.length == 10 && addressError != null) {
-                                  setState(() {
-                                    addressError = null;
-                                  });
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                        if (addressError != null)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 12.0, top: 5),
-                            child: Text(
-                              addressError!,
-                              style: const TextStyle(
-                                  color: Colors.red, fontSize: 12),
-                            ),
-                          ),
-                      ],
-                    ),
+
+                    // Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: [
+                    //     Container(
+                    //       margin: EdgeInsets.only(left: 10),
+                    //       child: Text(
+                    //         'Address',
+                    //         style: GoogleFonts.poppins(
+                    //           color: Color(0xFF6E7B7A),
+                    //           fontSize: 15,
+                    //           fontWeight: FontWeight.w400,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     SizedBox(height: 10),
+                    //     Container(
+                    //       decoration: BoxDecoration(
+                    //         color: Colors.white,
+                    //         borderRadius: BorderRadius.circular(50),
+                    //         boxShadow: [
+                    //           BoxShadow(
+                    //             color: Colors.black.withOpacity(0.1),
+                    //             blurRadius: 15,
+                    //             offset: Offset(0, 3),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //       child: SizedBox(
+                    //         width: double.infinity,
+                    //         child: TextField(
+                    //           controller: pdsAddressController,
+                    //           maxLines: 4,
+                    //           decoration: _inputDecoration('').copyWith(
+                    //             contentPadding: EdgeInsets.symmetric(
+                    //                 vertical: 10, horizontal: 12),
+                    //             border: OutlineInputBorder(
+                    //               borderRadius: BorderRadius.circular(10),
+                    //               borderSide:
+                    //                   BorderSide(color: Colors.white, width: 1),
+                    //             ),
+                    //             enabledBorder: OutlineInputBorder(
+                    //               borderRadius: BorderRadius.circular(10),
+                    //               borderSide:
+                    //                   BorderSide(color: Colors.white, width: 1),
+                    //             ),
+                    //             focusedBorder: OutlineInputBorder(
+                    //               borderRadius: BorderRadius.circular(10),
+                    //               borderSide: BorderSide(
+                    //                   color: Color(0xFF0f625c), width: 1),
+                    //             ),
+                    //           ),
+                    //           style: const TextStyle(
+                    //             color: Color(0xFF648683),
+                    //             fontSize: 14,
+                    //           ),
+                    //           onChanged: (value) {
+                    //             if (value.length == 10 &&
+                    //                 addressError != null) {
+                    //               setState(() {
+                    //                 addressError = null;
+                    //               });
+                    //             }
+                    //           },
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     if (addressError != null)
+                    //       Padding(
+                    //         padding: const EdgeInsets.only(left: 12.0, top: 5),
+                    //         child: Text(
+                    //           addressError!,
+                    //           style: const TextStyle(
+                    //               color: Colors.red, fontSize: 12),
+                    //         ),
+                    //       ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),
@@ -1063,87 +1069,197 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                     width: 10,
                   ),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      print('Next button pressed');
                       bool hasError = false;
+
+                      print('Validating form...');
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      final userId = prefs.getString('user_id') ?? '';
+                      // Print form values for debugging
+                      print('User ID: $userId');
+                      print('Occupation: ${occupationText.text}');
+                      print('Date of Birth: ${_dateController.text}');
+                      print('Gender: $selectedOption');
+                      print('Marital Status: $mrtSelectedOption');
+                      if (mrtSelectedOption == "Others") {
+                        print('Other Marital Status: ${othersController.text}');
+                      }
 
                       setState(() {
                         // Reset error messages
-                        firstNameError = lastNameError = holdingNtrError =
-                            occupationError = dobError =
-                                panError = addressError = othersError = null;
+                        // firstNameError = lastNameError = holdingNtrError = addressError = panError
+                        occupationError = dobError = othersError = null;
 
                         // Validations
-                        if (firstNameText.text.trim().isEmpty) {
-                          firstNameError = 'First name is required.';
-                          hasError = true;
-                        }
-                        if (lastNameText.text.trim().isEmpty) {
-                          lastNameError = 'Last name is required.';
-                          hasError = true;
-                        }
-                        if (holdingNtrText.text.trim().isEmpty) {
-                          holdingNtrError = 'Please select an option.';
-                          hasError = true;
-                        }
-                        if (occupationText.text.trim().isEmpty) {
-                          occupationError = 'Please select an option.';
-                          hasError = true;
-                        }
-                        if (_dateController.text.trim().isEmpty) {
-                          dobError = 'Date of Birth is required.';
-                          hasError = true;
-                        }
-                        if (pdsAddressController.text.trim().isEmpty) {
-                          addressError = 'Address is required.';
-                          hasError = true;
-                        }
+                        // if (firstNameText.text.trim().isEmpty) {
+                        //   firstNameError = 'First name is required.';
+                        //   hasError = true;
+                        // }
+                        // if (lastNameText.text.trim().isEmpty) {
+                        //   lastNameError = 'Last name is required.';
+                        //   hasError = true;
+                        // }
+                        // if (holdingNtrText.text.trim().isEmpty) {
+                        //   holdingNtrError = 'Please select an option.';
+                        //   hasError = true;
+                        // }
+                        // if (occupationText.text.trim().isEmpty) {
+                        //   occupationError = 'Please select an option.';
+                        //   hasError = true;
+                        // }
+                        // if (_dateController.text.trim().isEmpty) {
+                        //   dobError = 'Date of Birth is required.';
+                        //   hasError = true;
+                        // }
+                        // if (pdsAddressController.text.trim().isEmpty) {
+                        //   addressError = 'Address is required.';
+                        //   hasError = true;
+                        // }
 
-                        String pan = panNoText.text.trim().toUpperCase();
-                        RegExp panRegExp =
-                            RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$');
-                        if (pan.isEmpty) {
-                          panError = 'PAN number is required.';
-                          hasError = true;
-                        } else if (!panRegExp.hasMatch(pan)) {
-                          panError = 'Invalid PAN format.';
-                          hasError = true;
-                        }
+                        // String pan = panNoText.text.trim().toUpperCase();
+                        // RegExp panRegExp =
+                        //     RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$');
+                        // if (pan.isEmpty) {
+                        //   panError = 'PAN number is required.';
+                        //   hasError = true;
+                        // } else if (!panRegExp.hasMatch(pan)) {
+                        //   panError = 'Invalid PAN format.';
+                        //   hasError = true;
+                        // }
 
-                        if (mrtSelectedOption == "Others" &&
-                            othersController.text.trim().isEmpty) {
-                          othersError = 'Please fill in the "Others" field.';
-                          hasError = true;
-                        }
+                        // if (mrtSelectedOption == "Others" &&
+                        //     othersController.text.trim().isEmpty) {
+                        //   othersError = 'Please fill in the "Others" field.';
+                        //   hasError = true;
+                        // }
                       });
 
-                      if (hasError)
-                        return; // 🚫 Stop navigation if any error exists
+                      // if (hasError)
+                      //   return; // 🚫 Stop navigation if any error exists
+
+                      try {
+                        print('Submitting form data to server...');
+
+                        final apiUrl =
+                            'https://wealthclockadvisors.com/api/signup/update-personal-details';
+
+                        final response = await http.post(
+                          Uri.parse(apiUrl),
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: jsonEncode({
+                            'clientId': userId,
+                            'occupation': occupationText.text.trim(),
+                            'dob': _dateController.text.trim(),
+                            'gender': selectedOption,
+                            'status': mrtSelectedOption == "Others"
+                                ? othersController.text.trim()
+                                : mrtSelectedOption,
+                          }),
+                        );
+
+                        print(
+                            'Server responded with status: ${response.statusCode}');
+                        print('Response body: ${response.body}');
+
+                        if (response.statusCode == 200) {
+                          final responseData = jsonDecode(response.body);
+                          if (responseData['success'] == true) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  '${responseData['message']}',
+                                ),
+                              ),
+                            );
+
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                transitionDuration: Duration(milliseconds: 500),
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        SignupAddressPage(),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  const begin = Offset(1.0, 0.0);
+                                  const end = Offset.zero;
+                                  const curve = Curves.easeInOut;
+
+                                  var tween = Tween(begin: begin, end: end)
+                                      .chain(CurveTween(curve: curve));
+                                  var offsetAnimation = animation.drive(tween);
+
+                                  return SlideTransition(
+                                    position: offsetAnimation,
+                                    child: child,
+                                  );
+                                },
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Something went wrong: ${responseData['message']}. Please Try again.',
+                                ),
+                              ),
+                            );
+
+                            // print(
+                            //     'Something went wrong: ${responseData['message']}. Please Try again.');
+                            // Handle server-reported error
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Failed to submit form. Please try again later.',
+                              ),
+                            ),
+                          );
+                          // print('Failed to submit form.');
+                          // Handle non-200 status codes
+                        }
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Error during form submission: $e',
+                            ),
+                          ),
+                        );
+                        // print('Error during form submission: $e');
+                      }
 
                       // ✅ Safe to navigate
-                      Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 500),
-                          pageBuilder:
-                              (context, animation, secondaryAnimation) =>
-                                  SignupAdsPage(),
-                          transitionsBuilder:
-                              (context, animation, secondaryAnimation, child) {
-                            const begin = Offset(1.0, 0.0);
-                            const end = Offset.zero;
-                            const curve = Curves.easeInOut;
+                      // Navigator.push(
+                      //   context,
+                      //   PageRouteBuilder(
+                      //     transitionDuration: Duration(milliseconds: 500),
+                      //     pageBuilder:
+                      //         (context, animation, secondaryAnimation) =>
+                      //             SignupAdsPage(),
+                      //     transitionsBuilder:
+                      //         (context, animation, secondaryAnimation, child) {
+                      //       const begin = Offset(1.0, 0.0);
+                      //       const end = Offset.zero;
+                      //       const curve = Curves.easeInOut;
 
-                            var tween = Tween(begin: begin, end: end)
-                                .chain(CurveTween(curve: curve));
-                            var offsetAnimation = animation.drive(tween);
+                      //       var tween = Tween(begin: begin, end: end)
+                      //           .chain(CurveTween(curve: curve));
+                      //       var offsetAnimation = animation.drive(tween);
 
-                            return SlideTransition(
-                              position: offsetAnimation,
-                              child: child,
-                            );
-                          },
-                        ),
-                      );
+                      //       return SlideTransition(
+                      //         position: offsetAnimation,
+                      //         child: child,
+                      //       );
+                      //     },
+                      //   ),
+                      // );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFfdd1a0),
@@ -1209,14 +1325,14 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                               child: Wrap(
                                 alignment: WrapAlignment.center,
                                 children: [
-                                  Text(
-                                    'Have an account?',
-                                    style: GoogleFonts.poppins(
-                                      color: const Color(0xFF0f625c),
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
+                                  // Text(
+                                  //   'Have an account?',
+                                  //   style: GoogleFonts.poppins(
+                                  //     color: const Color(0xFF0f625c),
+                                  //     fontSize: 17,
+                                  //     fontWeight: FontWeight.w500,
+                                  //   ),
+                                  // ),
                                   InkWell(
                                     onTap: () {
                                       print('Sign In clicked');
@@ -1230,7 +1346,9 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                                   500), // ✅ Smooth transition
                                           pageBuilder: (context, animation,
                                                   secondaryAnimation) =>
-                                              const LoginPage(),
+                                              const dashboardAfterLogin(
+                                            userId: '',
+                                          ),
                                           transitionsBuilder: (context,
                                               animation,
                                               secondaryAnimation,
@@ -1257,7 +1375,7 @@ class _SignupPdsPageState extends State<SignupPdsPage> {
                                       );
                                     },
                                     child: Text(
-                                      'Sign In',
+                                      'Skip to Dashboard',
                                       style: GoogleFonts.poppins(
                                         color: const Color(0xFF0da99e),
                                         fontSize: 17,

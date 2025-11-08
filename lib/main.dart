@@ -2,24 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wealthclock28/biometric_auth.dart';
-import 'screens/login.dart';
+import 'package:wealthclock28/extras/SignupPdsFirst.dart';
+import 'package:wealthclock28/screens/login.dart';
 import 'screens/dashboard_after_login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  String? userId = await getUserId();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String? authToken = prefs.getString('auth_token');
+  final prefs = await SharedPreferences.getInstance();
+  final userId = prefs.getString('user_id');
+  final authToken = prefs.getString('auth_token');
 
-  runApp(
-    MyApp(userId: userId, authToken: authToken),
-  );
-}
-
-Future<String?> getUserId() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('user_id');
+  runApp(MyApp(userId: userId, authToken: authToken));
 }
 
 class MyApp extends StatelessWidget {
@@ -51,7 +45,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final biometric = BiometricAuth();
+  final BiometricAuth biometric = BiometricAuth();
 
   @override
   void initState() {
@@ -72,11 +66,13 @@ class _SplashScreenState extends State<SplashScreen> {
     final bioEnabled = await biometric.isBiometricEnabled();
 
     if (bioEnabled) {
-      final authenticated = await biometric.checkBiometric();
+      final authenticated = await biometric.authenticate(
+        reason: "Please authenticate to access your account",
+      );
       if (authenticated) {
         _goTo(dashboardAfterLogin(userId: widget.userId!));
       } else {
-        _goTo(const LoginPage());
+        _goTo(const SignupPdsFirst());
       }
     } else {
       _goTo(dashboardAfterLogin(userId: widget.userId!));
@@ -84,6 +80,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _goTo(Widget screen) {
+    if (!mounted) return;
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => screen),
@@ -97,49 +94,3 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-
-// class _SplashScreenState extends State<SplashScreen> {
-//   final biometric = BiometricAuth();
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _decideStartScreen();
-//   }
-
-//   Future<void> _decideStartScreen() async {
-//     final loggedIn = widget.userId != null && widget.authToken != null;
-
-//     if (!loggedIn) {
-//       _goTo(const LoginPage());
-//       return;
-//     }
-
-//     final bioEnabled = await biometric.isBiometricEnabled();
-
-//     if (bioEnabled) {
-//       final authenticated = await biometric.checkBiometric();
-//       if (authenticated) {
-//         _goTo(dashboardAfterLogin(userId: widget.userId!));
-//       } else {
-//         _goTo(const LoginPage());
-//       }
-//     } else {
-//       _goTo(dashboardAfterLogin(userId: widget.userId!));
-//     }
-//   }
-
-//   void _goTo(Widget screen) {
-//     Navigator.pushReplacement(
-//       context,
-//       MaterialPageRoute(builder: (_) => screen),
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return const Scaffold(
-//       body: Center(child: CircularProgressIndicator()),
-//     );
-//   }
-// }

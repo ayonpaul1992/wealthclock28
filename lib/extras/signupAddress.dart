@@ -6,26 +6,35 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wealthclock28/extras/signupNds.dart';
 import 'package:wealthclock28/screens/dashboard_after_login.dart';
-import '../screens/login.dart';
 import 'signupAds.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:http/http.dart' as http;
 
-class SignupNdsPage extends StatefulWidget {
-  const SignupNdsPage({super.key});
+class SignupAddressPage extends StatefulWidget {
+  const SignupAddressPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => _SignupNdsPageState();
+  State<StatefulWidget> createState() => _SignupAddressPageState();
 }
 
-class _SignupNdsPageState extends State<SignupNdsPage> {
-  final nomineeNameText = TextEditingController();
+class _SignupAddressPageState extends State<SignupAddressPage> {
+  final investorAddress = TextEditingController();
   final nomineePanText = TextEditingController();
 
-  final TextEditingController relationshipText = TextEditingController();
+  final TextEditingController investorstate = TextEditingController();
+  final TextEditingController investorcity = TextEditingController();
+  final TextEditingController investorpincode = TextEditingController();
+  final TextEditingController investorAlternativeAddress =
+      TextEditingController();
+  final TextEditingController investorAlternativeState =
+      TextEditingController();
+  final TextEditingController investorAlternativeCity = TextEditingController();
+  final TextEditingController investorAlternativePincode =
+      TextEditingController();
+
   final TextEditingController acTypeText = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController jointHolderNameText = TextEditingController();
@@ -143,7 +152,7 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                   onTap: () {
                     setState(() {
                       selectedRelationship = item;
-                      relationshipText.text = item;
+                      investorstate.text = item;
                       closeRelationshipDropdown();
                     });
                   },
@@ -290,15 +299,15 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
       showNomineeForms[index] = false;
       openFormCount--;
       if (index == 0) {
-        nomineeNameText.clear();
+        investorAddress.clear();
         nomineePanText.clear();
-        relationshipText.clear();
+        investorstate.clear();
         _dateController.clear();
         nomineeShareText.clear();
       } else if (index == 1) {
-        nomineeNameText.clear();
+        investorAddress.clear();
         nomineePanText.clear();
-        relationshipText.clear();
+        investorstate.clear();
         _dateController.clear();
         nomineeShareText.clear();
       }
@@ -307,13 +316,13 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
 
   Future<void> saveNominee() async {
     try {
-      // print('Submitting form data to server...');
+      print('Submitting form data to server...');
 
-      // print('Nominee Name: ${nomineeNameText.text.trim()}');
-      // print('Relationship: ${relationshipText.text.trim()}');
-      // print('Mode of Holding: ${holdingNtrText.text.trim()}');
-      // print('Joint Holder Name: ${jointHolderNameText.text.trim()}');
-      // print('Joint Holder PAN: ${nomineePanText.text.trim()}');
+      print('Nominee Name: ${investorAddress.text.trim()}');
+      print('Relationship: ${investorstate.text.trim()}');
+      print('Mode of Holding: ${holdingNtrText.text.trim()}');
+      print('Joint Holder Name: ${jointHolderNameText.text.trim()}');
+      print('Joint Holder PAN: ${nomineePanText.text.trim()}');
 
       // return;
 
@@ -321,7 +330,7 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
       final userId = prefs.getString('user_id') ?? '';
 
       final apiUrl =
-          'https://wealthclockadvisors.com/api/signup/update-nominee-details';
+          'https://wealthclockadvisors.com/api/signup/update-address-details';
 
       final response = await http.post(
         Uri.parse(apiUrl),
@@ -330,21 +339,14 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
         },
         body: jsonEncode({
           "clientId": userId,
-          "nomineeName": nomineeNameText.text.trim().isEmpty
-              ? ""
-              : nomineeNameText.text.trim(),
-          "relnNominee": relationshipText.text.trim().isEmpty
-              ? ""
-              : relationshipText.text.trim(),
-          "modeOfHolding": holdingNtrText.text.trim().isEmpty
-              ? ""
-              : holdingNtrText.text.trim(),
-          "jointHolderName": jointHolderNameText.text.trim().isEmpty
-              ? ""
-              : jointHolderNameText.text.trim(),
-          "jointHolderPan": nomineePanText.text.trim().isEmpty
-              ? ""
-              : nomineePanText.text.trim(),
+          "investorAddress": investorAddress.text.trim(),
+          "investorstate": investorstate.text.trim(),
+          "investorcity": investorcity.text.trim(),
+          "investorpincode": investorpincode.text.trim(),
+          "investorAlternativeAddress": investorAlternativeAddress.text.trim(),
+          "investorAlternativestate": investorAlternativeState.text.trim(),
+          "investorAlternativeCity": investorAlternativeCity.text.trim(),
+          "investorAlternativePincode": investorAlternativePincode.text.trim(),
         }),
       );
 
@@ -367,7 +369,7 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
             PageRouteBuilder(
               transitionDuration: Duration(milliseconds: 500),
               pageBuilder: (context, animation, secondaryAnimation) =>
-                  SignupAdsPage(),
+                  SignupNdsPage(),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 const begin = Offset(1.0, 0.0);
@@ -419,9 +421,9 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
       );
       // print('Error during form submission: $e');
     }
-    // if (nomineeNameText.text.isEmpty ||
+    // if (investorAddress.text.isEmpty ||
     //     nomineePanText.text.isEmpty ||
-    //     relationshipText.text.isEmpty ||
+    //     investorstate.text.isEmpty ||
     //     _dateController.text.isEmpty ||
     //     nomineeShareText.text.isEmpty) {
     //   ScaffoldMessenger.of(context).showSnackBar(
@@ -444,18 +446,18 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
 
     //   setState(() {
     //     savedNominees[editingIndex!] = {
-    //       'name': nomineeNameText.text,
+    //       'name': investorAddress.text,
     //       'pan': nomineePanText.text,
-    //       'relationship': relationshipText.text,
+    //       'relationship': investorstate.text,
     //       'dob': _dateController.text,
     //       'share': nomineeShareText.text,
     //     };
     //     totalShare = totalShare - oldShare + newShare;
     //     editingIndex = null; // Clear editing state
     //     // Clear form fields after update:
-    //     nomineeNameText.clear();
+    //     investorAddress.clear();
     //     nomineePanText.clear();
-    //     relationshipText.clear();
+    //     investorstate.clear();
     //     _dateController.clear();
     //     nomineeShareText.clear();
     //   });
@@ -479,9 +481,9 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
 
     //   setState(() {
     //     savedNominees.add({
-    //       'name': nomineeNameText.text,
+    //       'name': investorAddress.text,
     //       'pan': nomineePanText.text,
-    //       'relationship': relationshipText.text,
+    //       'relationship': investorstate.text,
     //       'dob': _dateController.text,
     //       'share': nomineeShareText.text,
     //     });
@@ -489,9 +491,9 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
     //     totalShare += newShare;
     //     isNomineeBoxList.add(false);
 
-    //     nomineeNameText.clear();
+    //     investorAddress.clear();
     //     nomineePanText.clear();
-    //     relationshipText.clear();
+    //     investorstate.clear();
     //     _dateController.clear();
     //     nomineeShareText.clear();
 
@@ -509,11 +511,11 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
   //         nomineeShareError = relationshipError = null;
   //
   //     // Validations
-  //     if (nomineeNameText.text.trim().isEmpty) {
+  //     if (investorAddress.text.trim().isEmpty) {
   //       nomineeError = 'Nominee name is required.';
   //       hasError = true;
   //     }
-  //     if (relationshipText.text.trim().isEmpty) {
+  //     if (investorstate.text.trim().isEmpty) {
   //       relationshipError = 'Please select an option.';
   //       hasError = true;
   //     }
@@ -552,18 +554,18 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
   //
   //         setState(() {
   //           savedNominees[editingIndex!] = {
-  //             'name': nomineeNameText.text,
+  //             'name': investorAddress.text,
   //             'pan': nomineePanText.text,
-  //             'relationship': relationshipText.text,
+  //             'relationship': investorstate.text,
   //             'dob': _dateController.text,
   //             'share': nomineeShareText.text,
   //           };
   //           totalShare = totalShare - oldShare + newShare;
   //           editingIndex = null; // Clear editing state
   //           // Clear form fields after update:
-  //           nomineeNameText.clear();
+  //           investorAddress.clear();
   //           nomineePanText.clear();
-  //           relationshipText.clear();
+  //           investorstate.clear();
   //           _dateController.clear();
   //           nomineeShareText.clear();
   //         });
@@ -587,9 +589,9 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
   //
   //         setState(() {
   //           savedNominees.add({
-  //             'name': nomineeNameText.text,
+  //             'name': investorAddress.text,
   //             'pan': nomineePanText.text,
-  //             'relationship': relationshipText.text,
+  //             'relationship': investorstate.text,
   //             'dob': _dateController.text,
   //             'share': nomineeShareText.text,
   //           });
@@ -597,9 +599,9 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
   //           totalShare += newShare;
   //           isNomineeBoxList.add(false);
   //
-  //           nomineeNameText.clear();
+  //           investorAddress.clear();
   //           nomineePanText.clear();
-  //           relationshipText.clear();
+  //           investorstate.clear();
   //           _dateController.clear();
   //           nomineeShareText.clear();
   //
@@ -625,9 +627,9 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
         if (editingIndex == index) {
           editingIndex = null; // Reset editing index
           // Clear form fields:
-          nomineeNameText.clear();
+          investorAddress.clear();
           nomineePanText.clear();
-          relationshipText.clear();
+          investorstate.clear();
           _dateController.clear();
           nomineeShareText.clear();
         }
@@ -636,7 +638,6 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
   }
 
   List<bool> isNomineeBoxList = [];
-  @override
   void initState() {
     super.initState();
     isNomineeBoxList = List.generate(savedNominees.length, (index) => false);
@@ -693,7 +694,7 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                 width: 10,
                               ),
                               Text(
-                                'Nominee Details',
+                                'Address Details',
                                 style: GoogleFonts.poppins(
                                   color: const Color(0xFF3F4B4B),
                                   fontSize: 16,
@@ -878,7 +879,7 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                                                       i; // Set the index of the nominee being edited
 
                                                                   // Populate form fields with the nominee's data:
-                                                                  nomineeNameText
+                                                                  investorAddress
                                                                           .text =
                                                                       savedNominees[i]
                                                                               [
@@ -890,7 +891,7 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                                                               [
                                                                               'pan'] ??
                                                                           '';
-                                                                  relationshipText
+                                                                  investorstate
                                                                           .text =
                                                                       savedNominees[i]
                                                                               [
@@ -959,7 +960,7 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                           Container(
                                             margin: EdgeInsets.only(left: 10),
                                             child: Text(
-                                              'Nominee Name',
+                                              'Investor Address',
                                               style: GoogleFonts.poppins(
                                                 color: Color(0xFF6E7B7A),
                                                 fontSize: 15,
@@ -988,7 +989,7 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                             child: SizedBox(
                                               width: double.infinity,
                                               child: TextField(
-                                                controller: nomineeNameText,
+                                                controller: investorAddress,
                                                 decoration:
                                                     _inputDecoration(''),
                                                 style: const TextStyle(
@@ -1030,7 +1031,7 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                           Container(
                                             margin: EdgeInsets.only(left: 10),
                                             child: Text(
-                                              'Relationship',
+                                              'State',
                                               style: GoogleFonts.poppins(
                                                 color: Color(0xFF6E7B7A),
                                                 fontSize: 15,
@@ -1054,7 +1055,7 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                             child: SizedBox(
                                               width: double.infinity,
                                               child: TextField(
-                                                controller: relationshipText,
+                                                controller: investorstate,
                                                 readOnly: false,
                                                 decoration:
                                                     _inputDecoration(''),
@@ -1095,116 +1096,172 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                             ),
                                         ],
                                       ),
-
-                                      // Column(
-                                      //   crossAxisAlignment:
-                                      //       CrossAxisAlignment.start,
-                                      //   children: [
-                                      //     Container(
-                                      //       margin: EdgeInsets.only(left: 10),
-                                      //       child: Text(
-                                      //         'Nominee DOB',
-                                      //         style: GoogleFonts.poppins(
-                                      //           color: Color(0xFF6E7B7A),
-                                      //           fontSize: 15,
-                                      //           fontWeight: FontWeight.w400,
-                                      //         ),
-                                      //       ),
-                                      //     ),
-                                      //     SizedBox(height: 10),
-
-                                      //     Container(
-                                      //       width: 171,
-                                      //       decoration: BoxDecoration(
-                                      //         color: Colors.white,
-                                      //         borderRadius:
-                                      //             BorderRadius.circular(50),
-                                      //         boxShadow: [
-                                      //           BoxShadow(
-                                      //             color: Colors.black
-                                      //                 .withOpacity(0.1),
-                                      //             blurRadius: 15,
-                                      //             spreadRadius: 0,
-                                      //             offset: Offset(0, 3),
-                                      //           ),
-                                      //         ],
-                                      //       ),
-                                      //       child: SizedBox(
-                                      //         width: 171,
-                                      //         child: GestureDetector(
-                                      //           onTap: editingIndex == null
-                                      //               ? () =>
-                                      //                   _showDatePicker(context)
-                                      //               : null,
-                                      //           child: Container(
-                                      //             padding: EdgeInsets.symmetric(
-                                      //                 horizontal: 15,
-                                      //                 vertical: 12.8),
-                                      //             decoration: BoxDecoration(
-                                      //               color: Colors.white,
-                                      //               borderRadius:
-                                      //                   BorderRadius.circular(
-                                      //                       50),
-                                      //               border: isLoading
-                                      //                   ? Border.all(
-                                      //                       color: Color(
-                                      //                           0xFF0f625c),
-                                      //                       width: 1)
-                                      //                   : Border.all(
-                                      //                       color: Colors
-                                      //                           .transparent,
-                                      //                       width: 1),
-                                      //               boxShadow: [
-                                      //                 BoxShadow(
-                                      //                     color: Colors.black
-                                      //                         .withOpacity(0.1),
-                                      //                     blurRadius: 5),
-                                      //               ],
-                                      //             ),
-                                      //             child: Row(
-                                      //               mainAxisAlignment:
-                                      //                   MainAxisAlignment
-                                      //                       .spaceBetween,
-                                      //               children: [
-                                      //                 Text(
-                                      //                   _dateController
-                                      //                           .text.isNotEmpty
-                                      //                       ? _dateController
-                                      //                           .text
-                                      //                       : "Select Date",
-                                      //                   style: TextStyle(
-                                      //                       color: Color(
-                                      //                           0xFF648683),
-                                      //                       fontSize: 14),
-                                      //                 ),
-                                      //                 Icon(
-                                      //                     Icons
-                                      //                         .calendar_month_outlined,
-                                      //                     color:
-                                      //                         Color(0xFF648683),
-                                      //                     size: 20),
-                                      //               ],
-                                      //             ),
-                                      //           ),
-                                      //         ),
-                                      //       ),
-                                      //     ),
-                                      //     if (nomineedobError != null)
-                                      //       Padding(
-                                      //         padding: const EdgeInsets.only(
-                                      //             left: 12.0, top: 5),
-                                      //         child: Text(
-                                      //           nomineedobError!,
-                                      //           style: const TextStyle(
-                                      //             color: Colors.red,
-                                      //             fontSize: 12,
-                                      //           ),
-                                      //         ),
-                                      //       ),
-
-                                      //   ],
-                                      // ),
-
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Container(
+                                                  margin:
+                                                      EdgeInsets.only(left: 10),
+                                                  child: Text(
+                                                    'City',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF6E7B7A),
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(height: 10),
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.black
+                                                            .withOpacity(0.1),
+                                                        blurRadius: 15,
+                                                        spreadRadius: 0,
+                                                        offset: Offset(0, 3),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  child: SizedBox(
+                                                    width: double.infinity,
+                                                    child: TextField(
+                                                      controller: investorcity,
+                                                      readOnly: false,
+                                                      decoration:
+                                                          _inputDecoration(''),
+                                                      style: const TextStyle(
+                                                        color:
+                                                            Color(0xFF648683),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                      inputFormatters: [
+                                                        LengthLimitingTextInputFormatter(
+                                                            50),
+                                                      ],
+                                                      onChanged: (value) {
+                                                        if (value.isNotEmpty &&
+                                                            relationshipError !=
+                                                                null) {
+                                                          setState(() {
+                                                            relationshipError =
+                                                                null;
+                                                          });
+                                                        }
+                                                      },
+                                                    ),
+                                                  ),
+                                                ),
+                                                if (relationshipError != null)
+                                                  const SizedBox(height: 6),
+                                                if (relationshipError != null)
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 12.0),
+                                                    child: Text(
+                                                      relationshipError!,
+                                                      style: const TextStyle(
+                                                        color: Colors.red,
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(width: 12),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Container(
+                                                  margin:
+                                                      EdgeInsets.only(left: 10),
+                                                  child: Text(
+                                                    'Pincode',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF6E7B7A),
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(height: 10),
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.black
+                                                            .withOpacity(0.1),
+                                                        blurRadius: 15,
+                                                        spreadRadius: 0,
+                                                        offset: Offset(0, 3),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  child: SizedBox(
+                                                    width: double.infinity,
+                                                    child: TextField(
+                                                      controller:
+                                                          investorpincode,
+                                                      readOnly: false,
+                                                      decoration:
+                                                          _inputDecoration(''),
+                                                      style: const TextStyle(
+                                                        color:
+                                                            Color(0xFF648683),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                      inputFormatters: [
+                                                        LengthLimitingTextInputFormatter(
+                                                            50),
+                                                      ],
+                                                      onChanged: (value) {
+                                                        if (value.isNotEmpty &&
+                                                            relationshipError !=
+                                                                null) {
+                                                          setState(() {
+                                                            relationshipError =
+                                                                null;
+                                                          });
+                                                        }
+                                                      },
+                                                    ),
+                                                  ),
+                                                ),
+                                                if (relationshipError != null)
+                                                  const SizedBox(height: 6),
+                                                if (relationshipError != null)
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 12.0),
+                                                    child: Text(
+                                                      relationshipError!,
+                                                      style: const TextStyle(
+                                                        color: Colors.red,
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                       Center(
                                         child: Padding(
                                           padding: EdgeInsets.only(top: 10),
@@ -1222,7 +1279,7 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                                   width: 10,
                                                 ),
                                                 Text(
-                                                  'Joint Holder Details',
+                                                  'Alternate Address',
                                                   style: GoogleFonts.poppins(
                                                     color:
                                                         const Color(0xFF3F4B4B),
@@ -1244,16 +1301,14 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                           ),
                                         ),
                                       ),
-
                                       Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           Container(
-                                            margin:
-                                                const EdgeInsets.only(left: 10),
+                                            margin: EdgeInsets.only(left: 10),
                                             child: Text(
-                                              'Joint Holder Name',
+                                              'Investor Address',
                                               style: GoogleFonts.poppins(
                                                 color: Color(0xFF6E7B7A),
                                                 fontSize: 15,
@@ -1261,7 +1316,79 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                               ),
                                             ),
                                           ),
-                                          const SizedBox(height: 10),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withOpacity(
+                                                          0.1), // Shadow color
+                                                  blurRadius: 15, // Blur effect
+                                                  spreadRadius:
+                                                      0, // Spread effect
+                                                  offset: Offset(0,
+                                                      3), // Position of shadow
+                                                ),
+                                              ],
+                                            ),
+                                            child: SizedBox(
+                                              width: double.infinity,
+                                              child: TextField(
+                                                controller:
+                                                    investorAlternativeAddress,
+                                                decoration:
+                                                    _inputDecoration(''),
+                                                style: const TextStyle(
+                                                  color: Color(0xFF648683),
+                                                  fontSize: 14,
+                                                ),
+                                                inputFormatters: [
+                                                  LengthLimitingTextInputFormatter(
+                                                      25), // Limit to 25 characters
+                                                ],
+                                                onChanged: (value) {
+                                                  if (value.isNotEmpty &&
+                                                      nomineeError != null) {
+                                                    setState(() {
+                                                      nomineeError = null;
+                                                    });
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                          if (nomineeError != null)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 8.0, top: 5),
+                                              child: Text(
+                                                nomineeError!,
+                                                style: const TextStyle(
+                                                    color: Colors.red,
+                                                    fontSize: 12),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(left: 10),
+                                            child: Text(
+                                              'State',
+                                              style: GoogleFonts.poppins(
+                                                color: Color(0xFF6E7B7A),
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 10),
                                           Container(
                                             decoration: BoxDecoration(
                                               boxShadow: [
@@ -1277,161 +1404,50 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                             child: SizedBox(
                                               width: double.infinity,
                                               child: TextField(
-                                                controller: jointHolderNameText,
+                                                controller:
+                                                    investorAlternativeState,
+                                                readOnly: false,
                                                 decoration:
                                                     _inputDecoration(''),
                                                 style: const TextStyle(
                                                   color: Color(0xFF648683),
                                                   fontSize: 14,
+                                                  fontWeight: FontWeight.w500,
                                                 ),
                                                 inputFormatters: [
                                                   LengthLimitingTextInputFormatter(
-                                                      50), // Limit to 50 characters
+                                                      50),
                                                 ],
+                                                onChanged: (value) {
+                                                  if (value.isNotEmpty &&
+                                                      relationshipError !=
+                                                          null) {
+                                                    setState(() {
+                                                      relationshipError = null;
+                                                    });
+                                                  }
+                                                },
                                               ),
                                             ),
-                                          )
+                                          ),
+                                          if (relationshipError != null)
+                                            const SizedBox(height: 6),
+                                          if (relationshipError != null)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 12.0),
+                                              child: Text(
+                                                relationshipError!,
+                                                style: const TextStyle(
+                                                  color: Colors.red,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
                                         ],
                                       ),
-
                                       Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
                                         children: [
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Container(
-                                                  margin: const EdgeInsets.only(
-                                                      left: 10),
-                                                  child: Text(
-                                                    'Mode of Holding',
-                                                    style: GoogleFonts.poppins(
-                                                      color: Color(0xFF6E7B7A),
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 10),
-
-                                                // Dropdown with shadow & styling - now full width of Expanded
-                                                CompositedTransformTarget(
-                                                  link: _layerLink,
-                                                  child: Container(
-                                                    width: double.infinity,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              50),
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color: Colors.black
-                                                              .withOpacity(0.1),
-                                                          blurRadius: 15,
-                                                          spreadRadius: 0,
-                                                          offset: Offset(0, 3),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 12.0,
-                                                              right: 12.0),
-                                                      child: SizedBox(
-                                                        width: double.infinity,
-                                                        child: TextField(
-                                                          controller:
-                                                              holdingNtrText,
-                                                          readOnly: true,
-                                                          onTap: toggleDropdown,
-                                                          decoration:
-                                                              InputDecoration(
-                                                            hintText: 'Select',
-                                                            hintStyle:
-                                                                GoogleFonts
-                                                                    .poppins(
-                                                              color: Color(
-                                                                  0xFF648683),
-                                                              fontSize: 14,
-                                                            ),
-                                                            contentPadding:
-                                                                const EdgeInsets
-                                                                    .symmetric(
-                                                                    vertical: 8,
-                                                                    horizontal:
-                                                                        15),
-                                                            suffixIcon: Icon(
-                                                              isDropdownOpen
-                                                                  ? Icons
-                                                                      .keyboard_arrow_up
-                                                                  : Icons
-                                                                      .keyboard_arrow_down,
-                                                              color: Color(
-                                                                  0xFF648683),
-                                                            ),
-                                                            enabledBorder:
-                                                                OutlineInputBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          50),
-                                                              borderSide:
-                                                                  const BorderSide(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      width: 1),
-                                                            ),
-                                                            focusedBorder:
-                                                                OutlineInputBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          50),
-                                                              borderSide:
-                                                                  const BorderSide(
-                                                                      color: Color(
-                                                                          0xFF0f625c),
-                                                                      width: 1),
-                                                            ),
-                                                          ),
-                                                          style:
-                                                              const TextStyle(
-                                                            color: Color(
-                                                                0xFF648683),
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-
-                                                // ✅ Show error below the field — NOT inside Stack
-                                                if (holdingNtrError != null)
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 12.0, top: 6),
-                                                    child: Text(
-                                                      holdingNtrError!,
-                                                      style: const TextStyle(
-                                                        color: Colors.red,
-                                                        fontSize: 12,
-                                                      ),
-                                                    ),
-                                                  ),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(width: 12),
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment:
@@ -1441,7 +1457,7 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                                   margin:
                                                       EdgeInsets.only(left: 10),
                                                   child: Text(
-                                                    'Joint Holder PAN',
+                                                    'City',
                                                     style: GoogleFonts.poppins(
                                                       color: Color(0xFF6E7B7A),
                                                       fontSize: 15,
@@ -1456,14 +1472,10 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                                     boxShadow: [
                                                       BoxShadow(
                                                         color: Colors.black
-                                                            .withOpacity(
-                                                                0.1), // Shadow color
-                                                        blurRadius:
-                                                            15, // Blur effect
-                                                        spreadRadius:
-                                                            0, // Spread effect
-                                                        offset: Offset(0,
-                                                            3), // Position of shadow
+                                                            .withOpacity(0.1),
+                                                        blurRadius: 15,
+                                                        spreadRadius: 0,
+                                                        offset: Offset(0, 3),
                                                       ),
                                                     ],
                                                   ),
@@ -1471,28 +1483,27 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                                     width: double.infinity,
                                                     child: TextField(
                                                       controller:
-                                                          nomineePanText,
+                                                          investorAlternativeCity,
+                                                      readOnly: false,
                                                       decoration:
                                                           _inputDecoration(''),
                                                       style: const TextStyle(
                                                         color:
                                                             Color(0xFF648683),
                                                         fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
                                                       ),
                                                       inputFormatters: [
-                                                        FilteringTextInputFormatter
-                                                            .allow(RegExp(
-                                                                r'[a-zA-Z0-9]')),
                                                         LengthLimitingTextInputFormatter(
-                                                            10),
+                                                            50),
                                                       ],
                                                       onChanged: (value) {
-                                                        if (value.length ==
-                                                                10 &&
-                                                            nomineePanError !=
+                                                        if (value.isNotEmpty &&
+                                                            relationshipError !=
                                                                 null) {
                                                           setState(() {
-                                                            nomineePanError =
+                                                            relationshipError =
                                                                 null;
                                                           });
                                                         }
@@ -1500,16 +1511,101 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                                     ),
                                                   ),
                                                 ),
-                                                if (nomineePanError != null)
+                                                if (relationshipError != null)
+                                                  const SizedBox(height: 6),
+                                                if (relationshipError != null)
                                                   Padding(
                                                     padding:
                                                         const EdgeInsets.only(
-                                                            left: 8.0, top: 5),
+                                                            left: 12.0),
                                                     child: Text(
-                                                      nomineePanError!,
+                                                      relationshipError!,
                                                       style: const TextStyle(
-                                                          color: Colors.red,
-                                                          fontSize: 12),
+                                                        color: Colors.red,
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(width: 12),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Container(
+                                                  margin:
+                                                      EdgeInsets.only(left: 10),
+                                                  child: Text(
+                                                    'Pincode',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Color(0xFF6E7B7A),
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(height: 10),
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.black
+                                                            .withOpacity(0.1),
+                                                        blurRadius: 15,
+                                                        spreadRadius: 0,
+                                                        offset: Offset(0, 3),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  child: SizedBox(
+                                                    width: double.infinity,
+                                                    child: TextField(
+                                                      controller:
+                                                          investorAlternativePincode,
+                                                      readOnly: false,
+                                                      decoration:
+                                                          _inputDecoration(''),
+                                                      style: const TextStyle(
+                                                        color:
+                                                            Color(0xFF648683),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                      inputFormatters: [
+                                                        LengthLimitingTextInputFormatter(
+                                                            50),
+                                                      ],
+                                                      onChanged: (value) {
+                                                        if (value.isNotEmpty &&
+                                                            relationshipError !=
+                                                                null) {
+                                                          setState(() {
+                                                            relationshipError =
+                                                                null;
+                                                          });
+                                                        }
+                                                      },
+                                                    ),
+                                                  ),
+                                                ),
+                                                if (relationshipError != null)
+                                                  const SizedBox(height: 6),
+                                                if (relationshipError != null)
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 12.0),
+                                                    child: Text(
+                                                      relationshipError!,
+                                                      style: const TextStyle(
+                                                        color: Colors.red,
+                                                        fontSize: 12,
+                                                      ),
                                                     ),
                                                   ),
                                               ],
@@ -1517,9 +1613,6 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                           ),
                                         ],
                                       ),
-
-                                      // buildNomineeShareField(),
-                                      // ... (Other form fields)
                                     ],
                                   ),
                                   Row(
@@ -1531,9 +1624,9 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                               editingIndex =
                                                   null; // Clear editing state
                                               // Clear form fields:
-                                              nomineeNameText.clear();
+                                              investorAddress.clear();
                                               nomineePanText.clear();
-                                              relationshipText.clear();
+                                              investorstate.clear();
                                               _dateController.clear();
                                               nomineeShareText.clear();
                                             });
@@ -1547,12 +1640,14 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                                         TextButton(
                                           onPressed: saveNominee,
                                           child: Text(
-                                              editingIndex != null
-                                                  ? 'Update'
-                                                  : 'Save',
-                                              style: GoogleFonts.poppins(
-                                                  color: Color(0xFF0DA99E),
-                                                  fontSize: 14)),
+                                            editingIndex != null
+                                                ? 'Update'
+                                                : 'Save',
+                                            style: GoogleFonts.poppins(
+                                              color: Color(0xFF0DA99E),
+                                              fontSize: 14,
+                                            ),
+                                          ),
                                         ),
                                     ],
                                   )
@@ -1583,12 +1678,12 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                     //                           relationshipError = null;
 
                     //                   // Validations
-                    //                   if (nomineeNameText.text.trim().isEmpty) {
+                    //                   if (investorAddress.text.trim().isEmpty) {
                     //                     nomineeError =
                     //                         'Nominee name is required.';
                     //                     hasError = true;
                     //                   }
-                    //                   if (relationshipText.text
+                    //                   if (investorstate.text
                     //                       .trim()
                     //                       .isEmpty) {
                     //                     relationshipError =
@@ -1644,7 +1739,7 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                     //                       runSpacing: 15,
                     //                       children: [
                     //                         buildInputField("Nominee Name",
-                    //                             nomineeNameText),
+                    //                             investorAddress),
                     //                         TextButton(
                     //                           onPressed: () {
                     //                             deleteNomineeForm(i);
@@ -1722,16 +1817,16 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      String unomineeNameText = nomineeNameText.text.trim();
+                      String uinvestorAddress = investorAddress.text.trim();
                       String unomineePan = nomineePanText.text.trim();
                       String unomineeShare = nomineeShareText.text.trim();
                       String uactype = acTypeText.text.trim();
-                      String urelationshiptext = relationshipText.text.trim();
+                      String uinvestorstate = investorstate.text.trim();
                       String uAdsNomDob = _dateController.text.trim();
                       // String urepass = repassText.text.trim();
                       // String uPass = passText.text.trim();
                       print(
-                          "Nominee Name: $unomineeNameText,Nominee Pan No.: $unomineePan,Nominee Share: $unomineeShare,Account type: $uactype,Relationship status: $urelationshiptext,Nominee DOB: $uAdsNomDob");
+                          "Nominee Name: $uinvestorAddress,Nominee Pan No.: $unomineePan,Nominee Share: $unomineeShare,Account type: $uactype,Relationship status: $uinvestorstate,Nominee DOB: $uAdsNomDob");
 
                       bool hasError = false;
                       setState(() {
@@ -1740,11 +1835,11 @@ class _SignupNdsPageState extends State<SignupNdsPage> {
                         //     nomineeShareError = relationshipError = null;
 
                         // // Validations
-                        // if (nomineeNameText.text.trim().isEmpty) {
+                        // if (investorAddress.text.trim().isEmpty) {
                         //   nomineeError = 'Nominee name is required.';
                         //   hasError = true;
                         // }
-                        // if (relationshipText.text.trim().isEmpty) {
+                        // if (investorstate.text.trim().isEmpty) {
                         //   relationshipError = 'Please select an option.';
                         //   hasError = true;
                         // }
