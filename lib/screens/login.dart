@@ -161,12 +161,15 @@ class _LoginPageState extends State<LoginPage> {
 
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("✅ Biometric login enabled")),
+                  const SnackBar(
+                    content: Text("Biometric login enabled"),
+                  ),
                 );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                      content: Text("❌ Failed to enable biometric login")),
+                    content: Text("Failed to enable biometric login"),
+                  ),
                 );
               }
             }
@@ -175,45 +178,16 @@ class _LoginPageState extends State<LoginPage> {
             await prefs.setBool('biometric_setup_done', true);
           }
 
-          // Only show prompt if it has never been shown
-          // if (!setupDone) {
-          //   final enableBiometric = await showDialog<bool>(
-          //     context: context,
-          //     builder: (ctx) => AlertDialog(
-          //       title: const Text("Enable Biometric Login?"),
-          //       content: const Text(
-          //           "Would you like to use fingerprint/face ID to quickly login next time?"),
-          //       actions: [
-          //         TextButton(
-          //           onPressed: () => Navigator.pop(ctx, false),
-          //           child: const Text("No"),
-          //         ),
-          //         ElevatedButton(
-          //           onPressed: () => Navigator.pop(ctx, true),
-          //           child: const Text("Yes"),
-          //         ),
-          //       ],
-          //     ),
-          //   );
-
-          //   if (enableBiometric == true) {
-          //     final biometric = BiometricAuth();
-          //     final success = await biometric.checkBiometric(setupMode: true);
-
-          //     if (success) {
-          //       await prefs.setBool('isBiometricEnabled', true);
-          //     }
-          //   }
-
-          //   // Mark that the prompt was shown, regardless of user choice
-          //   await prefs.setBool('biometric_setup_done', true);
-          // }
+          await secureStorage.write(key: 'saved_email', value: uEmail);
+          await secureStorage.write(key: 'saved_password', value: uPass);
+          await secureStorage.write(key: 'saved_pan', value: uPan);
 
           // Navigate to dashboard
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => dashboardAfterLogin(userId: userId)),
+              builder: (context) => dashboardAfterLogin(userId: userId),
+            ),
           );
         } else {
           _showMessage("Unexpected response from server.");
@@ -227,54 +201,10 @@ class _LoginPageState extends State<LoginPage> {
         //print("Login error: $errorMessage");
         _showMessage(errorMessage);
       }
-
-      //print("Response status code: ${response.statusCode}");
-      //print("Response body: ${response.body}");
-
-      // if (response.statusCode == 200) {
-      //   final Map<String, dynamic> responseData = json.decode(response.body);
-
-      //   if (responseData.containsKey('token') &&
-      //       responseData.containsKey('userId')) {
-      //     String token = responseData['token'];
-      //     String userId = responseData['userId'].toString();
-      //     String userName = responseData['userName'].toString();
-      //     String? expiresAt = responseData['expiresAt'];
-
-      //     SharedPreferences prefs = await SharedPreferences.getInstance();
-      //     await prefs.setString('auth_token', token);
-      //     await prefs.setString('user_id', userId);
-      //     await prefs.setString('user_name', userName);
-      //     if (expiresAt != null) {
-      //       await prefs.setString('expires_at', expiresAt);
-      //     }
-
-      //     // Additional check before navigating
-      //     if (prefs.getString('auth_token') == null ||
-      //         prefs.getString('user_id') == null) {
-      //       _showMessage("Something went wrong while saving login data.");
-      //       return;
-      //     }
-
-      //     _showMessage("Login successful.");
-
-      //     Navigator.pushReplacement(
-      //       // ignore: use_build_context_synchronously
-      //       context,
-      //       MaterialPageRoute(
-      //         builder: (context) => dashboardAfterLogin(userId: userId),
-      //       ),
-      //     );
-      //   } else {
-      //     //print("Unexpected response structure.");
-      //     _showMessage("Unexpected response from server.");
-      //   }
-      // }
     } catch (e) {
       setState(() {
         isLoading = false;
       });
-      //print("Exception caught: $e");
       _showMessage("Error: Unable to connect to the server.");
     }
   }
