@@ -790,7 +790,7 @@ class ProfileAfterLoginState extends State<ProfileAfterLogin> {
       appBar: CustomAppBar(
         scaffoldKey: _scaffoldKey,
         prflId: '',
-        showLeading: false,
+        showLeading: true,
         userId: '',
         rqsrvcId: '',
       ),
@@ -1045,7 +1045,7 @@ class ProfileAfterLoginState extends State<ProfileAfterLogin> {
           ),
         ],
       ),
-      bottomNavigationBar: const CustomBottomNavBar(selectedIndex: -1),
+      bottomNavigationBar: const CustomBottomNavBar(selectedIndex: 2),
     );
   }
 }

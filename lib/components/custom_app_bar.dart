@@ -16,19 +16,31 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBackPressed,
     this.onTitleTapped,
     this.showLeading = true,
-    required String prflId, required String rqsrvcId,
+    required String prflId,
+    required String rqsrvcId,
   });
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.white,
-      leading: showLeading // ✅ Show leading only if true
-          ? IconButton(
+      leadingWidth: 110,
+      leading: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (showLeading)
+            IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.black),
               onPressed: onBackPressed ?? () => Navigator.pop(context),
-            )
-          : null,
+              tooltip: 'Back',
+            ),
+          IconButton(
+            icon: const Icon(Icons.menu, color: Colors.black),
+            onPressed: () => scaffoldKey.currentState?.openDrawer(),
+            tooltip: 'Menu',
+          ),
+        ],
+      ),
       title: InkWell(
         onTap: onTitleTapped ??
             () {
@@ -45,21 +57,22 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () {
-            // Add notification functionality here
-          },
-          style: TextButton.styleFrom(
-            minimumSize: const Size(20, 20),
-            padding: EdgeInsets.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          child: Image.asset(
-            'assets/images/bell-svgrepo-com.png',
-            height: 20,
-            width: 20,
-          ),
-        ),
+        // TextButton(
+        //   onPressed: () {
+        //     // Add notification functionality here
+        //   },
+        //   style: TextButton.styleFrom(
+        //     minimumSize: const Size(20, 20),
+        //     padding: EdgeInsets.zero,
+        //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        //   ),
+        //   child: Image.asset(
+        //     'assets/images/bell-svgrepo-com.png',
+        //     height: 20,
+        //     width: 20,
+        //   ),
+        // ),
+
         const SizedBox(width: 10),
         TextButton(
           onPressed: () {

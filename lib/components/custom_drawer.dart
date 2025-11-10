@@ -261,16 +261,19 @@ class _CustomDrawerState extends State<CustomDrawer> {
               title: 'Change Password',
               icon: Icons.lock_outline,
             ),
-            _buildDrawerTile(
-              title: 'Request a Service',
-              icon: Icons.event_note_sharp,
-              destinationScreen: const RequestServicePage(
-                rqsrvcId: '',
-              ),
-            ),
+            // _buildDrawerTile(
+            //   title: 'Request a Service',
+            //   icon: Icons.event_note_sharp,
+            //   destinationScreen: const RequestServicePage(
+            //     rqsrvcId: '',
+            //   ),
+            // ),
             _buildDrawerTile(
               title: 'Contact Us',
               icon: Icons.email_outlined,
+              destinationScreen: const RequestServicePage(
+                rqsrvcId: '',
+              ),
             ),
 
             // _buildDrawerTile(

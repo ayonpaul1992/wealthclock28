@@ -84,12 +84,12 @@ class RequestServicePageState extends State<RequestServicePage> {
       appBar: CustomAppBar(
         scaffoldKey: _scaffoldKey,
         rqsrvcId: '',
-        showLeading: false,
+        showLeading: true,
         userId: '',
         prflId: '',
       ),
       drawer: CustomDrawer(
-        activeTile: 'Request a Service',
+        activeTile: 'Contact Us',
         onTileTap: (selectedTile) {},
       ),
       body: Column(
@@ -232,7 +232,7 @@ class RequestServicePageState extends State<RequestServicePage> {
           ),
         ],
       ),
-      bottomNavigationBar: const CustomBottomNavBar(selectedIndex: -1),
+      bottomNavigationBar: const CustomBottomNavBar(selectedIndex: 4),
     );
   }
 }

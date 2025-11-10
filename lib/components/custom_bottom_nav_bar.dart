@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wealthclock28/screens/ProfileAfterLogin.dart';
+import 'package:wealthclock28/screens/RequestService.dart';
 import 'package:wealthclock28/screens/dashboard_after_login.dart';
 import 'package:wealthclock28/screens/family_portfolio.dart';
 import 'package:wealthclock28/screens/individual_portfolio.dart';
@@ -58,9 +61,12 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
             ),
           },
           {
-            'icon': 'assets/images/ftr_invst.png',
-            'label': 'Invest',
-            'route': null,
+            'icon': 'assets/images/bttm_user.png',
+            'label': 'Profile',
+            'route': ProfileAfterLogin(
+              userId: '',
+              prflId: '',
+            ),
           },
           {
             'icon': 'assets/images/rptt.png',
@@ -68,9 +74,11 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
             'route': FamilyPortfolioPage(memberName: fetchedMemberName),
           },
           {
-            'icon': 'assets/images/stng.png',
-            'label': 'Settings',
-            'route': null,
+            'icon': 'assets/images/bttm_email.png',
+            'label': 'Contact',
+            'route': RequestServicePage(
+              rqsrvcId: '',
+            ),
           },
         ];
 
