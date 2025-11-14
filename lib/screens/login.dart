@@ -310,37 +310,35 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
               ),
-              // Container(
-              //   margin: const EdgeInsets.only(
-              //     top: 10,
-              //     bottom: 3,
-              //   ),
-              //   child: TextButton(
-              //     onPressed: () {
-              //       Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //           builder: (context) => const ForgotPasswordPage(),
-              //         ),
-              //       );
-              //     },
-              //     child: Text(
-              //       'Forgot Password?',
-              //       style: GoogleFonts.poppins(
-              //         fontSize: 17,
-              //         fontWeight: FontWeight.w600,
-              //         color: const Color(0xFF0f625c),
-              //         decoration: TextDecoration.underline,
-              //         decorationColor: const Color(0xFF0f625c),
-              //         decorationThickness: 1.2,
-              //         height: 0.5,
-              //       ),
-              //     ),
-              //   ),
-              // ),
-
+              Container(
+                margin: const EdgeInsets.only(
+                  top: 10,
+                  bottom: 3,
+                ),
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgotPasswordPage(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Forgot Password?',
+                    style: GoogleFonts.poppins(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF0f625c),
+                      decoration: TextDecoration.underline,
+                      decorationColor: const Color(0xFF0f625c),
+                      decorationThickness: 1.2,
+                      height: 0.5,
+                    ),
+                  ),
+                ),
+              ),
               SizedBox(height: 10),
-
               Padding(
                 padding: const EdgeInsets.only(),
                 child: Column(

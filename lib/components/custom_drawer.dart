@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 // import 'package:wealthclock28/extras/signupPds.dart';
 // import 'package:wealthclock28/extras/signupPdsfirst.dart';
 import 'package:wealthclock28/screens/RequestService.dart';
+import 'package:wealthclock28/screens/change_password.dart';
 import 'package:wealthclock28/screens/dashboard_after_login.dart';
 import 'package:wealthclock28/screens/individual_portfolio.dart';
 import 'package:wealthclock28/screens/login.dart';
@@ -260,6 +261,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             _buildDrawerTile(
               title: 'Change Password',
               icon: Icons.lock_outline,
+              destinationScreen: const ChangePasswordPage(),
             ),
             // _buildDrawerTile(
             //   title: 'Request a Service',

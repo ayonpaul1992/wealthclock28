@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'login.dart';
-import 'otp.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -11,173 +11,199 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  final phoneText = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final emailText = TextEditingController();
+  final panText = TextEditingController();
+
+  bool _hideValidation = true;
+
+  bool showPanField = false;
+
+  @override
+  void dispose() {
+    emailText.dispose();
+    panText.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Container(
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFfffaf5),
-              Color(0xFFe7f6f5),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          FocusScope.of(context).unfocus();
+          setState(() => _hideValidation = true);
+          _formKey.currentState?.validate();
+        },
+        child: Container(
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFfffaf5), Color(0xFFe7f6f5)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
           ),
-        ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 80),
-                child: Image.asset(
-                  'assets/images/logo_img.png',
-                  height: 120,
-                ),
-              ),
-              const SizedBox(height: 30),
-              Column(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Form(
+              key: _formKey,
+              autovalidateMode: _hideValidation
+                  ? AutovalidateMode.disabled
+                  : AutovalidateMode.onUserInteraction,
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  const SizedBox(height: 80),
+                  Image.asset('assets/images/logo_img.png', height: 120),
+
+                  const SizedBox(height: 30),
+
                   Text(
-                    'ENTER YOUR MOBILE NUMBER\nTO RESET PASSWORD'.toUpperCase(),
+                    'ENTER YOUR EMAIL ADDRESS'.toUpperCase(),
                     style: GoogleFonts.poppins(
                       color: const Color(0xFF0f625c),
                       fontSize: 19,
                       fontWeight: FontWeight.w600,
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: phoneText,
-                decoration: _inputDecoration('Your Phone No.'),
-                style: const TextStyle(
-                  color: Color(0xFF648683),
-                  fontSize: 15,
-                ),
-              ),
-              const SizedBox(height: 14),
-              ElevatedButton(
-                onPressed: () {
-                  phoneText.text.trim();
 
-                  //print("Phone: $uPhone");
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const OtpPage()));
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFfdd1a0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+                  const SizedBox(height: 20),
+
+                  // ---------------- EMAIL ----------------
+                  TextFormField(
+                    controller: emailText,
+                    decoration: _inputDecoration("Enter Your Email Address"),
+                    style:
+                        const TextStyle(color: Color(0xFF648683), fontSize: 15),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return _hideValidation ? null : "Email cannot be empty";
+                      }
+
+                      final emailPattern = r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$';
+                      if (!RegExp(emailPattern).hasMatch(value)) {
+                        return "Enter a valid email";
+                      }
+
+                      return null;
+                    },
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 35),
-                ),
-                child: Text(
-                  'Get otp'.toUpperCase(),
-                  style: GoogleFonts.poppins(
-                    color: const Color(0xFF222222),
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
+
+                  const SizedBox(height: 14),
+
+                  // ---------------- PAN ----------------
+                  if (showPanField)
+                    TextFormField(
+                      controller: panText,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9]')),
+                        UpperCaseTextFormatter(),
+                      ],
+                      decoration: _inputDecoration("Enter PAN ID"),
+                      style: const TextStyle(
+                          color: Color(0xFF648683), fontSize: 15),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return _hideValidation ? null : "PAN cannot be empty";
+                        }
+
+                        final panPattern = r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$';
+                        if (!RegExp(panPattern).hasMatch(value)) {
+                          return "Invalid PAN format";
+                        }
+
+                        return null;
+                      },
+                    ),
+
+                  const SizedBox(height: 20),
+
+                  // ---------------- SUBMIT BUTTON ----------------
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFfdd1a0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 35,
+                      ),
+                    ),
+                    onPressed: () {
+                      setState(() => _hideValidation = false);
+
+                      // Validate only email first
+                      bool emailValid =
+                          RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$')
+                              .hasMatch(emailText.text);
+
+                      if (!emailValid) {
+                        // email invalid, do not show PAN
+                        setState(() => showPanField = false);
+                        _formKey.currentState!.validate();
+                        return;
+                      }
+
+                      // Email valid → show PAN field
+                      setState(() => showPanField = true);
+
+                      // If PAN is visible → validate the whole form
+                      if (showPanField && _formKey.currentState!.validate()) {
+                        debugPrint("VALID Email & PAN");
+                      }
+                    },
+                    child: Text(
+                      "SUBMIT",
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xFF222222),
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Stack(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 40, bottom: 30),
-                          width: double.infinity,
-                          height: 1,
-                          color: const Color(0xFFc7d2d0),
+
+                  // ---------------- SIGN IN LINK ----------------
+                  const SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Have an account?',
+                        style: GoogleFonts.poppins(
+                          color: const Color(0xFF0f625c),
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500,
                         ),
-                        Positioned(
-                          top: 22,
-                          left: 160,
-                          child: Container(
-                            width: 33,
-                            height: 33,
-                            decoration: BoxDecoration(
-                              color: Colors.white, // Optional background color
-                              borderRadius:
-                                  BorderRadius.circular(100), // Rounded corners
-                            ),
-                            child: Center(
-                              child: Text(
-                                'or',
-                                style: GoogleFonts.poppins(
-                                  color: const Color(0xFF648683),
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const LoginPage()),
+                          );
+                        },
+                        child: Text(
+                          '  Sign In',
+                          style: GoogleFonts.poppins(
+                            color: const Color(0xFF0da99e),
+                            fontSize: 17,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 400,
-                              margin: const EdgeInsets.only(top: 70),
-                              child: Wrap(
-                                alignment: WrapAlignment.center,
-                                children: [
-                                  Text(
-                                    'Have an account?',
-                                    style: GoogleFonts.poppins(
-                                      color: const Color(0xFF0f625c),
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      // Handle the link click here
-                                      //print('Sign up clicked');
-                                      // Navigate to the Terms and Conditions page if needed
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const LoginPage()));
-                                    },
-                                    child: Text(
-                                      'Sign In',
-                                      style: GoogleFonts.poppins(
-                                        color: const Color(0xFF0da99e),
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 40),
+                ],
               ),
-            
-            
-            
-            ],
+            ),
           ),
         ),
       ),
@@ -189,25 +215,36 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       filled: true,
       fillColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(50),
-        borderSide: const BorderSide(
-          color: Color(0xFF0f625c),
-          width: 1,
-        ),
-      ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(50),
-        borderSide: const BorderSide(
-          color: Colors.white,
-          width: 1,
-        ),
+        borderSide: const BorderSide(color: Colors.white, width: 1),
       ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(50),
+        borderSide: const BorderSide(color: Color(0xFF0f625c), width: 1),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(50),
+        borderSide: const BorderSide(color: Colors.white, width: 1),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(50),
+        borderSide: const BorderSide(color: Colors.white, width: 1),
+      ),
+      errorStyle: const TextStyle(color: Colors.red, fontSize: 13),
       hintText: hintText,
       hintStyle: GoogleFonts.poppins(
         color: const Color(0xFF648683),
         fontSize: 15,
       ),
     );
+  }
+}
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return newValue.copyWith(text: newValue.text.toUpperCase());
   }
 }
