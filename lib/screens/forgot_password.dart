@@ -1,7 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'login.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -25,6 +31,57 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     emailText.dispose();
     panText.dispose();
     super.dispose();
+  }
+
+  Future<void> getEmail() async {
+    // print("Getting Email and PAN");
+
+    final String uEmail = emailText.text;
+    final String uPan = panText.text;
+
+    const String apiUrl =
+        'https://wealthclockadvisors.com/api/client/forgot-password';
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: {'email': uEmail, 'pan': uPan},
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        final errorMessage =
+            jsonResponse['message'] ?? 'Unknown error occurred';
+        SnackBar snackBar = SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.green,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else {
+        final jsonResponse = jsonDecode(response.body);
+        final errorMessage =
+            jsonResponse['message'] ?? 'Unknown error occurred';
+        SnackBar snackBar = SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+        final showPan = jsonResponse['show_pan'] ?? false;
+
+        setState(() {
+          showPanField = showPan;
+        });
+      }
+    } catch (e) {
+      final errorMessage = 'Something went wrong. Please try again.';
+      SnackBar snackBar = SnackBar(
+        content: Text(errorMessage),
+        backgroundColor: Colors.red,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 
   @override
@@ -63,7 +120,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   const SizedBox(height: 30),
 
                   Text(
-                    'ENTER YOUR EMAIL ADDRESS'.toUpperCase(),
+                    'Password Reset'.toUpperCase(),
                     style: GoogleFonts.poppins(
                       color: const Color(0xFF0f625c),
                       fontSize: 19,
@@ -81,7 +138,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         const TextStyle(color: Color(0xFF648683), fontSize: 15),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return _hideValidation ? null : "Email cannot be empty";
+                        return _hideValidation
+                            ? null
+                            : "Please enter email address";
                       }
 
                       final emailPattern = r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$';
@@ -100,7 +159,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     TextFormField(
                       controller: panText,
                       inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9]')),
+                        // FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9]')),
                         UpperCaseTextFormatter(),
                       ],
                       decoration: _inputDecoration("Enter PAN ID"),
@@ -144,13 +203,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
                       if (!emailValid) {
                         // email invalid, do not show PAN
-                        setState(() => showPanField = false);
+                        // setState(() => showPanField = false);
                         _formKey.currentState!.validate();
                         return;
                       }
 
+                      getEmail();
+
                       // Email valid → show PAN field
-                      setState(() => showPanField = true);
+                      // setState(() => showPanField = true);
 
                       // If PAN is visible → validate the whole form
                       if (showPanField && _formKey.currentState!.validate()) {
