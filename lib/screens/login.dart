@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, unrelated_type_equality_checks
 
 import 'dart:convert';
 
@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:wealthclock28/biometric_auth.dart';
 import 'package:wealthclock28/extras/signupPdsfirst.dart';
+import 'package:wealthclock28/screens/change_password.dart';
 // Make sure to import this for JSON handling
 import 'forgot_password.dart';
 import '../extras/terms_condition.dart';
@@ -105,6 +106,8 @@ class _LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
 
+        print("Login response data: $responseData");
+
         if (responseData.containsKey('token') &&
             responseData.containsKey('userId')) {
           String token = responseData['token'];
@@ -182,13 +185,27 @@ class _LoginPageState extends State<LoginPage> {
           await secureStorage.write(key: 'saved_password', value: uPass);
           await secureStorage.write(key: 'saved_pan', value: uPan);
 
-          // Navigate to dashboard
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => dashboardAfterLogin(userId: userId),
-            ),
-          );
+          if (responseData.containsKey('default_password')) {
+            final defaultPassword = responseData['default_password'];
+
+            if (defaultPassword == 1) {
+              // Navigate to change password screen
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChangePasswordPage(),
+                ),
+              );
+            } else {
+              // Navigate to dashboard
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => dashboardAfterLogin(userId: userId),
+                ),
+              );
+            }
+          }
         } else {
           _showMessage("Unexpected response from server.");
         }

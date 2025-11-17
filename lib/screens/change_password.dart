@@ -1,9 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components/custom_bottom_nav_bar.dart';
 import 'package:wealthclock28/components/custom_drawer.dart';
 import 'package:wealthclock28/components/custom_app_bar.dart';
+import 'package:http/http.dart' as http;
 
 class ChangePasswordPage extends StatefulWidget {
   // final String chngpsd;
@@ -46,6 +52,57 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       }
       _formKey.currentState?.validate();
     });
+  }
+
+  Future<void> changePassword() async {
+    const String apiUrl =
+        'https://wealthclockadvisors.com/api/client/change-password';
+
+    final prefs = await SharedPreferences.getInstance();
+    final String? authToken = prefs.getString('auth_token');
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Bearer $authToken',
+        },
+        body: {
+          'password': changePasswordText.text,
+          'confirm_password': changeRePasswordText.text,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        final errorMessage =
+            jsonResponse['message'] ?? 'Unknown error occurred';
+        SnackBar snackBar = SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.green,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else {
+        final jsonResponse = jsonDecode(response.body);
+        final errorMessage =
+            jsonResponse['message'] ?? 'Unknown error occurred';
+        SnackBar snackBar = SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+        setState(() {});
+      }
+    } catch (e) {
+      final errorMessage = 'Something went wrong. Please try again.';
+      SnackBar snackBar = SnackBar(
+        content: Text(errorMessage),
+        backgroundColor: Colors.red,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 
   @override
@@ -201,6 +258,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         if (_formKey.currentState!.validate()) {
                           // VALID — do nothing for now
                           // You can add your API call or logic here later
+
+                          changePassword();
+
                           debugPrint("Form valid!");
                         }
                       },

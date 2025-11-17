@@ -34,8 +34,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   Future<void> getEmail() async {
-    // print("Getting Email and PAN");
-
     final String uEmail = emailText.text;
     final String uPan = panText.text;
 
