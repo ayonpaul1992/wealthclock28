@@ -1311,7 +1311,9 @@ class ProfileAfterLoginState extends State<ProfileAfterLogin> {
         }
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
+          SnackBar(
+            content: Text(message),
+          ),
         );
       } else {}
     } catch (e) {
