@@ -1316,6 +1316,9 @@ class ProfileAfterLoginState extends State<ProfileAfterLogin> {
       } else {}
     } catch (e) {
       // print('Exception caught: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
     }
   }
 }
