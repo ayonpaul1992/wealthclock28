@@ -65,6 +65,11 @@ class ProfileAfterLoginState extends State<ProfileAfterLogin> {
   String rmName = '';
   String rmPhone = '';
 
+  bool isObscure = true; // 👈 ADD THIS ABOVE IN YOUR STATE
+
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController passwordController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -906,6 +911,214 @@ class ProfileAfterLoginState extends State<ProfileAfterLogin> {
                                 ),
                               );
                             }),
+                          ),
+                        ),
+
+                        Container(
+                          width: double.infinity,
+                          margin: const EdgeInsets.symmetric(horizontal: 17),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return StatefulBuilder(
+                                    builder: (context, setState) {
+                                      return AlertDialog(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.fromLTRB(
+                                                20, 10, 20, 10),
+                                        title: Text(
+                                          "Delete Account?",
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        content: Form(
+                                          // ✅ REQUIRED FOR VALIDATION
+                                          key: formKey,
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "Enter your password to confirm deletion.",
+                                                style: GoogleFonts.poppins(
+                                                    fontSize: 13),
+                                              ),
+
+                                              const SizedBox(height: 10),
+
+                                              // PASSWORD FIELD
+                                              TextFormField(
+                                                controller: passwordController,
+                                                obscureText: isObscure,
+
+                                                // 🔥 Re-validate on user typing
+                                                onChanged: (value) {
+                                                  if (formKey.currentState!
+                                                      .validate()) {
+                                                    setState(
+                                                        () {}); // rebuild to remove error immediately
+                                                  }
+                                                },
+
+                                                validator: (value) {
+                                                  if (value == null ||
+                                                      value.isEmpty) {
+                                                    return "Password cannot be empty";
+                                                  }
+                                                  return null;
+                                                },
+
+                                                decoration: InputDecoration(
+                                                  hintText: "Enter Password",
+                                                  hintStyle:
+                                                      GoogleFonts.poppins(
+                                                          fontSize: 13),
+                                                  border: InputBorder.none,
+                                                  enabledBorder:
+                                                      OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                    borderSide:
+                                                        const BorderSide(
+                                                            color: Colors.black,
+                                                            width: 1),
+                                                  ),
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                    borderSide:
+                                                        const BorderSide(
+                                                            color: Colors.black,
+                                                            width: 1),
+                                                  ),
+                                                  errorBorder:
+                                                      OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                    borderSide:
+                                                        const BorderSide(
+                                                            color: Colors.red,
+                                                            width: 1),
+                                                  ),
+                                                  focusedErrorBorder:
+                                                      OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                    borderSide:
+                                                        const BorderSide(
+                                                            color: Colors.red,
+                                                            width: 1),
+                                                  ),
+                                                  suffixIcon: IconButton(
+                                                    icon: Icon(
+                                                      isObscure
+                                                          ? Icons.visibility_off
+                                                          : Icons.visibility,
+                                                    ),
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        isObscure = !isObscure;
+                                                      });
+                                                    },
+                                                  ),
+                                                  errorStyle: const TextStyle(
+                                                      fontSize: 12,
+                                                      height: 1.2),
+                                                ),
+                                              ),
+
+                                              const SizedBox(height: 5),
+                                            ],
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text(
+                                              "Cancel",
+                                              style: GoogleFonts.poppins(
+                                                  color: Colors.grey[700]),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              if (!formKey.currentState!
+                                                  .validate()) {
+                                                return; // ⬅️ shows the error
+                                              }
+
+                                              Navigator.pop(context);
+
+                                              // TODO: Delete logic
+                                              // deleteAccount(passwordController.text);
+                                            },
+                                            child: Text(
+                                              "Delete",
+                                              style: GoogleFonts.poppins(
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 18, vertical: 12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Delete Account",
+                                    style: GoogleFonts.poppins(
+                                      color: const Color(0xFF3F4B4B),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.delete_forever,
+                                    size: 17,
+                                    color: Color(0xFF6B7280),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
 
