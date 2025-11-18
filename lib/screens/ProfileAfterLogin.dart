@@ -983,7 +983,7 @@ class ProfileAfterLoginState extends State<ProfileAfterLogin> {
                                                 validator: (value) {
                                                   if (value == null ||
                                                       value.isEmpty) {
-                                                    return "Password cannot be empty";
+                                                    return "Please enter your password";
                                                   }
                                                   return null;
                                                 },
@@ -1058,8 +1058,10 @@ class ProfileAfterLoginState extends State<ProfileAfterLogin> {
                                         ),
                                         actions: [
                                           TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
+                                            onPressed: () => {
+                                              passwordController.clear(),
+                                              Navigator.pop(context),
+                                            },
                                             child: Text(
                                               "Cancel",
                                               style: GoogleFonts.poppins(
@@ -1074,6 +1076,12 @@ class ProfileAfterLoginState extends State<ProfileAfterLogin> {
                                               }
 
                                               Navigator.pop(context);
+
+                                              print(
+                                                  "Deleting account with password: ${passwordController.text}");
+
+                                              deleteAccount(
+                                                  passwordController.text);
 
                                               // TODO: Delete logic
                                               // deleteAccount(passwordController.text);
@@ -1260,5 +1268,54 @@ class ProfileAfterLoginState extends State<ProfileAfterLogin> {
       ),
       bottomNavigationBar: const CustomBottomNavBar(selectedIndex: 2),
     );
+  }
+
+  void deleteAccount(String text) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? authToken = prefs.getString('auth_token');
+    const String apiUrl = 'https://wealthclockadvisors.com/api/client/delete';
+
+    if (authToken == null || authToken.isEmpty) {
+      return;
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $authToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String message = responseData['message'] ?? 'Account deleted';
+
+        // SnackBar(content: Text(message));
+
+        // Clear auth token and other user data
+        await prefs.remove('auth_token');
+        // You can clear other user-related data here if needed
+
+        // Clear auth token and navigate to the LoginPage (replace entire navigation stack)
+        // await prefs.remove('auth_token');
+
+        if (mounted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => const LoginPage(),
+            ),
+            (route) => false,
+          );
+        }
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      } else {}
+    } catch (e) {
+      // print('Exception caught: $e');
+    }
   }
 }
