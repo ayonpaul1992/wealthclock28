@@ -1280,12 +1280,13 @@ class ProfileAfterLoginState extends State<ProfileAfterLogin> {
     }
 
     try {
-      final response = await http.get(
+      final response = await http.post(
         Uri.parse(apiUrl),
         headers: {
           'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
         },
+        body: json.encode({'password': text}),
       );
 
       if (response.statusCode == 200) {
@@ -1315,7 +1316,18 @@ class ProfileAfterLoginState extends State<ProfileAfterLogin> {
             content: Text(message),
           ),
         );
-      } else {}
+      } else {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String errorMessage =
+            responseData['message'] ?? 'Failed to delete account';
+
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+          ),
+        );
+      }
     } catch (e) {
       // print('Exception caught: $e');
       ScaffoldMessenger.of(context).showSnackBar(
