@@ -800,8 +800,10 @@ class ProfileAfterLoginState extends State<ProfileAfterLogin> {
         rqsrvcId: '',
       ),
       drawer: CustomDrawer(
-        activeTile: 'Profile Details',
-        onTileTap: (selectedTile) {},
+        activeTile: 'My Profile',
+        onTileTap: (selectedTile) {
+          // Handle navigation based on selectedTile if needed
+        },
       ),
       body: Column(
         children: [

@@ -127,7 +127,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         rqsrvcId: '',
       ),
       drawer: CustomDrawer(
-        activeTile: 'Home',
+        activeTile: 'Change Password',
         onTileTap: (selectedTile) {},
       ),
       body: GestureDetector(

@@ -261,7 +261,7 @@ class _IndividualPortfolioPageState extends State<IndividualPortfolioPage> {
         rqsrvcId: '',
       ),
       drawer: CustomDrawer(
-        activeTile: '',
+        activeTile: 'My Orders',
         onTileTap: (selectedTile) {
           // //print("Navigating to $selectedTile");
           // Handle navigation logic
